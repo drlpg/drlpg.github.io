@@ -33,7 +33,7 @@ function weibo() {
 }
 
 function getData() {
-    fetch('https://weibo.drlpg.us.kg/weibo').then(data => data.json()).then(data => {
+    fetch('https://weibo.drlpg.dpdns.org/weibo').then(data => data.json()).then(data => {
          if (data == '0') {
              document.getElementById('weiboContent').innerHTML = '获取微博热搜失败'
              return
