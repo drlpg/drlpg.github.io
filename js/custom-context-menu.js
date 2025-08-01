@@ -1,0 +1,1075 @@
+// 自定义右键菜单功能
+(function() {
+  'use strict';
+
+  let contextMenu = null;
+  let rightClickTarget = null;
+
+  // 获取点击的链接元素
+  function getClickedLink() {
+    if (!rightClickTarget) return null;
+    
+    if (rightClickTarget.tagName === 'A') {
+      return rightClickTarget;
+    }
+    
+    const parentLink = rightClickTarget.closest('a');
+    return parentLink;
+  }
+
+  // 获取点击的图片元素
+  function getClickedImage() {
+    if (!rightClickTarget) return null;
+    
+    if (rightClickTarget.tagName === 'IMG') {
+      return rightClickTarget;
+    }
+    
+    const parentImage = rightClickTarget.closest('img');
+    return parentImage;
+  }
+
+  // 检测是否有选中的文字
+  function hasSelectedText() {
+    const selection = window.getSelection();
+    return selection && selection.toString().trim().length > 0;
+  }
+
+  // 获取选中的文字
+  function getSelectedText() {
+    const selection = window.getSelection();
+    return selection ? selection.toString().trim() : '';
+  }
+
+  // 检测当前页面是否为繁体
+  function isTraditionalChinese() {
+    // 检查繁简转换按钮的状态
+    const translateButton = document.getElementById('translateLink');
+    if (translateButton) {
+      const buttonText = translateButton.textContent.trim();
+      console.log('转换按钮文本:', buttonText);
+      
+      // 如果按钮显示"繁"，说明当前是简体
+      // 如果按钮显示"簡"或"简"，说明当前是繁体
+      if (buttonText === '繁') {
+        console.log('检测结果: 简体页面');
+        return false;
+      } else if (buttonText === '簡' || buttonText === '简') {
+        console.log('检测结果: 繁体页面');
+        return true;
+      }
+    }
+    
+    // 如果没有转换按钮，检查页面内容中的关键字符
+    const testElements = [
+      document.querySelector('h1'),
+      document.querySelector('.post-title'),
+      document.querySelector('#site-title')
+    ];
+    
+    for (let element of testElements) {
+      if (element && element.textContent) {
+        const text = element.textContent;
+        // 检查几个明显的繁体字符
+        if (/[個為國說時長來對會過還這裡頭樣讓從關門問題經驗學習實現應該種類別點內容標評論復製鏈接開關閉熱評深色模式轉繁體簡]/.test(text)) {
+          console.log('检测结果: 繁体页面 (通过内容检测)');
+          return true;
+        }
+      }
+    }
+    
+    console.log('检测结果: 简体页面 (默认)');
+    return false;
+  }
+
+  // 生成默认菜单内容（空白区域）
+  function generateDefaultMenuContent() {
+    // 获取热评弹窗状态
+    const isHotCommentEnabled = typeof window.getHotCommentStatus === 'function' ? window.getHotCommentStatus() : true;
+    
+    // 获取繁简转换状态
+    let translateText, translateIcon;
+    const isTraditional = isTraditionalChinese();
+    
+    if (isTraditional) {
+      // 当前是繁体，显示"转为简体"（用简体字显示）
+      translateText = '转为简体';
+      // 图标直接在HTML中设置
+    } else {
+      // 当前是简体，显示"轉為繁體"（用繁体字显示）
+      translateText = '轉為繁體';
+      // 图标直接在HTML中设置
+    }
+    
+    // 获取深色模式状态
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    let darkModeText, darkModeIcon;
+    if (isTraditional) {
+      darkModeText = isDark ? '淺色模式' : '深色模式';
+    } else {
+      darkModeText = isDark ? '浅色模式' : '深色模式';
+    }
+    // 图标直接在HTML中设置
+    
+    // 根据当前语言设置菜单文字
+    let menuTexts;
+    if (isTraditional) {
+      menuTexts = {
+        randomPost: '隨便逛逛',
+        categories: '博客分類',
+        tags: '文章標籤',
+        privacy: '隱私協議',
+        copyright: '版權協議',
+        copyUrl: '複製地址',
+        toggleComments: isHotCommentEnabled ? '關閉熱評' : '開啟熱評'
+      };
+    } else {
+      menuTexts = {
+        randomPost: '随便逛逛',
+        categories: '博客分类',
+        tags: '文章标签',
+        privacy: '隐私协议',
+        copyright: '版权协议',
+        copyUrl: '复制地址',
+        toggleComments: isHotCommentEnabled ? '关闭热评' : '开启热评'
+      };
+    }
+    
+    return `
+      <a href="javascript:void(0)" class="custom-context-menu-item" data-action="random-post">
+        <i class="fa fa-podcast"></i>
+        <span>${menuTexts.randomPost}</span>
+      </a>
+      <a href="/categories/" class="custom-context-menu-item" data-action="categories">
+        <i class="fa fa-folder-open"></i>
+        <span>${menuTexts.categories}</span>
+      </a>
+      <a href="/tags/" class="custom-context-menu-item" data-action="tags">
+        <i class="fa fa-tag"></i>
+        <span>${menuTexts.tags}</span>
+      </a>
+      <div class="custom-context-menu-separator"></div>
+      <a href="/privacy/" class="custom-context-menu-item" data-action="privacy">
+        <i class="fa fa-user-secret"></i>
+        <span>${menuTexts.privacy}</span>
+      </a>
+      <a href="/copyright/" class="custom-context-menu-item" data-action="copyright">
+        <i class="fa fa-creative-commons"></i>
+        <span>${menuTexts.copyright}</span>
+      </a>
+      <div class="custom-context-menu-separator"></div>
+      <a href="javascript:void(0)" class="custom-context-menu-item" data-action="copy-url">
+        <i class="fa fa-external-link"></i>
+        <span>${menuTexts.copyUrl}</span>
+      </a>
+      <a href="javascript:void(0)" class="custom-context-menu-item" data-action="toggle-comments">
+        <i class="fa fa-comment"></i>
+        <span>${menuTexts.toggleComments}</span>
+      </a>
+      <a href="javascript:void(0)" class="custom-context-menu-item" data-action="toggle-dark-mode">
+        <i class="fa fa-adjust"></i>
+        <span>${darkModeText}</span>
+      </a>
+      <a href="javascript:void(0)" class="custom-context-menu-item" data-action="translate">
+        <i class="${isTraditional ? 'fa fa-language' : 'fa fa-language'}"></i>
+        <span>${translateText}</span>
+      </a>
+    `;
+  }
+
+  // 生成文字菜单内容（选中文字）
+  function generateTextMenuContent() {
+    const isTraditional = isTraditionalChinese();
+    const selectedText = getSelectedText();
+    
+    let textMenuTexts;
+    if (isTraditional) {
+      textMenuTexts = {
+        copyText: '複製選中文本',
+        quoteComment: '引用到評論',
+        siteSearch: '站內搜索',
+        baiduSearch: '百度搜索',
+        privacy: '隱私協議',
+        copyright: '版權協議'
+      };
+    } else {
+      textMenuTexts = {
+        copyText: '复制选中文本',
+        quoteComment: '引用到评论',
+        siteSearch: '站内搜索',
+        baiduSearch: '百度搜索',
+        privacy: '隐私协议',
+        copyright: '版权协议'
+      };
+    }
+    
+    return `
+      <a href="javascript:void(0)" class="custom-context-menu-item" data-action="copy-selected-text">
+        <i class="fa fa-copy"></i>
+        <span>${textMenuTexts.copyText}</span>
+      </a>
+      <a href="javascript:void(0)" class="custom-context-menu-item" data-action="quote-to-comment">
+        <i class="fa fa-plus"></i>
+        <span>${textMenuTexts.quoteComment}</span>
+      </a>
+      <div class="custom-context-menu-separator"></div>
+      <a href="javascript:void(0)" class="custom-context-menu-item" data-action="site-search">
+        <i class="fa fa-search"></i>
+        <span>${textMenuTexts.siteSearch}</span>
+      </a>
+      <a href="javascript:void(0)" class="custom-context-menu-item" data-action="baidu-search">
+        <i class="fa fa-paw"></i>
+        <span>${textMenuTexts.baiduSearch}</span>
+      </a>
+      <div class="custom-context-menu-separator"></div>
+      <a href="/privacy/" class="custom-context-menu-item" data-action="privacy">
+        <i class="fa fa-user-secret"></i>
+        <span>${textMenuTexts.privacy}</span>
+      </a>
+      <a href="/copyright/" class="custom-context-menu-item" data-action="copyright">
+        <i class="fa fa-creative-commons"></i>
+        <span>${textMenuTexts.copyright}</span>
+      </a>
+    `;
+  }
+
+  // 生成图片菜单内容（图片区域）
+  function generateImageMenuContent() {
+    const isTraditional = isTraditionalChinese();
+    
+    let imageMenuTexts;
+    if (isTraditional) {
+      imageMenuTexts = {
+        copyImage: '複製此圖片',
+        downloadImage: '下載此圖片',
+        privacy: '隱私協議',
+        copyright: '版權協議'
+      };
+    } else {
+      imageMenuTexts = {
+        copyImage: '复制此图片',
+        downloadImage: '下载此图片',
+        privacy: '隐私协议',
+        copyright: '版权协议'
+      };
+    }
+    
+    return `
+      <a href="javascript:void(0)" class="custom-context-menu-item" data-action="copy-image">
+        <i class="fa fa-copy"></i>
+        <span>${imageMenuTexts.copyImage}</span>
+      </a>
+      <a href="javascript:void(0)" class="custom-context-menu-item" data-action="download-image">
+        <i class="fa fa-download"></i>
+        <span>${imageMenuTexts.downloadImage}</span>
+      </a>
+      <div class="custom-context-menu-separator"></div>
+      <a href="/privacy/" class="custom-context-menu-item" data-action="privacy">
+        <i class="fa fa-user-secret"></i>
+        <span>${imageMenuTexts.privacy}</span>
+      </a>
+      <a href="/copyright/" class="custom-context-menu-item" data-action="copyright">
+        <i class="fa fa-creative-commons"></i>
+        <span>${imageMenuTexts.copyright}</span>
+      </a>
+    `;
+  }
+
+  // 生成链接菜单内容（链接区域）
+  function generateLinkMenuContent() {
+    const isTraditional = isTraditionalChinese();
+    
+    let linkTexts;
+    if (isTraditional) {
+      linkTexts = {
+        openNewTab: '新窗口打開',
+        copyLink: '複製鏈接地址',
+        privacy: '隱私協議',
+        copyright: '版權協議'
+      };
+    } else {
+      linkTexts = {
+        openNewTab: '新窗口打开',
+        copyLink: '复制链接地址',
+        privacy: '隐私协议',
+        copyright: '版权协议'
+      };
+    }
+    
+    return `
+      <a href="javascript:void(0)" class="custom-context-menu-item" data-action="open-new-tab">
+        <i class="fa fa-external-link"></i>
+        <span>${linkTexts.openNewTab}</span>
+      </a>
+      <a href="javascript:void(0)" class="custom-context-menu-item" data-action="copy-link">
+        <i class="fa fa-link"></i>
+        <span>${linkTexts.copyLink}</span>
+      </a>
+      <div class="custom-context-menu-separator"></div>
+      <a href="/privacy/" class="custom-context-menu-item" data-action="privacy">
+        <i class="fa fa-user-secret"></i>
+        <span>${linkTexts.privacy}</span>
+      </a>
+      <a href="/copyright/" class="custom-context-menu-item" data-action="copyright">
+        <i class="fa fa-creative-commons"></i>
+        <span>${linkTexts.copyright}</span>
+      </a>
+    `;
+  }
+
+  // 创建右键菜单HTML
+  function createContextMenu() {
+    const isTraditional = isTraditionalChinese();
+    
+    let navTitles;
+    if (isTraditional) {
+      navTitles = {
+        back: '後退',
+        forward: '前進',
+        refresh: '刷新',
+        up: '向上'
+      };
+    } else {
+      navTitles = {
+        back: '后退',
+        forward: '前进',
+        refresh: '刷新',
+        up: '向上'
+      };
+    }
+    
+    const menuHTML = `
+      <div class="custom-context-menu" id="customContextMenu">
+        <div class="context-menu-nav-buttons">
+          <button class="context-menu-nav-button" data-action="go-back" data-tooltip="${navTitles.back}">
+            <i class="fa fa-arrow-left"></i>
+          </button>
+          <button class="context-menu-nav-button" data-action="go-forward" data-tooltip="${navTitles.forward}">
+            <i class="fa fa-arrow-right"></i>
+          </button>
+          <button class="context-menu-nav-button" data-action="refresh" data-tooltip="${navTitles.refresh}">
+            <i class="fa fa-refresh"></i>
+          </button>
+          <button class="context-menu-nav-button" data-action="go-up" data-tooltip="${navTitles.up}">
+            <i class="fa fa-arrow-up"></i>
+          </button>
+        </div>
+        <div class="context-menu-content" id="contextMenuContent">
+          <!-- 动态内容将在这里插入 -->
+        </div>
+      </div>
+    `;
+    
+    // 创建独立的悬停提示框
+    const tooltipHTML = `<div class="nav-button-tooltip" id="navTooltip"></div>`;
+    
+    document.body.insertAdjacentHTML('beforeend', menuHTML);
+    document.body.insertAdjacentHTML('beforeend', tooltipHTML);
+    contextMenu = document.getElementById('customContextMenu');
+  }
+
+  // 更新菜单内容
+  function updateMenuContent() {
+    const contentContainer = document.getElementById('contextMenuContent');
+    if (!contentContainer) return;
+
+    const clickedLink = getClickedLink();
+    const clickedImage = getClickedImage();
+    const hasText = hasSelectedText();
+    
+    if (hasText) {
+      // 有选中文字时显示文字菜单
+      contentContainer.innerHTML = generateTextMenuContent();
+    } else if (clickedImage) {
+      // 点击图片时显示图片菜单
+      contentContainer.innerHTML = generateImageMenuContent();
+    } else if (clickedLink) {
+      // 点击链接时显示链接菜单
+      contentContainer.innerHTML = generateLinkMenuContent();
+    } else {
+      // 默认菜单
+      contentContainer.innerHTML = generateDefaultMenuContent();
+    }
+    
+    bindMenuEvents();
+  }
+
+  // 绑定菜单事件
+  function bindMenuEvents() {
+    if (!contextMenu) return;
+    
+    // 直接为每个菜单项绑定事件
+    const menuItems = contextMenu.querySelectorAll('.custom-context-menu-item');
+    const navButtons = contextMenu.querySelectorAll('.context-menu-nav-button');
+    
+    menuItems.forEach(item => {
+      item.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const action = this.getAttribute('data-action');
+        console.log('菜单项点击:', action);
+        
+        // 立即隐藏菜单
+        hideContextMenu();
+        
+        // 延迟执行动作
+        setTimeout(() => {
+          handleMenuAction(action);
+        }, 100);
+      });
+    });
+
+    navButtons.forEach(button => {
+      button.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const action = this.getAttribute('data-action');
+        console.log('导航按钮点击:', action);
+        
+        // 立即隐藏菜单
+        hideContextMenu();
+        
+        // 延迟执行动作
+        setTimeout(() => {
+          handleNavAction(action);
+        }, 100);
+      });
+
+      // 添加悬停提示事件
+      button.addEventListener('mouseenter', function(e) {
+        showNavTooltip(this);
+      });
+
+      button.addEventListener('mouseleave', function(e) {
+        hideNavTooltip();
+      });
+    });
+  }
+
+
+
+  // 处理导航按钮动作
+  function handleNavAction(action) {
+    switch(action) {
+      case 'go-back':
+        if (window.history.length > 1) {
+          window.history.back();
+        } else {
+          showNotification('没有可返回的页面');
+        }
+        break;
+      case 'go-forward':
+        window.history.forward();
+        break;
+      case 'refresh':
+        window.location.reload();
+        break;
+      case 'go-up':
+        // 回到页面顶部
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+        break;
+    }
+  }
+
+  // 处理菜单动作
+  function handleMenuAction(action) {
+    switch(action) {
+      case 'open-new-tab':
+        const targetLink = getClickedLink();
+        if (targetLink) {
+          window.open(targetLink.href, '_blank');
+          showNotification('已在新窗口打开链接');
+        } else {
+          window.open(window.location.href, '_blank');
+          showNotification('已在新窗口打开页面');
+        }
+        break;
+        
+      case 'copy-link':
+        const clickedLink = getClickedLink();
+        if (clickedLink) {
+          copyToClipboard(clickedLink.href);
+          showCopySuccessNotification('已复制链接地址');
+        } else {
+          copyToClipboard(window.location.href);
+          showCopySuccessNotification('已复制本页链接地址');
+        }
+        break;
+        
+      case 'copy-url':
+        copyToClipboard(window.location.href);
+        showCopySuccessNotification('已复制本页链接地址');
+        break;
+        
+      case 'random-post':
+        if (typeof btf !== 'undefined' && btf.randomPost) {
+          btf.randomPost();
+        } else {
+          const pages = ['/archives/', '/categories/', '/tags/', '/about/'];
+          const randomPage = pages[Math.floor(Math.random() * pages.length)];
+          window.location.href = randomPage;
+        }
+        break;
+        
+      case 'categories':
+        window.location.href = '/categories/';
+        break;
+        
+      case 'tags':
+        window.location.href = '/tags/';
+        break;
+        
+      case 'privacy':
+        window.location.href = '/privacy/';
+        break;
+        
+      case 'copyright':
+        window.location.href = '/copyright/';
+        break;
+        
+      case 'toggle-comments':
+        console.log('切换热评弹窗状态');
+        if (typeof window.toggleHotCommentPopup === 'function') {
+          const newStatus = window.toggleHotCommentPopup();
+          const isTraditional = isTraditionalChinese();
+          const statusText = newStatus ? 
+            (isTraditional ? '熱評彈窗已開啟' : '热评弹窗已开启') : 
+            (isTraditional ? '熱評彈窗已關閉' : '热评弹窗已关闭');
+          showCopySuccessNotification(statusText);
+        } else {
+          console.log('热评弹窗功能未加载');
+        }
+        break;
+        
+      case 'toggle-dark-mode':
+        if (typeof btf !== 'undefined' && btf.switchDarkMode) {
+          btf.switchDarkMode();
+        } else {
+          const currentTheme = document.documentElement.getAttribute('data-theme');
+          const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+          document.documentElement.setAttribute('data-theme', newTheme);
+        }
+        // 不需要立即更新菜单，因为菜单已经关闭
+        // 下次打开菜单时会自动获取最新状态
+        break;
+        
+      case 'translate':
+        // 调用博客自带的繁简转换功能
+        if (typeof window.translateFn !== 'undefined' && window.translateFn.translatePage) {
+          // 获取当前状态来确定切换后的状态
+          const isCurrentlyTraditional = isTraditionalChinese();
+          
+          window.translateFn.translatePage();
+          
+          // 延迟显示通知，等待页面切换完成
+          setTimeout(() => {
+            if (isCurrentlyTraditional) {
+              showCopySuccessNotification('你已切换为简体');
+            } else {
+              showCopySuccessNotification('你已切换为繁体');
+            }
+          }, 100);
+          
+          console.log('繁简转换完成');
+        } else {
+          console.log('繁简转换功能未启用');
+        }
+        break;
+        
+      case 'copy-selected-text':
+        const selectedText = getSelectedText();
+        if (selectedText) {
+          copyToClipboard(selectedText);
+          showCopySuccessNotification('复制成功，复制和转载请标注本文地址');
+        }
+        break;
+        
+      case 'quote-to-comment':
+        const quoteText = getSelectedText();
+        if (quoteText) {
+          // 尝试将文本添加到评论框，使用更广泛的选择器
+          const commentBox = document.querySelector('#comment-textarea, .comment-textarea, textarea[name="comment"], textarea[placeholder*="评论"], textarea[placeholder*="comment"], #comment, .comment-form textarea, .post-comment textarea, textarea');
+          if (commentBox) {
+            // 直接插入选中的文本，不添加引用格式
+            commentBox.value = quoteText + (commentBox.value ? ' ' + commentBox.value : '');
+            commentBox.focus();
+            // 滚动到评论区域
+            commentBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // 移除通知，静默执行
+          } else {
+            copyToClipboard(quoteText);
+            // 移除通知，静默执行
+          }
+        }
+        break;
+        
+      case 'site-search':
+        const siteSearchText = getSelectedText();
+        if (siteSearchText) {
+          // 尝试调用博客的本地搜索功能
+          try {
+            let searchTriggered = false;
+            
+            // 方法1: 尝试调用各种可能的搜索函数
+            const searchFunctions = [
+              () => typeof btf !== 'undefined' && btf.openSearch && btf.openSearch(),
+              () => typeof openSearch === 'function' && openSearch(),
+              () => typeof searchFunc === 'function' && searchFunc(),
+              () => typeof localSearch === 'function' && localSearch()
+            ];
+            
+            for (let searchFunc of searchFunctions) {
+              try {
+                if (searchFunc()) {
+                  searchTriggered = true;
+                  break;
+                }
+              } catch (e) {
+                continue;
+              }
+            }
+            
+            // 方法2: 尝试点击搜索按钮
+            if (!searchTriggered) {
+              const searchButtons = [
+                '.search',
+                '.search-button', 
+                '#search-button',
+                '[data-href="#search"]',
+                '.fa-search',
+                '.search-icon',
+                '.local-search',
+                '#local-search'
+              ];
+              
+              for (let selector of searchButtons) {
+                const button = document.querySelector(selector);
+                if (button) {
+                  button.click();
+                  searchTriggered = true;
+                  break;
+                }
+              }
+            }
+            
+            // 如果成功触发搜索，等待搜索框出现并填入文本
+            if (searchTriggered) {
+              // 填入搜索文本
+              const fillSearchInput = () => {
+                // 优先查找搜索相关的输入框
+                const searchInputSelectors = [
+                  'input[type="search"]',
+                  'input[placeholder*="搜索"]',
+                  'input[placeholder*="search"]',
+                  'input[placeholder*="Search"]',
+                  '.search-input',
+                  '.local-search-input',
+                  '#local-search-input',
+                  '.search-dialog input',
+                  '.search-popup input',
+                  '.search-container input',
+                  '#search input',
+                  '.algolia-search-input'
+                ];
+                
+                // 首先尝试搜索相关的输入框
+                for (let selector of searchInputSelectors) {
+                  const input = document.querySelector(selector);
+                  if (input && input.offsetParent !== null) {
+                    try {
+                      input.value = siteSearchText;
+                      input.focus();
+                      
+                      // 触发搜索事件
+                      ['input', 'change', 'keyup'].forEach(eventType => {
+                        const event = new Event(eventType, { bubbles: true, cancelable: true });
+                        input.dispatchEvent(event);
+                      });
+                      
+                      console.log('搜索文本已填入:', siteSearchText);
+                      return true;
+                    } catch (e) {
+                      continue;
+                    }
+                  }
+                }
+                
+                // 如果没找到专门的搜索框，查找最近出现的可见输入框（排除评论相关）
+                const allInputs = document.querySelectorAll('input');
+                for (let input of allInputs) {
+                  // 排除评论相关的输入框
+                  const isCommentInput = input.closest('.comment, .comments, #post-comment, .tk-comments, .valine, .waline') ||
+                                        input.name === 'nick' ||
+                                        input.name === 'name' ||
+                                        input.name === 'author' ||
+                                        input.placeholder && (
+                                          input.placeholder.includes('昵称') ||
+                                          input.placeholder.includes('姓名') ||
+                                          input.placeholder.includes('Name') ||
+                                          input.placeholder.includes('邮箱') ||
+                                          input.placeholder.includes('Email') ||
+                                          input.placeholder.includes('网址') ||
+                                          input.placeholder.includes('URL')
+                                        );
+                  
+                  if (!isCommentInput && input.offsetParent !== null && input.type !== 'hidden') {
+                    try {
+                      input.value = siteSearchText;
+                      input.focus();
+                      
+                      // 触发搜索事件
+                      ['input', 'change', 'keyup'].forEach(eventType => {
+                        const event = new Event(eventType, { bubbles: true, cancelable: true });
+                        input.dispatchEvent(event);
+                      });
+                      
+                      console.log('搜索文本已填入备用输入框:', siteSearchText);
+                      return true;
+                    } catch (e) {
+                      continue;
+                    }
+                  }
+                }
+                return false;
+              };
+              
+              // 延迟填入，给搜索框时间加载
+              setTimeout(fillSearchInput, 300);
+              setTimeout(fillSearchInput, 800);
+            } else {
+              // 如果都不行，使用Google站内搜索
+              const googleSiteSearch = `https://www.google.com/search?q=site:${window.location.hostname} ${encodeURIComponent(siteSearchText)}`;
+              window.open(googleSiteSearch, '_blank');
+            }
+          } catch (error) {
+            console.log('本地搜索调用失败:', error);
+            // 备用方案：Google站内搜索
+            const googleSiteSearch = `https://www.google.com/search?q=site:${window.location.hostname} ${encodeURIComponent(siteSearchText)}`;
+            window.open(googleSiteSearch, '_blank');
+          }
+        }
+        break;
+        
+      case 'baidu-search':
+        const baiduSearchText = getSelectedText();
+        if (baiduSearchText) {
+          const baiduUrl = `https://www.baidu.com/s?wd=${encodeURIComponent(baiduSearchText)}`;
+          window.open(baiduUrl, '_blank');
+        }
+        break;
+        
+      case 'copy-image':
+        const targetImage = getClickedImage();
+        if (targetImage) {
+          // 直接复制图片地址，避免fetch可能的干扰
+          copyToClipboard(targetImage.src);
+          showCopySuccessNotification('复制成功!图片已添加盲水印，请遵守版权协议');
+        }
+        break;
+        
+      case 'download-image':
+        const downloadImage = getClickedImage();
+        if (downloadImage) {
+          try {
+            // 获取图片文件名
+            const imageUrl = new URL(downloadImage.src);
+            const imageName = downloadImage.alt || imageUrl.pathname.split('/').pop() || 'image.jpg';
+            
+            // 尝试使用fetch下载图片
+            fetch(downloadImage.src)
+              .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.blob();
+              })
+              .then(blob => {
+                // 创建下载链接
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = imageName;
+                link.style.display = 'none';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+                // 移除通知，静默下载
+              })
+              .catch(() => {
+                // 如果fetch失败，使用传统方法
+                const link = document.createElement('a');
+                link.href = downloadImage.src;
+                link.download = imageName;
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                // 移除通知，静默下载
+              });
+          } catch (error) {
+            // 最后的备用方案：直接打开图片
+            window.open(downloadImage.src, '_blank');
+            // 移除通知，静默下载
+          }
+        }
+        break;
+    }
+  }
+
+  // 原toggleComments函数已移除，现在使用热评弹窗控制
+  // function toggleComments() { ... } - 已废弃
+
+  // 更新深色模式文本
+  function updateDarkModeText() {
+    const darkModeItem = contextMenu.querySelector('[data-action="toggle-dark-mode"] span');
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    if (darkModeItem) {
+      darkModeItem.textContent = isDark ? '浅色模式' : '深色模式';
+    }
+    const darkModeIcon = contextMenu.querySelector('[data-action="toggle-dark-mode"] i');
+    if (darkModeIcon) {
+      darkModeIcon.className = 'fa fa-adjust';
+    }
+  }
+
+
+
+
+
+  // 复制到剪贴板
+  function copyToClipboard(text) {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text);
+    } else {
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+    }
+  }
+
+  // 显示通知
+  function showNotification(message) {
+    try {
+      if (typeof btf !== 'undefined' && btf.snackbarShow && typeof GLOBAL_CONFIG !== 'undefined' && GLOBAL_CONFIG.Snackbar) {
+        btf.snackbarShow(message);
+      } else if (typeof Swal !== 'undefined') {
+        Swal.fire({
+          title: message,
+          icon: 'success',
+          timer: 2000,
+          showConfirmButton: false
+        });
+      } else {
+        // 使用简单的alert作为备用
+        alert(message);
+      }
+    } catch (error) {
+      console.log('通知显示失败:', error);
+      console.log('消息:', message);
+    }
+  }
+
+  // 显示复制成功提示栏
+  function showCopySuccessNotification(message) {
+    // 移除已存在的提示栏
+    const existingNotification = document.querySelector('.copy-success-notification');
+    if (existingNotification) {
+      existingNotification.remove();
+    }
+
+    // 创建新的提示栏
+    const notification = document.createElement('div');
+    notification.className = 'copy-success-notification';
+    notification.innerHTML = `
+      <span>${message}</span>
+      <div class="progress-bar"></div>
+    `;
+
+    // 添加到页面
+    document.body.appendChild(notification);
+
+    // 显示动画
+    setTimeout(() => {
+      notification.classList.add('show');
+    }, 10);
+
+    // 3秒后隐藏并移除
+    setTimeout(() => {
+      notification.classList.remove('show');
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.parentNode.removeChild(notification);
+        }
+      }, 300);
+    }, 3000);
+  }
+
+  // 显示右键菜单
+  function showContextMenu(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // 每次都重新创建菜单以确保状态正确
+    if (contextMenu) {
+      contextMenu.remove();
+      contextMenu = null;
+    }
+    
+    // 清理旧的提示框
+    const oldTooltip = document.getElementById('navTooltip');
+    if (oldTooltip) {
+      oldTooltip.remove();
+    }
+    
+    createContextMenu();
+    updateMenuContent();
+    
+    // 获取鼠标位置
+    const x = e.clientX;
+    const y = e.clientY;
+    
+    // 显示在鼠标指针左上角
+    const offsetX = -10;
+    const offsetY = -10;
+    
+    contextMenu.style.left = (x + offsetX) + 'px';
+    contextMenu.style.top = (y + offsetY) + 'px';
+    contextMenu.classList.add('show');
+    
+    // 检查边界
+    const rect = contextMenu.getBoundingClientRect();
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+    
+    if (rect.left < 0) {
+      contextMenu.style.left = '10px';
+    } else if (rect.right > windowWidth) {
+      contextMenu.style.left = (windowWidth - rect.width - 10) + 'px';
+    }
+    
+    if (rect.top < 0) {
+      contextMenu.style.top = '10px';
+    } else if (rect.bottom > windowHeight) {
+      contextMenu.style.top = (windowHeight - rect.height - 10) + 'px';
+    }
+  }
+
+  // 隐藏右键菜单
+  function hideContextMenu() {
+    if (contextMenu) {
+      console.log('隐藏菜单');
+      contextMenu.classList.remove('show');
+    }
+    // 同时隐藏悬停提示
+    hideNavTooltip();
+  }
+
+  // 显示导航按钮悬停提示
+  function showNavTooltip(button) {
+    const tooltip = document.getElementById('navTooltip');
+    if (!tooltip) return;
+    
+    const tooltipText = button.getAttribute('data-tooltip');
+    if (!tooltipText) return;
+    
+    tooltip.textContent = tooltipText;
+    
+    // 计算按钮的屏幕位置
+    const buttonRect = button.getBoundingClientRect();
+    
+    // 获取菜单容器位置
+    const menuRect = contextMenu.getBoundingClientRect();
+    
+    // 设置提示框内容以计算其尺寸
+    tooltip.style.visibility = 'hidden';
+    tooltip.style.opacity = '1';
+    tooltip.classList.add('show');
+    
+    // 获取提示框尺寸
+    const tooltipRect = tooltip.getBoundingClientRect();
+    
+    // 计算提示框位置：按钮上方，水平居中，与菜单保持3px间距
+    const left = buttonRect.left + (buttonRect.width - tooltipRect.width) / 2;
+    const top = menuRect.top - tooltipRect.height - 3; // 3px间距
+    
+    // 设置位置
+    tooltip.style.left = left + 'px';
+    tooltip.style.top = top + 'px';
+    
+    // 显示提示框
+    tooltip.style.visibility = 'visible';
+  }
+
+  // 隐藏导航按钮悬停提示
+  function hideNavTooltip() {
+    const tooltip = document.getElementById('navTooltip');
+    if (tooltip) {
+      tooltip.classList.remove('show');
+      // 重置所有内联样式
+      tooltip.style.visibility = 'hidden';
+      tooltip.style.opacity = '0';
+      tooltip.style.left = '';
+      tooltip.style.top = '';
+    }
+  }
+
+  // 原restoreCommentsState函数已移除，现在使用热评弹窗控制
+  // function restoreCommentsState() { ... } - 已废弃
+
+  // 初始化事件监听
+  function initContextMenu() {
+    // 原评论状态恢复已移除
+    
+    // 右键事件
+    document.addEventListener('contextmenu', function(e) {
+      const target = e.target;
+      const isInContent = target.closest('#content-inner, .layout, body');
+      const isNotInInput = !target.closest('input, textarea, select, [contenteditable]');
+      const isNotInMenu = !target.closest('.custom-context-menu, #nav, .rightside');
+      
+      if (isInContent && isNotInInput && isNotInMenu) {
+        rightClickTarget = target;
+        showContextMenu(e);
+        return false; // 阻止默认右键菜单
+      }
+    });
+
+    // 点击其他地方隐藏菜单（添加延迟避免立即隐藏）
+    document.addEventListener('click', function(e) {
+      setTimeout(() => {
+        if (!e.target.closest('.custom-context-menu')) {
+          hideContextMenu();
+        }
+      }, 10);
+    });
+
+    // 滚动时隐藏菜单
+    document.addEventListener('scroll', hideContextMenu);
+    
+    // 窗口大小改变时隐藏菜单
+    window.addEventListener('resize', hideContextMenu);
+    
+    // ESC键隐藏菜单
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        hideContextMenu();
+      }
+    });
+  }
+
+  // 页面加载完成后初始化
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initContextMenu);
+  } else {
+    initContextMenu();
+  }
+
+})();

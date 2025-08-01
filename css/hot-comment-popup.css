@@ -1,0 +1,207 @@
+/* 热评弹窗样式 */
+.hot-comment-popup {
+  position: fixed;
+  bottom: 20px;
+  right: 65px;
+  width: 270px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e0e0e0;
+  z-index: 9999;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+  overflow: hidden;
+  font-family: inherit;
+}
+
+.hot-comment-popup.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 弹窗头部 */
+.hot-comment-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px 3px;
+}
+
+.hot-comment-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hot-comment-title-text {
+  background: #333;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  height: 20px;
+}
+
+.hot-comment-title-text:hover {
+  background: #555;
+  transform: translateY(-1px);
+}
+
+.hot-comment-author {
+  font-size: 12px;
+  color: #333;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  height: 20px;
+}
+
+.hot-comment-close {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hot-comment-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #f0f0f0;
+}
+
+.hot-comment-close-btn {
+  background: none;
+  border: none;
+  font-size: 22px;
+  color: #666;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+}
+
+.hot-comment-close-btn:hover {
+  background: #f5f5f5;
+  color: #333;
+}
+
+/* 分割线 */
+.hot-comment-divider {
+  height: 1px;
+  background: repeating-linear-gradient(
+    to right,
+    #ddd 0px,
+    #ddd 4px,
+    transparent 4px,
+    transparent 8px
+  );
+  margin: 3px 16px 0;
+}
+
+/* 弹窗内容 */
+.hot-comment-content {
+  padding: 8px 16px 14px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #333;
+  word-wrap: break-word;
+  word-break: break-word;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 20px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.hot-comment-content:hover {
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 6px;
+}
+
+/* 暗色模式适配 */
+[data-theme="dark"] .hot-comment-popup {
+  background: rgba(44, 44, 46, 0.95);
+  border: 1px solid #666;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+[data-theme="dark"] .hot-comment-title-text {
+  background: #555;
+  color: #fff;
+}
+
+[data-theme="dark"] .hot-comment-author {
+  color: #fff;
+}
+
+[data-theme="dark"] .hot-comment-content {
+  color: #fff;
+}
+
+[data-theme="dark"] .hot-comment-content:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .hot-comment-close-btn {
+  color: #ccc;
+}
+
+[data-theme="dark"] .hot-comment-close-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+[data-theme="dark"] .hot-comment-divider {
+  background: repeating-linear-gradient(
+    to right,
+    #666 0px,
+    #666 4px,
+    transparent 4px,
+    transparent 8px
+  );
+}
+
+/* 动画效果 */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideOutDown {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+}
+
+.hot-comment-popup.slide-in {
+  animation: slideInUp 0.3s ease forwards;
+}
+
+.hot-comment-popup.slide-out {
+  animation: slideOutDown 0.3s ease forwards;
+}

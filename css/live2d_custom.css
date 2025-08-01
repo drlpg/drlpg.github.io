@@ -1,0 +1,79 @@
+/* 设置 Live2D容器的 z-index */
+#oml2d-canvas {
+			z-index: 6 !important;
+			transform: translateY(-60px) !important;  
+}
+
+#oml2d-stage {
+			z-index: 7 !important;
+}
+
+#oml2d-menus {
+			z-index: 8 !important;
+			transform: translateY(-50px) !important;
+}
+
+#oml2d-statusBar {
+			z-index: 9 !important;
+			font-size: 12px !important;
+			font-weight: normal !important;
+			background-color: #646b73 !important;
+			border: 2px solid #414b60 !important;
+}
+
+/* 提示框样式 */
+#oml2d-tips {
+			min-height: 80px !important;
+			color: #ffffff !important;
+			font-size: 12px !important;
+			line-height: 1.5 !important;
+			background-color: #646b73 !important;
+			border: 2px solid #414b60 !important;
+}
+
+/* 设置菜单项的基本样式 */
+.oml2d-menus-item {
+			background-color: #646b73 !important;
+			color: white !important;
+			padding: 5px !important;
+			margin: 5px 0 !important;
+}
+
+/* 鼠标悬停时改变背景颜色和字体颜色 */
+.oml2d-menus-item:hover {
+			background-color: #3f475b !important;
+}
+
+/* 当菜单项处于活动状态时改变颜色 */
+.oml2d-menus-item.active {
+			background-color: #414b60 !important;
+}
+
+/* 设置 SVG 图标的样式 */
+.oml2d-icon {
+			width: 20x !important;
+			height: 20px !important;
+}
+
+/* 设置菜单的可见性 */
+.oml2d-menus.show {
+			visibility: visible !important;
+			opacity: 1 !important;
+}
+
+@keyframes oml2d-stage-slide-in {
+    from {
+      transform: translateY(150%);
+    }
+    to {
+      transform: translateY(0%);
+    }
+  }
+@keyframes oml2d-stage-slide-out {
+    from {
+      transform: translateY(0%);
+    }
+    to {
+      transform: translateY(150%);
+    }
+  }
