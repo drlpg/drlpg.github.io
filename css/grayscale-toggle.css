@@ -1,0 +1,43 @@
+/* 灰度切换按钮样式 - 继承现有右侧按钮样式 */
+
+#grayscale-toggle {
+  /* 继承右侧按钮的基本样式 */
+  display: block;
+  margin-bottom: 5px;
+  width: 35px;
+  height: 35px;
+  background-color: var(--btn-bg);
+  color: var(--btn-color);
+  text-align: center;
+  font-size: 16px;
+  line-height: 35px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#grayscale-toggle:hover {
+  background-color: var(--btn-hover-color);
+}
+
+/* 激活状态样式 */
+#grayscale-toggle.active {
+  background-color: var(--btn-hover-color);
+  color: var(--btn-color);
+}
+
+/* 确保在所有主题下都能正常显示 */
+[data-theme="dark"] #grayscale-toggle {
+  background-color: var(--btn-bg);
+  color: var(--btn-color);
+}
+
+[data-theme="dark"] #grayscale-toggle:hover {
+  background-color: var(--btn-hover-color);
+}
+
+[data-theme="dark"] #grayscale-toggle.active {
+  background-color: var(--btn-hover-color);
+  color: var(--btn-color);
+}

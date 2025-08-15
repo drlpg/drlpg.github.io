@@ -1,0 +1,53 @@
+/* 移动端右侧悬浮按钮显示修复 - 尊重原生逻辑 */
+
+/* 移动端优化：降低显示阈值，让按钮更容易出现 */
+@media screen and (max-width: 900px) {
+  /* 确保移动端目录按钮正常显示 */
+  #mobile-toc-button {
+    display: block !important;
+  }
+  
+  /* 隐藏侧边栏按钮在移动端隐藏 */
+  #hide-aside-btn {
+    display: none !important;
+  }
+  
+  /* 移动端让rightside更容易显示 - 页面高度较小时也显示 */
+  #rightside {
+    /* 保持原生的基本样式，不强制覆盖 */
+    position: fixed;
+    right: -48px;
+    bottom: 40px;
+    z-index: 100;
+    transition: all 0.5s;
+  }
+  
+  /* 当有rightside-show类时的正常显示 */
+  #rightside.rightside-show {
+    opacity: 0.8;
+    transform: translate(-58px, 0);
+  }
+  
+  /* 确保按钮本身的样式正确 */
+  #rightside > div > button,
+  #rightside > div > a {
+    display: block;
+    margin-bottom: 5px;
+    width: 35px;
+    height: 35px;
+    background-color: var(--btn-bg);
+    color: var(--btn-color);
+    text-align: center;
+    font-size: 16px;
+    line-height: 35px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  #rightside > div > button:hover,
+  #rightside > div > a:hover {
+    background-color: var(--btn-hover-color);
+  }
+}
