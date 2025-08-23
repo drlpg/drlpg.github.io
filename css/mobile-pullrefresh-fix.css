@@ -1,0 +1,59 @@
+/* 修复移动端下拉刷新取消后出现空白区域的问题 */
+
+/* 1. 禁用iOS Safari的橡皮筋效果，防止下拉刷新干扰 */
+html, body {
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 2. 使用更稳定的viewport高度计算方式 */
+@supports (-webkit-touch-callout: none) {
+  /* iOS Safari 专用修复 */
+  #body-wrap {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+}
+
+/* 3. 移动端专用修复 */
+@media screen and (max-width: 768px) {
+  /* 防止页面高度累积增长，但允许正常滚动 */
+  html {
+    /* height: 100%; - 移除这行，允许页面正常滚动 */
+    overflow-x: hidden;
+  }
+  
+  body {
+    /* height: 100%; - 移除这行，允许页面正常滚动 */
+    position: relative;
+    overflow-x: hidden;
+  }
+  
+  #body-wrap {
+    min-height: 100vh;
+    min-height: calc(var(--vh, 1vh) * 100);
+    position: relative;
+  }
+  
+  /* 确保footer不会产生额外空间 */
+  #footer {
+    flex-shrink: 0;
+    margin-top: auto;
+  }
+}
+
+/* 4. 防止触摸滚动时的弹性效果 */
+@media screen and (max-width: 768px) {
+  body {
+    touch-action: pan-y;
+  }
+  
+  /* 禁用页面级别的下拉刷新 */
+  html {
+    overscroll-behavior-y: none;
+  }
+  
+  body {
+    overscroll-behavior-y: none;
+  }
+}
