@@ -1,0 +1,228 @@
+#oml2d-stage {
+  position: fixed !important;
+  bottom: 64px !important;
+  left: 5px !important;
+  pointer-events: none !important;
+  width: 180px !important;
+  height: 200px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  z-index: 7 !important;
+}
+
+#oml2d-canvas {
+  z-index: 6 !important;
+  pointer-events: auto !important;
+  position: relative !important;
+}
+
+#oml2d-menus {
+  z-index: 8 !important;
+  position: fixed !important;
+  bottom: 10px !important;
+  left: 180px !important;
+}
+
+#oml2d-statusBar {
+  z-index: 9 !important;
+  font-size: 12px !important;
+  font-weight: normal !important;
+  background-color: #646b73 !important;
+  border: 2px solid #414b60 !important;
+}
+
+/* 提示框样式 */
+
+#oml2d-tips {
+  position: absolute !important;
+  color: #fff !important;
+  font-size: 12px !important;
+  line-height: 1.5 !important;
+  background-color: #646b73 !important;
+  border: 2px solid #414b60 !important;
+  z-index: 9 !important;
+  border-radius: 6px !important;
+  padding: 6px 8px !important;
+  box-sizing: border-box !important;
+}
+
+/* 设置菜单项的基本样式 */
+.oml2d-menus-item {
+  background-color: #646b73 !important;
+  color: white !important;
+  padding: 5px !important;
+  margin: 5px 0 !important;
+}
+
+/* 鼠标悬停时改变背景颜色和字体颜色 */
+.oml2d-menus-item:hover {
+  background-color: #3f475b !important;
+}
+
+/* 当菜单项处于活动状态时改变颜色 */
+.oml2d-menus-item.active {
+  background-color: #414b60 !important;
+}
+
+/* 设置 SVG 图标的样式 */
+.oml2d-icon {
+  width: 20x !important;
+  height: 20px !important;
+}
+
+/* 设置菜单的可见性 */
+.oml2d-menus.show {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* 菜单容器悬停时保持可见 */
+#oml2d-menus:hover {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* 菜单项悬停效果增强 */
+#oml2d-menus .oml2d-menus-item {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
+/* 确保菜单区域可以接收鼠标事件 */
+#oml2d-menus {
+  pointer-events: auto !important;
+}
+
+/* 移动端隐藏Live2D容器 */
+@media screen and (max-width: 768px) {
+  #oml2d-stage {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    position: absolute !important;
+    top: -9999px !important;
+    left: -9999px !important;
+  }
+
+  #oml2d-canvas {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    position: absolute !important;
+    top: -9999px !important;
+    left: -9999px !important;
+  }
+
+  #oml2d-menus {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    position: absolute !important;
+    top: -9999px !important;
+    left: -9999px !important;
+  }
+
+  #oml2d-statusBar {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    position: absolute !important;
+    top: -9999px !important;
+    left: -9999px !important;
+  }
+
+  #oml2d-tips {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    position: absolute !important;
+    top: -9999px !important;
+    left: -9999px !important;
+  }
+
+  /* 隐藏所有Live2D相关元素 */
+  [id*="oml2d"],
+  [class*="oml2d"] {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    position: absolute !important;
+    top: -9999px !important;
+    left: -9999px !important;
+  }
+}
+
+@keyframes oml2d-stage-slide-in {
+  from {
+    transform: translateY(150%);
+  }
+
+  to {
+    transform: translateY(0%);
+  }
+}
+
+@keyframes oml2d-stage-slide-out {
+  from {
+    transform: translateY(0%);
+  }
+
+  to {
+    transform: translateY(150%);
+  }
+}
+
+/* 菜单项交互增强 */
+#oml2d-menus .oml2d-menus-item:hover {
+  transform: scale(1.05) !important;
+  transition: all 0.2s ease !important;
+}
+
+/* 菜单容器增强 */
+#oml2d-menus {
+  transition: opacity 0.3s ease, visibility 0.3s ease !important;
+}/* 
+菜单垂直排列优化 */
+#oml2d-menus {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+}
+
+/* 菜单项尺寸优化 - 保持原有间距 */
+#oml2d-menus .oml2d-menus-item {
+  margin: 5px 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}

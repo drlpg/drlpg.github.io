@@ -1,0 +1,96 @@
+/* Live2D 提示框美化样式 */
+.oh-my-live2d .tips {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
+  border: 2px solid rgba(74, 144, 226, 0.3);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #333;
+  padding: 8px 12px;
+  max-width: 180px;
+  word-wrap: break-word;
+  animation: tipsFadeIn 0.3s ease-out;
+}
+
+/* 深色模式适配 */
+[data-theme="dark"] .oh-my-live2d .tips {
+  background: linear-gradient(135deg, rgba(45, 45, 45, 0.95) 0%, rgba(35, 35, 35, 0.9) 100%);
+  border-color: rgba(74, 144, 226, 0.4);
+  color: #e0e0e0;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* 提示框出现动画 */
+@keyframes tipsFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 提示框箭头 */
+.oh-my-live2d .tips::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid rgba(255, 255, 255, 0.95);
+}
+
+[data-theme="dark"] .oh-my-live2d .tips::after {
+  border-top-color: rgba(45, 45, 45, 0.95);
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .oh-my-live2d .tips {
+    font-size: 12px;
+    padding: 6px 10px;
+    max-width: 150px;
+    border-radius: 10px;
+  }
+}
+
+/* 特殊状态的提示框样式 */
+.oh-my-live2d .tips.success {
+  border-color: rgba(76, 175, 80, 0.5);
+  background: linear-gradient(135deg, rgba(232, 245, 233, 0.95) 0%, rgba(200, 230, 201, 0.9) 100%);
+}
+
+.oh-my-live2d .tips.warning {
+  border-color: rgba(255, 152, 0, 0.5);
+  background: linear-gradient(135deg, rgba(255, 243, 224, 0.95) 0%, rgba(255, 224, 178, 0.9) 100%);
+}
+
+.oh-my-live2d .tips.info {
+  border-color: rgba(33, 150, 243, 0.5);
+  background: linear-gradient(135deg, rgba(227, 242, 253, 0.95) 0%, rgba(187, 222, 251, 0.9) 100%);
+}
+
+/* 鼠标悬停效果 */
+.oh-my-live2d .tips:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+
+/* 文字渐变效果（可选） */
+.oh-my-live2d .tips.gradient-text {
+  background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 500;
+}

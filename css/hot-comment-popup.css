@@ -1,0 +1,289 @@
+/* 热评弹窗样式 */
+.hot-comment-popup {
+  position: fixed;
+  bottom: 20px;
+  right: 65px;
+  width: 270px;
+  height: 84px; /* 继续调整高度：原64px + 顶部9px + 底部11px留白 = 84px */
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e0e0e0;
+  z-index: 9999;
+  opacity: 0;
+  transform: translateY(20px) scale(0.95); /* 增加缩放效果 */
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), border-color 0.2s ease; /* 使用更平滑的缓动函数 */
+  overflow: hidden;
+  font-family: inherit;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 移动端适配 */
+@media screen and (max-width: 768px) {
+  .hot-comment-popup {
+    left: 50% !important;
+    right: auto !important;
+    bottom: 20px !important;
+    transform: translateX(-50%) translateY(100px) scale(0.95) !important;
+    width: 90% !important;
+    max-width: 320px !important;
+  }
+  
+  .hot-comment-popup.show {
+    transform: translateX(-50%) translateY(0) scale(1) !important;
+  }
+  
+  /* 移动端动画效果 */
+  .hot-comment-popup.slide-in {
+    animation: mobileSlideInUp 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) forwards !important;
+  }
+  
+  .hot-comment-popup.slide-out {
+    animation: mobileSlideOutDown 0.3s cubic-bezier(0.4, 0, 0.6, 1) forwards !important;
+  }
+}
+
+/* 两行内容时的高度 */
+.hot-comment-popup.two-lines {
+  height: 92px; /* 继续调整高度：原72px + 顶部9px + 底部11px留白 = 92px */
+}
+
+.hot-comment-popup.show {
+  opacity: 1;
+  transform: translateY(0) scale(1); /* 显示时恢复正常大小 */
+}
+
+/* 弹窗头部 */
+.hot-comment-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 16px 2px; /* 进一步减少头部padding */
+  margin-top: 9px; /* 继续减小顶部留白：11px - 2px = 9px */
+  flex-shrink: 0; /* 防止头部被压缩 */
+  height: 32px; /* 固定头部高度 */
+}
+
+.hot-comment-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hot-comment-title-text {
+  background: #333;
+  color: white;
+  padding: 6px 8px; /* 减小左右间距：上下6px，左右8px */
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* 确保水平居中 */
+  height: 20px;
+  min-width: 40px; /* 确保最小宽度 */
+}
+
+.hot-comment-title-text:hover {
+  background: #1890ff; /* 使用和右键菜单相同的悬停颜色 */
+}
+
+.hot-comment-author {
+  font-size: 12px;
+  color: #333;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  height: 20px;
+}
+
+.hot-comment-close {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hot-comment-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #f0f0f0;
+}
+
+.hot-comment-close-btn {
+  background: none;
+  border: none;
+  font-size: 22px;
+  color: #666;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+}
+
+.hot-comment-close-btn:hover {
+  color: #1890ff; /* 移除背景色，只让图标变为蓝色 */
+}
+
+/* 分割线 */
+.hot-comment-divider {
+  height: 1px;
+  background: repeating-linear-gradient(
+    to right,
+    #ddd 0px,
+    #ddd 4px,
+    transparent 4px,
+    transparent 8px
+  );
+  margin: 4px 16px 0; /* 增加分割线上边距 */
+  flex-shrink: 0; /* 防止分割线被压缩 */
+}
+
+/* 弹窗内容 */
+.hot-comment-content {
+  padding: 6px 16px 10px; /* 恢复合理的内容padding：上6px，左右16px，下10px */
+  margin-bottom: 11px; /* 继续减小底部留白：13px - 2px = 11px */
+  font-size: 14px;
+  line-height: 1; /* 行间距设为1 */
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  height: 30px; /* 恢复单行高度：6px + 14px + 10px */
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 1; /* 默认显示1行 */
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
+  word-wrap: break-word;
+  word-break: break-word;
+}
+
+/* 两行内容时的样式 */
+.hot-comment-popup.two-lines .hot-comment-content {
+  height: 38px; /* 恢复两行高度：6px + 28px + 4px */
+  padding-bottom: 4px; /* 两行时减少底部padding */
+  -webkit-line-clamp: 2; /* 显示2行 */
+}
+
+/* 弹窗整体悬停效果 */
+.hot-comment-popup:hover {
+  border-color: #1890ff; /* 悬停时边框变为蓝色 */
+}
+
+.hot-comment-content:hover {
+  color: #1890ff; /* 悬停时文字变为蓝色，与"评论"按钮颜色一致 */
+}
+
+/* 暗色模式适配 */
+[data-theme="dark"] .hot-comment-popup {
+  background: #121212;
+  border: 1px solid #3D3D3F;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+[data-theme="dark"] .hot-comment-popup:hover {
+  border-color: #787878; /* 暗色模式下弹窗悬停边框颜色 */
+}
+
+[data-theme="dark"] .hot-comment-title-text {
+  background: #555;
+  color: #fff;
+}
+
+[data-theme="dark"] .hot-comment-title-text:hover {
+  background: #787878; /* 暗色模式下使用灰色悬停 */
+}
+
+[data-theme="dark"] .hot-comment-author {
+  color: #B8B8B8;
+}
+
+[data-theme="dark"] .hot-comment-content {
+  color: #B8B8B8;
+}
+
+[data-theme="dark"] .hot-comment-content:hover {
+  color: #ffffff; /* 暗色模式下悬停时文字变为白色 */
+}
+
+[data-theme="dark"] .hot-comment-close-btn {
+  color: #ccc;
+}
+
+[data-theme="dark"] .hot-comment-close-btn:hover {
+  color: #1890ff; /* 暗色模式下也移除背景色，只让图标变为蓝色 */
+}
+
+[data-theme="dark"] .hot-comment-divider {
+  background: repeating-linear-gradient(
+    to right,
+    #666 0px,
+    #666 4px,
+    transparent 4px,
+    transparent 8px
+  );
+}
+
+/* 优化的动画效果 */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes slideOutDown {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(30px) scale(0.9);
+  }
+}
+
+/* 移动端专用动画 */
+@keyframes mobileSlideInUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(100px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+@keyframes mobileSlideOutDown {
+  from {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(100px) scale(0.9);
+  }
+}
+
+.hot-comment-popup.slide-in {
+  animation: slideInUp 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+}
+
+.hot-comment-popup.slide-out {
+  animation: slideOutDown 0.3s cubic-bezier(0.4, 0, 0.6, 1) forwards;
+}
