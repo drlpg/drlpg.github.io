@@ -1,0 +1,37 @@
+/* 正常模式下文章标题高度居中但靠左显示 */
+#page-header.post-bg #post-info {
+    position: absolute !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    width: 100% !important;
+    text-align: left !important;
+}
+
+#page-header.post-bg #post-info > * {
+    margin: 0 auto;
+    padding: 0 15px;
+    max-width: 1200px;
+}
+
+@media screen and (min-width: 768px) and (max-width: 1300px) {
+    #page-header.post-bg #post-info > * {
+        padding: 0 30px;
+    }
+}
+
+@media screen and (min-width: 2000px) {
+    #page-header.post-bg #post-info > * {
+        max-width: 70%;
+    }
+}
+
+/* 移动端适配 */
+@media screen and (max-width: 768px) {
+    #page-header.post-bg #post-info {
+        padding: 0 15px;
+    }
+    
+    #page-header.post-bg #post-info > * {
+        padding: 0;
+    }
+}

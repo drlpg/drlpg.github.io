@@ -1,0 +1,527 @@
+/* 自定义时钟CSS - 移除内阴影版本 */
+:root {
+  --clock-text-color: #000;
+  --clock-bg-color: transparent;
+  --clock-border-radius: 8px;
+  --clock-padding-vertical: 20px; /* 上下padding，与公告卡片一致 */
+  --clock-padding-horizontal: 24px; /* 左右padding，与公告卡片一致 */
+  --clock-margin: 8px;
+}
+
+[data-theme='dark'] {
+  --clock-text-color: #fff;
+  --clock-bg-color: #212121;
+}
+
+/* 字体回退方案 - 使用系统字体避免404错误 */
+
+/* 备用字体定义 - 使用系统等宽字体 */
+.clock-font-primary {
+    font-family: 'SF Mono', 'Monaco', 'Menlo', 'Consolas', 'Liberation Mono', 'Courier New', monospace;
+}
+
+.clock-font-secondary {
+    font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
+}
+@font-face {
+  font-family: "qweather-icons";
+  src: url("https://cdn.jsdelivr.net/npm/hexo-butterfly-clock-anzhiyu@1.0.0/lib/fonts/qweather-icons.woff2") format("woff2"),
+url("https://cdn.jsdelivr.net/npm/hexo-butterfly-clock-anzhiyu@1.0.0/lib/fonts/qweather-icons.woff") format("woff"),
+url("https://cdn.jsdelivr.net/npm/hexo-butterfly-clock-anzhiyu@1.0.0/lib/fonts/qweather-icons.ttf") format("truetype");
+  font-display: swap;
+}
+
+span.card-clock-weather,
+.card-clock-location,
+.card-clock-windDir {
+  font-family: 'ZhuZiAYuanJWD';
+}
+span.temp {
+  font-family: 'SF Mono', 'Monaco', 'Menlo', 'Consolas', 'Liberation Mono', 'Courier New', monospace;
+}
+#hexo_electric_clock {
+  /* 重置所有可能的间距 */
+  margin: 0 !important;
+  padding: var(--clock-padding-vertical) var(--clock-padding-horizontal) !important; /* 20px 24px，与公告卡片一致 */
+  position: relative;
+  overflow: hidden;
+  /* 添加硬件加速 */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  /* 优化渲染性能 */
+  will-change: auto;
+  color: var(--clock-text-color);
+  /* 确保四边间距一致 */
+  box-sizing: border-box !important;
+}
+.card-clock {
+  padding: 0 !important;
+}
+
+.card-content {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.card-glass {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+.card-background {
+  height: auto; /* 改为自动高度 */
+  margin: var(--clock-margin);
+  border-radius: var(--clock-border-radius);
+  background-color: var(--clock-bg-color);
+  /* 移除内阴影 */
+  /* box-shadow: inset 0px 0px 4px 2px rgb(145 148 154 / 40%); */
+  z-index: 2;
+  /* 添加平滑过渡 */
+  transition: all 0.3s ease;
+  /* 确保内容紧贴容器 */
+  padding: 0;
+}
+.clock-row {
+  font-family: UnidreamLED;
+  font-weight: 400;
+  color: var(--clock-text-color);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  align-items: center;
+  min-height: 1.2em;
+  /* 添加平滑过渡 */
+  transition: all 0.3s ease;
+  /* 确保文本不会被截断 */
+  overflow: visible;
+}
+.card-clock-clockdate,
+.card-clock-ip {
+  text-align: left;
+}
+.card-clock-location,
+.card-clock-weather {
+  text-align: center;
+}
+.card-clock-dackorlight,
+.card-clock-humidity {
+  text-align: right;
+}
+.card-clock-time {
+  flex: 1;
+  font-family: UnidreamLED;
+  font-size: 38px;
+  text-align: center;
+  line-height: 1.5;
+}
+/* 深色模式样式已通过CSS变量处理 */
+/* 响应式设计优化 */
+@media screen and (min-width: 900px){
+  .card-clock-humidity {
+     display: block;
+  }
+}
+
+@media screen and (max-width: 1086px){
+  .card-clock-humidity {
+    display: none;
+  }
+}
+
+/* 中等屏幕优化 */
+@media screen and (max-width: 1024px) and (min-width: 769px) {
+  #hexo_electric_clock {
+    padding: 18px 22px !important; /* 中等屏幕下稍微减小padding */
+    margin: 0 !important;
+  }
+}
+
+/* 小屏幕优化 */
+@media screen and (max-width: 768px) {
+  #hexo_electric_clock {
+    padding: 15px 18px !important; /* 小屏幕下按比例减小padding，保持与公告卡片的比例一致 */
+    margin: 0 !important;
+  }
+  
+  .card-background {
+    margin: 5px;
+  }
+  
+  .card-clock-time {
+    font-size: 32px;
+  }
+  
+  .clock-row {
+    font-size: 0.9em;
+  }
+}
+
+/* 超小屏幕优化 */
+@media screen and (max-width: 480px) {
+  .card-clock-time {
+    font-size: 28px;
+  }
+  
+  .clock-row {
+    font-size: 0.8em;
+  }
+  
+  .card-clock-weather,
+  .card-clock-windDir {
+    font-size: 0.85em;
+  }
+}
+
+/* QWeather Icons */
+[class^="qi-"]::before,
+[class*=" qi-"]::before {
+  display: inline-block;
+  font-family: "qweather-icons" !important;
+  font-style: normal;
+  font-weight: normal !important;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  vertical-align: -.125em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 这里省略了大量的图标定义，如需要可以从原文件复制 */
+.qi-100::before { content: "\f101"; }
+.qi-101::before { content: "\f102"; }
+.qi-102::before { content: "\f103"; }
+.qi-103::before { content: "\f104"; }
+.qi-104::before { content: "\f105"; }
+.qi-150::before { content: "\f106"; }
+.qi-151::before { content: "\f107"; }
+.qi-152::before { content: "\f108"; }
+.qi-153::before { content: "\f109"; }
+.qi-300::before { content: "\f10a"; }
+.qi-301::before { content: "\f10b"; }
+.qi-302::before { content: "\f10c"; }
+.qi-303::before { content: "\f10d"; }
+.qi-304::before { content: "\f10e"; }
+.qi-305::before { content: "\f10f"; }
+.qi-306::before { content: "\f110"; }
+.qi-307::before { content: "\f111"; }
+.qi-308::before { content: "\f112"; }
+.qi-309::before { content: "\f113"; }
+.qi-310::before { content: "\f114"; }
+.qi-311::before { content: "\f115"; }
+.qi-312::before { content: "\f116"; }
+.qi-313::before { content: "\f117"; }
+.qi-314::before { content: "\f118"; }
+.qi-315::before { content: "\f119"; }
+.qi-316::before { content: "\f11a"; }
+.qi-317::before { content: "\f11b"; }
+.qi-318::before { content: "\f11c"; }
+.qi-350::before { content: "\f11d"; }
+.qi-351::before { content: "\f11e"; }
+.qi-399::before { content: "\f11f"; }
+.qi-400::before { content: "\f120"; }
+.qi-401::before { content: "\f121"; }
+.qi-402::before { content: "\f122"; }
+.qi-403::before { content: "\f123"; }
+.qi-404::before { content: "\f124"; }
+.qi-405::before { content: "\f125"; }
+.qi-406::before { content: "\f126"; }
+.qi-407::before { content: "\f127"; }
+.qi-408::before { content: "\f128"; }
+.qi-409::before { content: "\f129"; }
+.qi-410::before { content: "\f12a"; }
+.qi-456::before { content: "\f12b"; }
+.qi-457::before { content: "\f12c"; }
+.qi-499::before { content: "\f12d"; }
+.qi-500::before { content: "\f12e"; }
+.qi-501::before { content: "\f12f"; }
+.qi-502::before { content: "\f130"; }
+.qi-503::before { content: "\f131"; }
+.qi-504::before { content: "\f132"; }
+.qi-507::before { content: "\f133"; }
+.qi-508::before { content: "\f134"; }
+.qi-509::before { content: "\f135"; }
+.qi-510::before { content: "\f136"; }
+.qi-511::before { content: "\f137"; }
+.qi-512::before { content: "\f138"; }
+.qi-513::before { content: "\f139"; }
+.qi-514::before { content: "\f13a"; }
+.qi-515::before { content: "\f13b"; }
+.qi-gale::before { content: "\f14c"; }
+.qi-100-fill::before { content: "\f1ac"; }
+.qi-101-fill::before { content: "\f1ad"; }
+.qi-102-fill::before { content: "\f1ae"; }
+.qi-103-fill::before { content: "\f1af"; }
+.qi-104-fill::before { content: "\f1b0"; }
+.qi-150-fill::before { content: "\f1b1"; }
+.qi-151-fill::before { content: "\f1b2"; }
+.qi-152-fill::before { content: "\f1b3"; }
+.qi-153-fill::before { content: "\f1b4"; }
+.qi-300-fill::before { content: "\f1b5"; }
+.qi-301-fill::before { content: "\f1b6"; }
+.qi-302-fill::before { content: "\f1b7"; }
+.qi-303-fill::before { content: "\f1b8"; }
+.qi-304-fill::before { content: "\f1b9"; }
+.qi-305-fill::before { content: "\f1ba"; }
+.qi-306-fill::before { content: "\f1bb"; }
+.qi-307-fill::before { content: "\f1bc"; }
+.qi-308-fill::before { content: "\f1bd"; }
+.qi-309-fill::before { content: "\f1be"; }
+.qi-310-fill::before { content: "\f1bf"; }
+.qi-311-fill::before { content: "\f1c0"; }
+.qi-312-fill::before { content: "\f1c1"; }
+.qi-313-fill::before { content: "\f1c2"; }
+.qi-314-fill::before { content: "\f1c3"; }
+.qi-315-fill::before { content: "\f1c4"; }
+.qi-316-fill::before { content: "\f1c5"; }
+.qi-317-fill::before { content: "\f1c6"; }
+.qi-318-fill::before { content: "\f1c7"; }
+.qi-350-fill::before { content: "\f1c8"; }
+.qi-351-fill::before { content: "\f1c9"; }
+.qi-399-fill::before { content: "\f1ca"; }
+.qi-400-fill::before { content: "\f1cb"; }
+.qi-401-fill::before { content: "\f1cc"; }
+.qi-402-fill::before { content: "\f1cd"; }
+.qi-403-fill::before { content: "\f1ce"; }
+.qi-404-fill::before { content: "\f1cf"; }
+.qi-405-fill::before { content: "\f1d0"; }
+.qi-406-fill::before { content: "\f1d1"; }
+.qi-407-fill::before { content: "\f1d2"; }
+.qi-408-fill::before { content: "\f1d3"; }
+.qi-409-fill::before { content: "\f1d4"; }
+.qi-410-fill::before { content: "\f1d5"; }
+.qi-456-fill::before { content: "\f1d6"; }
+.qi-457-fill::before { content: "\f1d7"; }
+.qi-499-fill::before { content: "\f1d8"; }
+.qi-500-fill::before { content: "\f1d9"; }
+.qi-501-fill::before { content: "\f1da"; }
+.qi-502-fill::before { content: "\f1db"; }
+.qi-503-fill::before { content: "\f1dc"; }
+.qi-504-fill::before { content: "\f1dd"; }
+.qi-507-fill::before { content: "\f1de"; }
+.qi-508-fill::before { content: "\f1df"; }
+.qi-509-fill::before { content: "\f1e0"; }
+.qi-510-fill::before { content: "\f1e1"; }
+.qi-511-fill::before { content: "\f1e2"; }
+.qi-512-fill::before { content: "\f1e3"; }
+.qi-513-fill::before { content: "\f1e4"; }
+.qi-514-fill::before { content: "\f1e5"; }
+.qi-515-fill::before { content: "\f1e6"; }
+.qi-gale-fill::before { content: "\f14c"; }/* 加载和错误状
+态样式 */
+#card-clock-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100px;
+  color: var(--clock-text-color);
+  font-family: UnidreamLED;
+}
+
+.clock-error {
+  color: #ff6b6b;
+  text-align: center;
+  padding: 20px;
+  font-family: UnidreamLED;
+}
+
+.clock-loading {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+/* 时钟数字的平滑动画 */
+.card-clock-time {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* 天气图标的旋转动画 */
+.card-clock-weather i {
+  transition: transform 0.3s ease;
+}
+
+.card-clock-weather i:hover {
+  transform: rotate(10deg);
+}
+
+/* 优化字体渲染 */
+.card-clock-time,
+.clock-row {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* 确保在所有主题下都有良好的对比度 */
+.card-clock-weather,
+.card-clock-location,
+.card-clock-windDir,
+.card-clock-humidity,
+.card-clock-clockdate,
+.card-clock-dackorlight {
+  color: inherit;
+  opacity: 0.9;
+  transition: opacity 0.3s ease;
+}
+
+.card-clock-weather:hover,
+.card-clock-location:hover,
+.card-clock-windDir:hover {
+  opacity: 1;
+}/* 主题切换动画 
+*/
+#hexo_electric_clock,
+.clock-row,
+.card-background {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* 时钟容器的焦点状态 */
+#hexo_electric_clock:focus-within {
+    outline: 2px solid var(--hover-border-color, #49B1F5);
+    outline-offset: 2px;
+}
+
+/* 无障碍访问优化 */
+@media (prefers-reduced-motion: reduce) {
+    #hexo_electric_clock *,
+    .clock-row,
+    .card-background {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+/* 高对比度模式支持 */
+@media (prefers-contrast: high) {
+    :root {
+        --clock-text-color: #000;
+    }
+    
+    [data-theme='dark'] {
+        --clock-text-color: #fff;
+    }
+    
+    .clock-row {
+        font-weight: 600;
+    }
+}
+
+/* 打印样式 */
+@media print {
+    #hexo_electric_clock {
+        background: white !important;
+        color: black !important;
+        box-shadow: none !important;
+    }
+    
+    .card-clock-weather i,
+    .card-clock-windDir i {
+        display: none;
+    }
+}/* 强制确保时钟容器
+间距一致 */
+#hexo_electric_clock.card-widget,
+.card-widget#hexo_electric_clock,
+.sticky_layout #hexo_electric_clock {
+  margin: 0 !important;
+  padding: var(--clock-padding-vertical) var(--clock-padding-horizontal) !important;
+  box-sizing: border-box !important;
+}
+
+/* 如果时钟容器有额外的wrapper */
+#hexo_electric_clock * {
+  box-sizing: border-box;
+}
+
+/* 确保时钟行的间距一致 */
+.clock-row:first-child {
+  margin-top: 0;
+}
+
+.clock-row:last-child {
+  margin-bottom: 0;
+}/* 时钟卡片结构
+优化 */
+.card-widget.card-clock {
+  padding: 0 !important;
+  margin-bottom: 1rem; /* 与其他卡片保持一致的底部间距 */
+}
+
+.card-widget.card-clock .card-glass {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.card-widget.card-clock .card-background {
+  margin: 0 !important; /* 移除margin，避免不均匀间距 */
+  padding: 0 !important;
+  height: auto !important; /* 让高度自适应内容 */
+}
+
+.card-widget.card-clock .card-content {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* 确保时钟容器本身的间距均匀 */
+.card-widget.card-clock #hexo_electric_clock {
+  margin: 0 !important;
+  padding: var(--clock-padding-vertical) var(--clock-padding-horizontal) !important;
+  box-sizing: border-box !important;
+}/* 确保时钟
+行没有额外的间距 */
+.clock-row {
+  margin: 0 !important;
+  padding: 0;
+}
+
+/* 特别处理最后一行，确保没有底部间距 */
+.clock-row:last-child {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* 确保时钟内的所有元素都没有额外间距 */
+#hexo_electric_clock * {
+  margin-bottom: 0;
+}
+
+#hexo_electric_clock *:last-child {
+  margin-bottom: 0 !important;
+}/* 强制解决底部
+间距问题 */
+.card-widget.card-clock {
+  overflow: hidden; /* 隐藏可能的溢出内容 */
+}
+
+.card-widget.card-clock .card-background {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: auto;
+}
+
+.card-widget.card-clock .card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-widget.card-clock #hexo_electric_clock {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 120px; /* 设置最小高度 */
+}

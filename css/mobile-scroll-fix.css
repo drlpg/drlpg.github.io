@@ -1,0 +1,60 @@
+/* 移动端滚动修复 - 防止强制定位到顶部 */
+
+/* 仅在移动端应用 */
+@media screen and (max-width: 768px) {
+  /* 确保内容页面可以正常滚动 */
+  body.post-page,
+  body[class*="post-"],
+  body:has(#post),
+  body:has(.post-content),
+  body:has(#article-container) {
+    /* 禁用任何可能的强制滚动行为 */
+    scroll-behavior: auto !important;
+    overflow-y: auto !important;
+    position: relative !important;
+  }
+  
+  /* 确保主要内容区域可以正常滚动 */
+  #post,
+  .post-content,
+  #article-container,
+  .layout {
+    position: relative !important;
+    overflow: visible !important;
+  }
+  
+  /* 防止任何元素强制定位到顶部 */
+  html,
+  body {
+    scroll-snap-type: none !important;
+    scroll-behavior: auto !important;
+  }
+  
+  /* 确保页面容器不会阻止滚动 */
+  #body-wrap,
+  .layout,
+  main {
+    position: relative !important;
+    overflow: visible !important;
+  }
+}
+
+/* 针对特定页面类型的修复 */
+@media screen and (max-width: 768px) {
+  /* 如果页面包含文章内容，禁用强制滚动 */
+  body:has(#post) *,
+  body:has(.post-content) *,
+  body:has(#article-container) * {
+    scroll-behavior: auto !important;
+  }
+}
+
+/* 防止JavaScript强制滚动的CSS保护 */
+@media screen and (max-width: 768px) {
+  /* 使用CSS来保护滚动位置 */
+  html[data-scroll-protection="true"],
+  body[data-scroll-protection="true"] {
+    scroll-behavior: auto !important;
+    overflow-y: auto !important;
+  }
+}
