@@ -1,0 +1,107 @@
+/* 修复移动端输入框缩放问题 */
+
+/* 防止iOS Safari在输入时自动缩放 */
+@media screen and (max-width: 768px) {
+  /* 确保输入框字体大小不小于16px，防止iOS自动缩放 */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="url"],
+  textarea,
+  select {
+    font-size: 16px !important;
+    /* 防止iOS Safari自动缩放的最小字体大小 */
+  }
+  
+  /* 搜索框特殊处理 */
+  #local-search-input,
+  .search-dialog input,
+  .algolia-search-input,
+  input[type="search"] {
+    font-size: 16px !important;
+    transform-origin: left top;
+    /* 确保缩放原点正确 */
+  }
+  
+  /* 评论区输入框 */
+  .tk-input,
+  .tk-textarea,
+  #twikoo .tk-input,
+  #twikoo .tk-textarea,
+  .comment-form input,
+  .comment-form textarea {
+    font-size: 16px !important;
+  }
+  
+  /* 确保页面viewport设置正确 */
+  html {
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  
+  /* 防止横屏时的缩放问题 */
+  @media screen and (orientation: landscape) {
+    html {
+      -webkit-text-size-adjust: 100%;
+    }
+  }
+}
+
+/* 通用移动端输入框修复 */
+@media screen and (max-width: 768px) {
+  /* 确保所有输入框字体足够大，防止自动缩放 */
+  input, textarea, select {
+    font-size: 16px !important;
+    line-height: 1.2 !important;
+  }
+  
+  /* 特别针对常见输入框类型 */
+  input[type="search"],
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="tel"],
+  input[type="url"],
+  textarea {
+    font-size: 16px !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+  }
+}
+
+/* 确保在输入状态下页面不会异常缩放 - 修复版本 */
+@media screen and (max-width: 768px) {
+  html, body {
+    -webkit-text-size-adjust: 100% !important;
+    -ms-text-size-adjust: 100% !important;
+    text-size-adjust: 100% !important;
+    /* 移除可能影响rightside定位的zoom和transform设置 */
+  }
+  
+  /* 只对输入相关元素应用缩放保护 */
+  input, textarea, select {
+    -webkit-text-size-adjust: 100% !important;
+    -ms-text-size-adjust: 100% !important;
+    text-size-adjust: 100% !important;
+  }
+  
+  /* 防止输入框获得焦点时的页面跳动 */
+  input:focus,
+  textarea:focus {
+    outline: none;
+    /* 移除默认焦点样式可能导致的布局变化 */
+  }
+  
+  /* 确保页面容器保持正常状态，不强制设置zoom和transform */
+  #body-wrap,
+  .layout,
+  main {
+    position: relative;
+    /* 移除可能影响子元素定位的强制样式 */
+  }
+  
+
+}

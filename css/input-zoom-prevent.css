@@ -1,0 +1,12 @@
+/* 轻量级移动端输入框缩放防止样式 */
+
+/* 移动端基础样式优化 */
+@media (max-width: 768px) {
+  /* 确保页面基础滚动正常 */
+  html, body {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* 保持输入框原有样式，不强制修改字体大小 */
+  /* 缩放防止完全通过JavaScript的viewport控制实现 */
+}

@@ -1,0 +1,292 @@
+/* 彻底禁用音乐播放器歌词和进度条控制功能 */
+/* 使用最高优先级规则确保完全禁用 */
+
+/* 智能禁用歌词区域交互 - 保留显示和更新功能 */
+.aplayer-lrc,
+.aplayer-lrc p,
+#nav-music .aplayer-lrc,
+#nav-music .aplayer-lrc p,
+html body #nav-music .aplayer-lrc,
+html body #nav-music .aplayer-lrc p {
+  pointer-events: none !important;
+  cursor: default !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  -webkit-touch-callout: none !important;
+  touch-action: none !important;
+  /* 确保歌词内容可以正常显示 */
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* 全局禁用进度条区域交互 */
+.aplayer-bar-wrap,
+.aplayer-bar-wrap *,
+.aplayer-bar,
+.aplayer-loaded,
+.aplayer-played,
+#nav-music .aplayer-bar-wrap,
+#nav-music .aplayer-bar-wrap *,
+#nav-music .aplayer-bar,
+#nav-music .aplayer-loaded,
+#nav-music .aplayer-played,
+html body #nav-music .aplayer-bar-wrap,
+html body #nav-music .aplayer-bar-wrap *,
+html body #nav-music .aplayer-bar,
+html body #nav-music .aplayer-loaded,
+html body #nav-music .aplayer-played {
+  pointer-events: none !important;
+  cursor: default !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  -webkit-touch-callout: none !important;
+  touch-action: none !important;
+}
+
+/* 使用属性选择器覆盖所有可能的类名变体 */
+[class*="aplayer-lrc"],
+[class*="aplayer-lrc"] *,
+[class*="lrc"],
+[class*="lrc"] * {
+  pointer-events: none !important;
+  cursor: default !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  -webkit-touch-callout: none !important;
+  touch-action: none !important;
+}
+
+[class*="bar-wrap"],
+[class*="bar-wrap"] *,
+[class*="aplayer-bar"],
+[class*="aplayer-loaded"],
+[class*="aplayer-played"] {
+  pointer-events: none !important;
+  cursor: default !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  -webkit-touch-callout: none !important;
+  touch-action: none !important;
+}
+
+/* 防止任何内联样式覆盖 */
+*[style*="pointer-events: auto"].aplayer-lrc,
+*[style*="pointer-events: auto"] .aplayer-lrc,
+*[style*="cursor: pointer"].aplayer-lrc,
+*[style*="cursor: pointer"] .aplayer-lrc,
+*[style*="pointer-events: auto"].aplayer-bar-wrap,
+*[style*="pointer-events: auto"] .aplayer-bar-wrap,
+*[style*="cursor: pointer"].aplayer-bar-wrap,
+*[style*="cursor: pointer"] .aplayer-bar-wrap {
+  pointer-events: none !important;
+  cursor: default !important;
+}
+
+/* 确保在所有主题模式下都生效 */
+[data-theme="light"] .aplayer-lrc,
+[data-theme="light"] .aplayer-lrc *,
+[data-theme="light"] .aplayer-bar-wrap,
+[data-theme="light"] .aplayer-bar-wrap *,
+[data-theme="dark"] .aplayer-lrc,
+[data-theme="dark"] .aplayer-lrc *,
+[data-theme="dark"] .aplayer-bar-wrap,
+[data-theme="dark"] .aplayer-bar-wrap * {
+  pointer-events: none !important;
+  cursor: default !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  -webkit-touch-callout: none !important;
+  touch-action: none !important;
+}
+
+/* 移动端特殊处理 */
+@media screen and (max-width: 768px) {
+  .aplayer-lrc,
+  .aplayer-lrc *,
+  .aplayer-bar-wrap,
+  .aplayer-bar-wrap * {
+    pointer-events: none !important;
+    cursor: default !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    -webkit-touch-callout: none !important;
+    touch-action: none !important;
+  }
+}
+
+/* 歌词透明度控制 */
+.aplayer-lrc {
+  opacity: 1 !important;
+  /* 保持歌词容器完全可见 */
+}
+
+/* 降低非当前歌词行的透明度 */
+.aplayer-lrc p {
+  opacity: 0.3 !important;
+  /* 非当前歌词行使用较低透明度 */
+  transition: opacity 0.3s ease !important;
+  /* 平滑过渡效果 */
+}
+
+/* 当前播放的歌词行保持高透明度 */
+.aplayer-lrc p.aplayer-lrc-current {
+  opacity: 1 !important;
+  /* 当前歌词行完全不透明 */
+  color: inherit !important;
+  /* 保持原有颜色 */
+}
+
+.aplayer-bar-wrap {
+  opacity: 0.7 !important;
+}
+
+/* 移除悬停效果 */
+.aplayer-lrc:hover,
+.aplayer-lrc *:hover,
+.aplayer-bar-wrap:hover,
+.aplayer-bar-wrap *:hover {
+  background-color: inherit !important;
+  color: inherit !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* 确保播放按钮等其他控件正常工作 */
+.aplayer-pic,
+.aplayer-pic *,
+.aplayer-button,
+.aplayer-music,
+.aplayer-music *,
+.aplayer-volume-wrap,
+.aplayer-volume-wrap *,
+.aplayer-time,
+.aplayer-icon {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
+/* 使用!important覆盖任何可能的样式 */
+.aplayer-lrc[style],
+.aplayer-lrc *[style],
+.aplayer-bar-wrap[style],
+.aplayer-bar-wrap *[style] {
+  pointer-events: none !important;
+  cursor: default !important;
+}
+
+/* 最终保险规则 - 使用最高特异性 */
+html body div#nav-music .aplayer .aplayer-lrc,
+html body div#nav-music .aplayer .aplayer-lrc *,
+html body div#nav-music .aplayer .aplayer-bar-wrap,
+html body div#nav-music .aplayer .aplayer-bar-wrap * {
+  pointer-events: none !important;
+  cursor: default !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  -webkit-touch-callout: none !important;
+  touch-action: none !important;
+}
+
+/* 禁用拖拽相关的CSS属性 */
+.aplayer-bar-wrap,
+.aplayer-bar-wrap *,
+.aplayer-bar,
+.aplayer-loaded,
+.aplayer-played {
+  -webkit-user-drag: none !important;
+  -khtml-user-drag: none !important;
+  -moz-user-drag: none !important;
+  -o-user-drag: none !important;
+  user-drag: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+}
+
+/* 确保标记为禁用的元素完全不可交互 */
+[data-control-disabled="true"],
+[data-control-disabled="true"] * {
+  pointer-events: none !important;
+  cursor: default !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  -webkit-touch-callout: none !important;
+  touch-action: none !important;
+}
+/* 
+更具体的歌词透明度控制 */
+#nav-music .aplayer .aplayer-lrc p,
+html body #nav-music .aplayer .aplayer-lrc p,
+.aplayer.aplayer-withlrc .aplayer-lrc p {
+  opacity: 0.3 !important;
+  /* 非当前歌词行低透明度 */
+  transition: opacity 0.3s ease !important;
+}
+
+/* 当前歌词行高透明度 */
+#nav-music .aplayer .aplayer-lrc p.aplayer-lrc-current,
+html body #nav-music .aplayer .aplayer-lrc p.aplayer-lrc-current,
+.aplayer.aplayer-withlrc .aplayer-lrc p.aplayer-lrc-current {
+  opacity: 1 !important;
+  /* 当前歌词行完全不透明 */
+  font-weight: normal !important;
+  /* 保持正常字重 */
+}
+
+/* 确保在所有主题模式下透明度设置都生效 */
+[data-theme="light"] .aplayer-lrc p,
+[data-theme="dark"] .aplayer-lrc p {
+  opacity: 0.3 !important;
+}
+
+[data-theme="light"] .aplayer-lrc p.aplayer-lrc-current,
+[data-theme="dark"] .aplayer-lrc p.aplayer-lrc-current {
+  opacity: 1 !important;
+}
+
+/* 移动端透明度控制 */
+@media screen and (max-width: 768px) {
+  .aplayer-lrc p {
+    opacity: 0.3 !important;
+  }
+  
+  .aplayer-lrc p.aplayer-lrc-current {
+    opacity: 1 !important;
+  }
+}
+
+/* 防止内联样式覆盖透明度设置 */
+.aplayer-lrc p[style*="opacity"] {
+  opacity: 0.3 !important;
+}
+
+.aplayer-lrc p.aplayer-lrc-current[style*="opacity"] {
+  opacity: 1 !important;
+}
+
+/* 最高优先级透明度控制 */
+html body div#nav-music .aplayer .aplayer-lrc p {
+  opacity: 0.3 !important;
+}
+
+html body div#nav-music .aplayer .aplayer-lrc p.aplayer-lrc-current {
+  opacity: 1 !important;
+}
