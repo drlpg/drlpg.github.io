@@ -1,0 +1,37 @@
+/* 将底栏上部分padding设置为0 - 针对Butterfly主题 */
+/* 使用高优先级选择器确保样式生效 */
+body #footer #footer-wrap {
+  padding-top: 0 !important; /* 只将上部分padding设置为0 */
+  padding-bottom: 40px !important; /* 保持原来的下部分padding */
+  padding-left: 20px !important; /* 保持原来的左部分padding */
+  padding-right: 20px !important; /* 保持原来的右部分padding */
+}
+
+/* 双重保险 - 使用更具体的选择器 */
+#body-wrap footer#footer #footer-wrap {
+  padding-top: 0 !important; /* 只将上部分padding设置为0 */
+  padding-bottom: 40px !important; /* 保持原来的下部分padding */
+  padding-left: 20px !important; /* 保持原来的左部分padding */
+  padding-right: 20px !important; /* 保持原来的右部分padding */
+}
+
+/* 移动端适配 */
+@media screen and (max-width: 768px) {
+  body #footer #footer-wrap,
+  #body-wrap footer#footer #footer-wrap {
+    padding-top: 0 !important; /* 移动端上部分padding也设置为0 */
+    padding-bottom: 20px !important; /* 移动端底部padding改为20px */
+    padding-left: 20px !important; /* 保持左部分padding */
+    padding-right: 20px !important; /* 保持右部分padding */
+  }
+}
+
+/* 确保没有额外的margin影响 */
+body #footer {
+  margin-bottom: 0 !important;
+}
+
+#footer-wrap * {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
