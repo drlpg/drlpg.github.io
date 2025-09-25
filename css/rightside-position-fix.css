@@ -1,0 +1,89 @@
+/* 修复右侧回到顶部按钮悬停时图标位置偏移问题 */
+
+/* 确保rightside容器正确定位，不受zoom影响 */
+#rightside {
+    zoom: 1 !important;
+}
+
+/* 确保rightside显示状态正常 */
+#rightside.rightside-show {
+    transform: translate(-58px, 0) !important;
+}
+
+/* 确保go-up按钮内容居中对齐，避免悬停时位置偏移 */
+#rightside #go-up {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: relative !important;
+}
+
+/* 确保scroll-percent和图标都绝对居中 */
+#rightside #go-up .scroll-percent,
+#rightside #go-up i {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    margin: 0 !important;
+}
+
+/* 保持原有的显示/隐藏逻辑不变 */
+#rightside #go-up .scroll-percent {
+    display: none;
+}
+
+#rightside #go-up.show-percent .scroll-percent {
+    display: block;
+}
+
+#rightside #go-up.show-percent .scroll-percent + i {
+    display: none;
+}
+
+#rightside #go-up:hover .scroll-percent {
+    display: none;
+}
+
+#rightside #go-up:hover .scroll-percent + i {
+    display: block;
+}
+
+/* 移动端特殊修复 */
+@media (max-width: 768px) {
+    /* 强制确保rightside正确定位 */
+    #rightside {
+        position: fixed !important;
+        right: -48px !important;
+        bottom: 40px !important;
+        z-index: 100 !important;
+        zoom: 1 !important;
+    }
+    
+    /* 确保rightside显示状态 */
+    #rightside.rightside-show {
+        opacity: 0.8 !important;
+        transform: translate(-58px, 0) !important;
+    }
+    
+    /* 确保移动端滚动正常 */
+    html, body {
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        zoom: 1 !important;
+        height: auto !important;
+    }
+    
+    /* 确保页面容器不被zoom影响 */
+    #body-wrap {
+        zoom: 1 !important;
+        position: relative !important;
+        min-height: 100vh !important;
+    }
+    
+    /* 强制重置可能影响的样式 */
+    * {
+        zoom: inherit !important;
+    }
+}
