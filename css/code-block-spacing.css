@@ -1,0 +1,103 @@
+/* 重置所有工具栏元素的默认样式，但不影响文字对齐 */
+.container figure.highlight .highlight-tools>* {
+    padding: 8px 12px !important;
+    margin-left: 6px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+}
+
+/* 第一个元素不需要左边距 */
+.container figure.highlight .highlight-tools>*:first-child {
+    margin-left: 0 !important;
+}
+
+/* 修复工具栏整体对齐 */
+.container figure.highlight .highlight-tools {
+    display: flex !important;
+    align-items: center !important;
+    min-height: 32px !important;
+    height: 2.15em !important;
+    padding: 0 8px !important;
+}
+
+/* 确保不影响语言标签的样式，保持左对齐 */
+.container figure.highlight .highlight-tools .code-lang {
+    padding: 2px 8px !important;
+    margin-left: 0 !important;
+    flex: 1 !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
+}
+
+/* 确保不影响Mac风格按钮的样式 */
+.container figure.highlight .highlight-tools .macStyle {
+    padding: 8px 12px !important;
+    margin-left: 0 !important;
+}
+
+/* Mac风格按钮内的圆点保持原有间距 */
+.container figure.highlight .highlight-tools .macStyle>* {
+    margin-right: 8px !important;
+    padding: 0 !important;
+}
+
+/* 专门针对图标按钮的样式，确保间距一致 */
+.container figure.highlight .highlight-tools i {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    vertical-align: middle !important;
+    min-width: 20px !important;
+    min-height: 20px !important;
+    font-size: 14px !important;
+    box-sizing: border-box !important;
+    /* 重置所有可能的间距属性 */
+    margin: 0 !important;
+    border: none !important;
+    outline: none !important;
+    background: transparent !important;
+}
+
+/* 专门修复下拉箭头(expand)的样式 */
+.container figure.highlight .highlight-tools i.expand {
+    padding: 8px 12px !important;
+    margin: 0 0 0 6px !important;
+    font-size: 16px !important;
+    min-width: 24px !important;
+    min-height: 24px !important;
+    border: none !important;
+    outline: none !important;
+    background: transparent !important;
+}
+
+/* 确保下拉箭头不受其他样式影响 */
+.container figure.highlight .highlight-tools .expand {
+    padding: 8px 12px !important;
+    margin: 0 0 0 6px !important;
+}
+
+/* 确保复制提示的样式不受影响 */
+.container figure.highlight .highlight-tools .copy-notice {
+    padding: 8px 12px !important;
+    margin-left: 6px !important;
+    opacity: 0 !important;
+    transition: opacity .4s !important;
+}
+
+/* 强制统一所有按钮的间距 - 最高优先级 */
+.container figure.highlight .highlight-tools>i,
+.container figure.highlight .highlight-tools>.copy-button,
+.container figure.highlight .highlight-tools>.fullpage-button {
+    margin-left: 6px !important;
+    margin-right: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding: 8px 12px !important;
+}
+
+/* 第一个按钮元素不需要左边距 */
+.container figure.highlight .highlight-tools>i:first-of-type,
+.container figure.highlight .highlight-tools>.copy-button:first-of-type,
+.container figure.highlight .highlight-tools>.fullpage-button:first-of-type {
+    margin-left: 0 !important;
+}

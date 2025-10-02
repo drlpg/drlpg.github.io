@@ -1,0 +1,82 @@
+/* 将底栏上部分padding设置为0 - 针对Butterfly主题 */
+/* 使用高优先级选择器确保样式生效 */
+body #footer #footer-wrap {
+  padding-top: 0 !important; /* 只将上部分padding设置为0 */
+  padding-bottom: 40px !important; /* 保持原来的下部分padding */
+  padding-left: 20px !important; /* 保持原来的左部分padding */
+  padding-right: 20px !important; /* 保持原来的右部分padding */
+}
+
+/* 双重保险 - 使用更具体的选择器 */
+#body-wrap footer#footer #footer-wrap {
+  padding-top: 0 !important; /* 只将上部分padding设置为0 */
+  padding-bottom: 40px !important; /* 保持原来的下部分padding */
+  padding-left: 20px !important; /* 保持原来的左部分padding */
+  padding-right: 20px !important; /* 保持原来的右部分padding */
+}
+
+/* 移动端适配 */
+@media screen and (max-width: 768px) {
+  body #footer #footer-wrap,
+  #body-wrap footer#footer #footer-wrap {
+    padding-top: 0 !important; /* 移动端上部分padding也设置为0 */
+    padding-bottom: 20px !important; /* 移动端底部padding改为20px */
+    padding-left: 20px !important; /* 保持左部分padding */
+    padding-right: 20px !important; /* 保持右部分padding */
+  }
+}
+
+/* 确保没有额外的margin影响 */
+body #footer {
+  margin-bottom: 0 !important;
+}
+
+/* 页脚元素间距设置 */
+#footer-wrap #workboard {
+  margin-bottom: 8px !important;
+}
+
+#footer-wrap #ghbdages {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* 统一设置3行内容的容器高度为22px */
+#footer-wrap .copyright {
+  height: 22px !important;
+  line-height: 22px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+#footer-wrap #workboard {
+  height: 22px !important;
+  line-height: 22px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+#footer-wrap #ghbdages {
+  height: auto !important;
+  line-height: 22px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-wrap: wrap !important;
+  gap: 4px !important;
+}
+
+/* 移动端特殊处理 */
+@media screen and (max-width: 768px) {
+  #footer-wrap #ghbdages {
+    justify-content: center !important;
+    padding: 0 10px !important;
+  }
+  
+  #footer-wrap #ghbdages img {
+    max-height: 18px !important;
+    margin: 2px !important;
+  }
+}
