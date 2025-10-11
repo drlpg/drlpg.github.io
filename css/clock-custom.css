@@ -1,0 +1,563 @@
+/* 自定义时钟CSS - 移除内阴影版本 v20250914 */
+:root {
+  --clock-text-color: #000;
+  --clock-bg-color: transparent;
+  --clock-border-radius: 8px;
+  --clock-padding: 24px;
+  /* 四周统一padding */
+  --clock-margin: 8px;
+
+  /* 自定义字体变量 */
+  --clock-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "Helvetica Neue", Lato, Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+  --clock-time-font-family: "SF Mono", "Monaco", "Menlo", "Consolas",
+    "Liberation Mono", "Courier New", monospace;
+}
+
+[data-theme="dark"] {
+  --clock-text-color: #fff;
+  --clock-bg-color: #212121;
+}
+
+/* 字体回退方案 - 使用系统字体避免404错误 */
+span.card-clock-weather,
+.card-clock-location,
+.card-clock-windDir {
+  font-family: var(--clock-font-family);
+}
+
+span.temp {
+  font-family: var(--clock-font-family);
+  margin-left: 4px;
+}
+
+#hexo_electric_clock {
+  /* 重置所有可能的间距 */
+  margin: 0 !important;
+  padding: var(--clock-padding) !important;
+  /* 四周统一24px */
+  min-height: 140px !important;
+  max-height: 140px !important;
+  height: 140px !important;
+  /* 固定高度：24(padding) + 92(内容) + 24(padding) = 140px */
+  position: relative;
+  overflow: visible !important;
+  /* 允许内容正常显示 */
+  /* 添加硬件加速 */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  /* 优化渲染性能 */
+  will-change: auto;
+  color: var(--clock-text-color);
+  /* 确保四边间距一致 */
+  box-sizing: border-box !important;
+  width: 100%;
+  max-width: 100%;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  /* 从上开始排列，不使用space-between */
+}
+
+.card-clock {
+  padding: 0 !important;
+}
+
+.card-content {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.card-glass {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.card-background {
+  height: 140px;
+  /* 固定高度：24 + 16 + 60 + 16 + 24 = 140px */
+  margin: var(--clock-margin);
+  border-radius: var(--clock-border-radius);
+  background-color: var(--clock-bg-color);
+  /* 移除内阴影 */
+  /* box-shadow: inset 0px 0px 4px 2px rgb(145 148 154 / 40%); */
+  z-index: 2;
+  /* 添加平滑过渡 */
+  transition: all 0.3s ease;
+  /* 确保内容紧贴容器 */
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.clock-row {
+  font-family: var(--clock-font-family);
+  font-weight: 400;
+  color: var(--clock-text-color);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  align-items: center;
+  min-height: 16px;
+  max-height: 16px;
+  height: 16px !important;
+  /* 固定行高16px */
+  line-height: 16px;
+  font-size: 13px;
+  /* 添加平滑过渡 */
+  transition: all 0.3s ease;
+  /* 允许内容正常显示，不裁剪 */
+  overflow: visible;
+  flex-shrink: 0;
+  /* 防止行被压缩 */
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* 时间行特殊处理 - 覆盖上面的16px限制 */
+.clock-row:nth-child(2) {
+  min-height: 60px !important;
+  max-height: 60px !important;
+  height: 60px !important;
+  /* 时间行固定60px */
+  line-height: 1;
+  /* 重置行高 */
+  justify-content: center !important;
+  /* 时间居中显示 */
+  align-items: center !important;
+}
+
+.card-clock-clockdate,
+.card-clock-ip {
+  text-align: left;
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.card-clock-location,
+.card-clock-weather {
+  text-align: center;
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.card-clock-dackorlight,
+.card-clock-humidity {
+  text-align: right;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0px;
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.card-clock-humidity {
+  min-width: 0;
+}
+
+.card-clock-time {
+  flex: 0 0 60px;
+  min-height: 60px;
+  max-height: 60px;
+  height: 60px !important;
+  /* 固定高度60px */
+  font-family: var(--clock-time-font-family);
+  font-size: 38px;
+  text-align: center;
+  line-height: 1.2;
+  /* 使用正常行高，避免压缩 */
+  font-weight: 600;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: visible;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* 使用flex居中，而不是line-height */
+}
+
+/* 深色模式样式已通过CSS变量处理 */
+/* 响应式设计优化 */
+@media screen and (min-width: 900px) {
+  .card-clock-humidity {
+    display: block;
+  }
+}
+
+@media screen and (max-width: 1086px) {
+  .card-clock-humidity {
+    display: none;
+  }
+}
+
+/* 中等屏幕优化 */
+@media screen and (max-width: 1024px) and (min-width: 769px) {
+  #hexo_electric_clock {
+    padding: 22px !important;
+    /* 中等屏幕下稍微减小padding */
+    margin: 0 !important;
+  }
+}
+
+/* 小屏幕优化 */
+@media screen and (max-width: 768px) {
+  #hexo_electric_clock {
+    padding: 18px !important;
+    /* 小屏幕下按比例减小padding */
+    margin: 0 !important;
+  }
+
+  .card-background {
+    margin: 5px;
+  }
+
+  .card-clock-time {
+    font-size: 32px;
+  }
+
+  .clock-row {
+    font-size: 12px;
+  }
+
+  /* 移动设备上的图标对齐优化 */
+  .weather-icon,
+  .wind-icon {
+    font-size: 1em;
+    transform: translateY(0);
+  }
+
+  .wind-icon:hover {
+    transform: translateY(0) scale(1.05);
+  }
+}
+
+/* 超小屏幕优化 */
+@media screen and (max-width: 480px) {
+  .card-clock-time {
+    font-size: 28px;
+  }
+
+  .clock-row {
+    font-size: 11px;
+  }
+
+  .card-clock-weather,
+  .card-clock-windDir,
+  .card-clock-clockdate,
+  .card-clock-humidity,
+  .card-clock-location,
+  .card-clock-dackorlight {
+    font-size: inherit;
+  }
+}
+
+/* 天气图标映射系统 - 使用Emoji替代失效字体 */
+.weather-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1em;
+  vertical-align: middle;
+  line-height: 1;
+  height: 1em;
+  width: 1em;
+  text-align: center;
+}
+
+/* 风向图标 - 旗帜样式 */
+.wind-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1em;
+  margin-right: 4px;
+  vertical-align: baseline;
+  line-height: 1;
+  height: 1em;
+  width: 1em;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+/* hover样式已在上面的浏览器兼容性部分定义 */
+
+/* 天气显示样式优化 */
+.card-clock-weather {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-size: 1em;
+  line-height: 1;
+  flex: 0 0 auto;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* 风向显示样式优化 */
+.card-clock-windDir {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  font-size: inherit;
+  line-height: 1;
+  flex: 0 0 auto;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.card-clock-windDir .wind-speed {
+  font-size: inherit;
+  opacity: 0.8;
+  margin-left: 2px;
+}
+
+/* 确保所有时钟元素垂直居中 */
+.card-clock-clockdate,
+.card-clock-humidity,
+.card-clock-location,
+.card-clock-dackorlight {
+  display: flex;
+  align-items: center;
+  line-height: 1;
+  font-size: inherit;
+  font-family: var(--clock-font-family) !important;
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+/* 强制统一所有时钟文字字体 */
+#hexo_electric_clock * {
+  font-family: var(--clock-font-family) !important;
+  box-sizing: border-box;
+}
+
+/* 时间数字使用专门的字体 */
+.card-clock-time {
+  font-family: var(--clock-time-font-family) !important;
+}
+
+/* 修复emoji图标与文字的对齐问题 */
+.weather-icon,
+.wind-icon {
+  /* 使用transform来微调垂直位置，确保与文字基线对齐 */
+  transform: translateY(0);
+}
+
+.wind-icon:hover {
+  transform: translateY(0) scale(1.1);
+}
+
+/* 针对不同浏览器的emoji渲染优化 */
+@supports (-webkit-appearance: none) {
+  .weather-icon,
+  .wind-icon {
+    transform: translateY(0);
+  }
+
+  .wind-icon:hover {
+    transform: translateY(0) scale(1.1);
+  }
+}
+
+/* Firefox特殊处理 */
+@-moz-document url-prefix() {
+  .weather-icon,
+  .wind-icon {
+    transform: translateY(0);
+  }
+
+  .wind-icon:hover {
+    transform: translateY(0) scale(1.1);
+  }
+}
+
+/* 加载和错误状态样式 */
+#card-clock-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  /* 占据父容器的全部空间 */
+  color: var(--clock-text-color);
+  font-family: var(--clock-font-family);
+}
+
+.clock-error {
+  color: #ff6b6b;
+  text-align: center;
+  padding: 20px;
+  font-family: var(--clock-font-family);
+}
+
+.clock-loading {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+/* 时钟数字的平滑动画 */
+.card-clock-time {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* 天气图标的旋转动画 */
+.card-clock-weather i {
+  transition: transform 0.3s ease;
+}
+
+.card-clock-weather i:hover {
+  transform: rotate(10deg);
+}
+
+/* 优化字体渲染 */
+.card-clock-time,
+.clock-row {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* 确保在所有主题下都有良好的对比度 */
+.card-clock-weather,
+.card-clock-location,
+.card-clock-windDir,
+.card-clock-humidity,
+.card-clock-clockdate,
+.card-clock-dackorlight {
+  color: inherit;
+  opacity: 0.9;
+  transition: opacity 0.3s ease;
+}
+
+.card-clock-weather:hover,
+.card-clock-location:hover,
+.card-clock-windDir:hover {
+  opacity: 1;
+}
+
+/* 主题切换动画 
+*/
+#hexo_electric_clock,
+.clock-row,
+.card-background {
+  transition: background-color 0.3s ease, color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+/* 时钟容器的焦点状态 */
+#hexo_electric_clock:focus-within {
+  outline: 2px solid var(--hover-border-color, #49b1f5);
+  outline-offset: 2px;
+}
+
+/* 无障碍访问优化 */
+@media (prefers-reduced-motion: reduce) {
+  #hexo_electric_clock *,
+  .clock-row,
+  .card-background {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* 高对比度模式支持 */
+@media (prefers-contrast: high) {
+  :root {
+    --clock-text-color: #000;
+  }
+
+  [data-theme="dark"] {
+    --clock-text-color: #fff;
+  }
+
+  .clock-row {
+    font-weight: 600;
+  }
+}
+
+/* 打印样式 */
+@media print {
+  #hexo_electric_clock {
+    background: white !important;
+    color: black !important;
+    box-shadow: none !important;
+  }
+
+  .card-clock-weather i,
+  .card-clock-windDir i {
+    display: none;
+  }
+}
+
+/* 强制确保时钟容器间距和高度一致 */
+#hexo_electric_clock.card-widget,
+.card-widget#hexo_electric_clock,
+.sticky_layout #hexo_electric_clock {
+  margin: 0 !important;
+  padding: var(--clock-padding) !important;
+  height: 140px !important;
+  box-sizing: border-box !important;
+}
+
+/* 时钟卡片结构优化 */
+.card-widget.card-clock {
+  padding: 0 !important;
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+
+.card-widget.card-clock .card-glass {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.card-widget.card-clock .card-background {
+  margin: 0 !important;
+  padding: 0 !important;
+  height: 140px !important;
+}
+
+.card-widget.card-clock .card-content {
+  padding: 0 !important;
+  margin: 0 !important;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.card-widget.card-clock #hexo_electric_clock {
+  margin: 0 !important;
+  padding: var(--clock-padding) !important;
+  height: 140px !important;
+  box-sizing: border-box !important;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
