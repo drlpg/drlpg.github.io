@@ -1,0 +1,79 @@
+/* 页面卡片控制器 - 用于控制不同页面的侧边栏卡片显示 */
+
+/* 通用隐藏类 - 可用于任何页面 */
+body.hide-category-tags .card-categories,
+body.hide-category-tags .card-tags {
+  display: none !important;
+}
+
+body.hide-categories .card-categories {
+  display: none !important;
+}
+
+body.hide-tags .card-tags {
+  display: none !important;
+}
+
+body.hide-archives .card-archives {
+  display: none !important;
+}
+
+body.hide-recent-posts .card-recent-post {
+  display: none !important;
+}
+
+body.hide-webinfo .card-webinfo {
+  display: none !important;
+}
+
+/* 特定页面控制 */
+/* About页面 */
+body[data-page="/about/"] .card-categories,
+body[data-page="/about/"] .card-tags,
+body[data-page="about"] .card-categories,
+body[data-page="about"] .card-tags,
+.page-about .card-categories,
+.page-about .card-tags,
+body.about .card-categories,
+body.about .card-tags {
+  display: none !important;
+}
+
+/* 可扩展的页面控制 - 示例 */
+/* 
+body[data-page="/contact/"] .card-categories,
+body[data-page="/contact/"] .card-tags {
+  display: none !important;
+}
+
+body[data-page="/projects/"] .card-recent-post {
+  display: none !important;
+}
+*/
+
+/* 通过页面标题匹配 */
+body:has(h1:contains("关于")) .card-categories,
+body:has(h1:contains("关于")) .card-tags,
+body:has(h1:contains("About")) .card-categories,
+body:has(h1:contains("About")) .card-tags {
+  display: none !important;
+}
+
+/* 通过meta标签匹配 */
+body:has(meta[property="og:title"][content*="关于"]) .card-categories,
+body:has(meta[property="og:title"][content*="关于"]) .card-tags,
+body:has(meta[property="og:title"][content*="About"]) .card-categories,
+body:has(meta[property="og:title"][content*="About"]) .card-tags {
+  display: none !important;
+}
+
+/* 确保默认显示 */
+@media screen {
+  body .card-categories,
+  body .card-tags,
+  body .card-archives,
+  body .card-recent-post,
+  body .card-webinfo {
+    display: block;
+  }
+}

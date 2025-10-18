@@ -1,0 +1,159 @@
+/* 页脚容器样式 */
+body #footer #footer-wrap {
+  padding: 0 !important;
+}
+
+#body-wrap footer#footer #footer-wrap {
+  padding: 0 !important;
+}
+
+/* 页脚白色底框容器 */
+#footer-wrap .footer-container {
+  width: 100% !important;
+  height: 80px !important;
+  background-color: #f7f7f9 !important;
+  border: none !important;
+  border-top: 1px solid #e3e8f7 !important;
+  border-radius: 16px 16px 0 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 0 50px !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+  gap: 20px !important;
+}
+
+/* 左侧文字容器 */
+#footer-wrap .footer-left {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 0 !important;
+  color: #000000 !important;
+}
+
+#footer-wrap .footer-left .copyright {
+  text-align: left !important;
+  margin: 0 !important;
+  line-height: 1.4 !important;
+  font-size: 13px !important;
+}
+
+#footer-wrap .footer-left .framework-info,
+#footer-wrap .footer-left .footer_custom_text,
+#footer-wrap .footer-left #workboard,
+#footer-wrap .footer-left #workboard * {
+  text-align: left !important;
+  margin: 0 !important;
+  line-height: 1.4 !important;
+  font-size: 12px !important;
+}
+
+#footer-wrap .footer-left a {
+  color: #000000 !important;
+  font-size: 12px !important;
+}
+
+/* 中间备案信息容器 */
+#footer-wrap .footer-filing {
+  flex: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  color: #000000 !important;
+  font-size: 12px !important;
+  line-height: 1.4 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+#footer-wrap .footer-filing a {
+  color: #000000 !important;
+  font-size: 12px !important;
+}
+
+/* 右侧标签容器 */
+#footer-wrap .footer-right {
+  display: flex !important;
+  align-items: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+#footer-wrap .footer-right #ghbdages {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+#footer-wrap .footer-right #ghbdages a {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+#footer-wrap .footer-right #ghbdages a img {
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  height: 22px !important;
+  width: auto !important;
+}
+
+/* 移动端适配 */
+@media screen and (max-width: 768px) {
+  #footer-wrap .footer-container {
+    flex-direction: column !important;
+    height: auto !important;
+    padding: 20px 30px !important;
+    gap: 15px !important;
+  }
+
+  #footer-wrap .footer-left {
+    align-items: center !important;
+  }
+
+  #footer-wrap .footer-filing {
+    width: 100% !important;
+  }
+
+  #footer-wrap .footer-right {
+    margin-left: 0 !important;
+  }
+
+  #footer-wrap .footer-right #ghbdages {
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 5px !important;
+  }
+
+  #footer-wrap .footer-right #ghbdages a img {
+    height: 20px !important;
+    width: auto !important;
+  }
+}
+
+/* 暗色模式适配 */
+[data-theme="dark"] #footer-wrap .footer-container {
+  background-color: #21232a !important;
+  border-top-color: #3d3d3f !important;
+}
+
+[data-theme="dark"] #footer-wrap .footer-left {
+  color: #e8e8e8 !important;
+}
+
+[data-theme="dark"] #footer-wrap .footer-left a {
+  color: #e8e8e8 !important;
+}
+
+[data-theme="dark"] #footer-wrap .footer-filing {
+  color: #e8e8e8 !important;
+}
+
+[data-theme="dark"] #footer-wrap .footer-filing a {
+  color: #e8e8e8 !important;
+}
