@@ -1,0 +1,203 @@
+/* SweetAlert2 节日提示弹窗样式优化 */
+
+/* 修复 -ms-high-contrast deprecation 警告 */
+/* 使用新的 Forced Colors Mode 标准替代已弃用的 -ms-high-contrast */
+@media (forced-colors: active) {
+  .swal2-popup {
+    forced-color-adjust: none !important;
+  }
+  
+  .swal2-popup .swal2-title,
+  .swal2-popup .swal2-content,
+  .swal2-popup .swal2-styled {
+    forced-color-adjust: auto !important;
+  }
+}
+
+/* 1. 弹窗四周圆角改成和内容卡片圆角一致 (8px) */
+/* 2. 弹窗整体大小缩小20% */
+.swal2-popup {
+  border-radius: 8px !important;
+  width: auto !important; /* 自动宽度，根据内容调整 */
+  min-width: 18em !important; /* 最小宽度，确保第一行"今天是"有足够空间 */
+  max-width: 90% !important; /* 最大宽度，保持响应式 */
+  padding: 1.6em !important; /* 恢复1.6em内边距 */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important; /* 30%不透明度阴影 */
+  border: 1px solid rgba(0, 0, 0, 0.2) !important; /* 1px边框 */
+}
+
+/* 3. 文字行间距减小50% 和字体大小设置 */
+.swal2-popup .swal2-title {
+  font-size: 20px !important; /* 桌面端标题文字：从24px缩小到20px */
+  font-weight: normal !important; /* 取消粗体，使用正常字重 */
+  line-height: 1.4 !important; /* 调整行高适应两行显示 */
+  margin: 0 0 12px 0 !important; /* 标题下方增加12px margin */
+  white-space: pre-line !important; /* 允许换行显示 */
+  text-align: center !important; /* 文字居中对齐 */
+}
+
+.swal2-popup .swal2-content {
+  display: none !important; /* 隐藏内容区域 */
+}
+
+/* 按钮样式也相应调整 */
+.swal2-popup .swal2-actions {
+  margin: 0 auto !important; /* 按钮区域margin改为0 */
+}
+
+.swal2-popup .swal2-styled {
+  font-size: 14px !important; /* 桌面端按钮文字：从18px缩小到14px */
+  margin: 0.1em 0.2em !important; /* 进一步缩小按钮外边距 */
+  padding: 0.4em 1.2em !important; /* 增加按钮内边距，特别是左右边距 */
+  border-radius: 4px !important; /* 进一步缩小按钮圆角 */
+  border: none !important; /* 移除按钮边框 */
+  outline: none !important; /* 移除焦点轮廓 */
+  box-shadow: none !important; /* 移除按钮阴影 */
+  background-color: #808080 !important; /* 更深的灰色按钮背景 */
+  color: #ffffff !important; /* 白色文字 */
+  min-width: 4em !important; /* 设置最小宽度 */
+}
+
+.swal2-popup .swal2-styled:hover {
+  background-color: #606060 !important; /* 悬停时更深的背景色 */
+  color: #ffffff !important; /* 悬停时保持白色文字 */
+}
+
+/* 移动端适配 */
+@media screen and (max-width: 768px) {
+  .swal2-popup {
+    width: auto !important; /* 移动端也使用自动宽度 */
+    min-width: 14em !important; /* 移动端最小宽度 */
+    max-width: 95% !important; /* 移动端最大宽度 */
+    padding: 1.2em !important; /* 恢复移动端1.2em内边距 */
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.3) !important; /* 移动端稍小的阴影 */
+  }
+  
+  .swal2-popup .swal2-title {
+    font-size: 16px !important; /* 移动端标题文字：增大到16px */
+    font-weight: normal !important; /* 移动端也取消粗体 */
+    line-height: 1.4 !important; /* 移动端调整行高适应两行显示 */
+    margin: 0 0 16px 0 !important; /* 移动端标题下方增加16px margin */
+    white-space: pre-line !important; /* 移动端允许换行显示 */
+    text-align: center !important; /* 移动端文字居中对齐 */
+  }
+  
+  .swal2-popup .swal2-content {
+    display: none !important; /* 移动端也隐藏内容区域 */
+  }
+  
+  .swal2-popup .swal2-styled {
+    font-size: 12px !important; /* 移动端按钮文字：增大到12px */
+    margin: 0.2em 0.3em !important; /* 移动端增加按钮外边距 */
+    padding: 0.6em 1.2em !important; /* 移动端增加按钮内边距 */
+    border-radius: 6px !important; /* 移动端增大按钮圆角 */
+    border: none !important; /* 移动端也移除按钮边框 */
+    outline: none !important; /* 移动端移除焦点轮廓 */
+    box-shadow: none !important; /* 移动端移除按钮阴影 */
+    min-width: 4em !important; /* 移动端设置最小宽度 */
+  }
+}
+
+/* 确保弹窗背景遮罩正常显示 */
+.swal2-container {
+  z-index: 9999 !important;
+}
+
+/* 优化弹窗动画效果 */
+.swal2-popup.swal2-show {
+  animation: swal2-show 0.2s !important; /* 稍微加快动画速度 */
+}
+
+.swal2-popup.swal2-hide {
+  animation: swal2-hide 0.15s !important; /* 稍微加快动画速度 */
+}
+
+/* 额外的兼容性样式 */
+html.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) .swal2-popup {
+  border-radius: 8px !important;
+  width: auto !important; /* 兼容性样式也使用自动宽度 */
+  min-width: 18em !important; /* 最小宽度 */
+  max-width: 90% !important; /* 最大宽度 */
+  padding: 1.6em !important; /* 恢复1.6em内边距 */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important; /* 兼容性样式的阴影 */
+  border: 1px solid rgba(0, 0, 0, 0.2) !important; /* 兼容性样式的边框 */
+}
+
+/* 确保在所有主题模式下都能正确显示 */
+[data-theme="dark"] .swal2-popup,
+[data-theme="light"] .swal2-popup,
+.swal2-popup {
+  border-radius: 8px !important;
+}
+
+/* 深色模式下的色彩方案 */
+[data-theme="dark"] .swal2-popup {
+  background-color: #2d2d2d !important; /* 深色背景 */
+  color: #e0e0e0 !important; /* 浅色文字 */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6) !important; /* 深色模式下更深的阴影 */
+  border: 1px solid rgba(255, 255, 255, 0.1) !important; /* 深色模式下的浅色边框 */
+}
+
+[data-theme="dark"] .swal2-popup .swal2-title {
+  color: #f0f0f0 !important; /* 深色模式下标题颜色 */
+}
+
+[data-theme="dark"] .swal2-popup .swal2-styled {
+  background-color: #1a1a1a !important; /* 深色模式下更深的按钮背景 */
+  color: #ffffff !important; /* 深色模式下白色文字 */
+  border: none !important; /* 深色模式下也移除按钮边框 */
+  outline: none !important; /* 深色模式下移除焦点轮廓 */
+  box-shadow: none !important; /* 深色模式下移除按钮阴影 */
+}
+
+[data-theme="dark"] .swal2-popup .swal2-styled:hover {
+  background-color: #0d0d0d !important; /* 深色模式下悬停时非常深的背景 */
+  color: #ffffff !important; /* 深色模式下悬停时保持白色文字 */
+}
+
+/* 浅色模式下的色彩方案 */
+[data-theme="light"] .swal2-popup {
+  background-color: #ffffff !important; /* 浅色背景 */
+  color: #333333 !important; /* 深色文字 */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important; /* 浅色模式下的阴影 */
+  border: 1px solid rgba(0, 0, 0, 0.2) !important; /* 浅色模式下的边框 */
+}
+
+[data-theme="light"] .swal2-popup .swal2-title {
+  color: #2c2c2c !important; /* 浅色模式下标题颜色 */
+}
+
+[data-theme="light"] .swal2-popup .swal2-styled {
+  background-color: #808080 !important; /* 浅色模式下更深的按钮背景 */
+  color: #ffffff !important; /* 浅色模式下白色文字 */
+  border: none !important; /* 浅色模式下也移除按钮边框 */
+  outline: none !important; /* 浅色模式下移除焦点轮廓 */
+  box-shadow: none !important; /* 浅色模式下移除按钮阴影 */
+}
+
+[data-theme="light"] .swal2-popup .swal2-styled:hover {
+  background-color: #606060 !important; /* 浅色模式下悬停时更深的背景 */
+  color: #ffffff !important; /* 浅色模式下悬停时保持白色文字 */
+}
+
+/* 额外确保内容区域被完全隐藏 */
+.swal2-popup .swal2-html-container,
+.swal2-popup #swal2-content,
+.swal2-popup .swal2-content {
+  display: none !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* 调整弹窗整体布局，移除内容区域后 */
+.swal2-popup .swal2-header {
+  margin: 0 !important; /* 标题头部区域margin改为0 */
+}
+
+/* 优化自动宽度显示效果 */
+.swal2-popup .swal2-title {
+  display: inline-block !important; /* 使标题宽度适应内容 */
+  max-width: 100% !important; /* 确保不超出容器 */
+}
+

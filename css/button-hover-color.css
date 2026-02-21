@@ -1,0 +1,163 @@
+/* 侧边栏个人主页卡片社交按钮悬停色 */
+.card-info-social-icons .social-icon:hover {
+  color: #29f2f2 !important;
+}
+
+/* 侧边栏个人主页卡片 Follow Me 按钮悬停色 */
+#card-info-btn:hover {
+  background-color: #29f2f2 !important;
+  color: #fff !important;
+}
+
+/* 右侧悬浮按钮基础样式 - 确保所有按钮使用相同的基础样式 */
+#rightside > div > button,
+#rightside > div > a {
+  background-color: var(--btn-bg) !important;
+  color: var(--btn-color) !important;
+}
+
+/* 右侧悬浮按钮悬停色 */
+#rightside > div > button:hover,
+#rightside > div > a:hover {
+  background-color: #0eb0c9 !important;
+  color: #fff !important;
+}
+
+/* 确保悬停时图标颜色也改变 */
+#rightside > div > button:hover i,
+#rightside > div > a:hover i {
+  color: #fff !important;
+}
+
+/* 个人主页卡片背景色 */
+.card-info {
+  background-color: #3d9df2 !important;
+  color: #fff !important;
+}
+
+/* 确保卡片内的文字颜色为白色 */
+.card-info .author-info-name,
+.card-info .author-info-description,
+.card-info .site-data .headline,
+.card-info .site-data .length-num {
+  color: #fff !important;
+}
+
+/* 个人主页卡片社交按钮背景色 */
+.card-info-social-icons .social-icon {
+  background-color: #6bd9f2 !important;
+  color: #fff !important;
+  padding: 8px !important;
+  border-radius: 50% !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 40px !important;
+  height: 40px !important;
+  transition: all 0.3s ease !important;
+}
+
+/* 头像中间边框 */
+.card-info .avatar-img {
+  border-radius: 50% !important;
+  padding: 3px !important;
+  background-color: #fff !important;
+  box-sizing: border-box !important;
+}
+
+.card-info .avatar-img img {
+  border-radius: 50% !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
+/* 深色模式下保持社交按钮背景色不变 */
+[data-theme="dark"] .card-info-social-icons .social-icon {
+  background-color: #6bd9f2 !important;
+  color: #fff !important;
+}
+
+/* 深色模式下保持头像不受影响 */
+[data-theme="dark"] .card-info .avatar-img {
+  filter: none !important;
+  opacity: 1 !important;
+}
+
+[data-theme="dark"] .card-info .avatar-img img {
+  filter: none !important;
+  opacity: 1 !important;
+}
+
+/* 深色模式下保持 Follow Me 按钮浅色模式的外观 */
+[data-theme="dark"] #card-info-btn {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: #fff !important;
+}
+
+/* 深色模式下保持悬停效果 */
+[data-theme="dark"] #card-info-btn:hover {
+  background-color: #29f2f2 !important;
+  color: #fff !important;
+}
+
+/* 深色模式下右侧悬浮按钮基础样式 */
+[data-theme="dark"] #rightside > div > button,
+[data-theme="dark"] #rightside > div > a {
+  background-color: var(--btn-bg) !important;
+  color: var(--btn-color) !important;
+}
+
+/* 深色模式下右侧悬浮按钮悬停色 */
+[data-theme="dark"] #rightside > div > button:hover,
+[data-theme="dark"] #rightside > div > a:hover {
+  background-color: #0eb0c9 !important;
+  color: #fff !important;
+}
+
+/* 深色模式下确保悬停时图标颜色也改变 */
+[data-theme="dark"] #rightside > div > button:hover i,
+[data-theme="dark"] #rightside > div > a:hover i {
+  color: #fff !important;
+}
+
+/* 灰度模式下右侧悬浮按钮基础样式 */
+html[style*="grayscale"] #rightside > div > button,
+html[style*="grayscale"] #rightside > div > a {
+  background-color: var(--btn-bg) !important;
+  color: var(--btn-color) !important;
+}
+
+/* 灰度模式下右侧悬浮按钮悬停色 */
+html[style*="grayscale"] #rightside > div > button:hover,
+html[style*="grayscale"] #rightside > div > a:hover {
+  background-color: #0eb0c9 !important;
+  color: #fff !important;
+}
+
+/* 灰度模式下确保悬停时图标颜色也改变 */
+html[style*="grayscale"] #rightside > div > button:hover i,
+html[style*="grayscale"] #rightside > div > a:hover i {
+  color: #fff !important;
+}
+
+/* 灰度+深色模式组合下的基础样式 */
+html[style*="grayscale"][data-theme="dark"] #rightside > div > button,
+html[style*="grayscale"][data-theme="dark"] #rightside > div > a {
+  background-color: var(--btn-bg) !important;
+  color: var(--btn-color) !important;
+}
+
+/* 灰度+深色模式组合下的悬停色 */
+html[style*="grayscale"][data-theme="dark"] #rightside > div > button:hover,
+html[style*="grayscale"][data-theme="dark"] #rightside > div > a:hover {
+  background-color: #0eb0c9 !important;
+  color: #fff !important;
+}
+
+/* 移除个人主页卡片边框 */
+.card-info {
+  border: none !important;
+  box-shadow: none !important;
+}

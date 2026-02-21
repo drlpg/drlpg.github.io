@@ -1,0 +1,324 @@
+/* 
+ * 热评弹窗样式
+ * 
+ * 移动端开关配置：
+ * - 如需启用移动端热评弹窗，请修改 source/js/hot-comment-popup.js 中的 ENABLE_MOBILE_HOT_COMMENT 为 true
+ * - 同时删除下方 @media 中的 display: none !important; 并取消注释移动端样式
+ */
+.hot-comment-popup {
+  position: fixed;
+  bottom: 20px;
+  right: 65px;
+  width: 17.3vw;
+  min-width: 260px;
+  height: 84px; /* 继续调整高度：原64px + 顶部9px + 底部11px留白 = 84px */
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e0e0e0;
+  z-index: 9999;
+  opacity: 0;
+  transform: translateY(20px) scale(0.95); /* 增加缩放效果 */
+  transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55),
+    border-color 0.2s ease, bottom 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); /* 添加回弹效果 */
+  overflow: hidden;
+  font-family: inherit;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 移动端适配（当前禁用，后续可启用） */
+@media screen and (max-width: 768px) {
+  .hot-comment-popup {
+    display: none !important; /* 移动端禁用热评弹窗 */
+    /* 以下样式保留，启用时取消注释并删除上面的display: none */
+    /*
+    left: 50% !important;
+    right: auto !important;
+    bottom: 20px !important;
+    transform: translateX(-50%) translateY(100px) scale(0.95) !important;
+    width: 90vw !important;
+    max-width: 320px !important;
+    */
+  }
+
+  /* 移动端显示状态（保留，启用时取消注释） */
+  /* .hot-comment-popup.show {
+    transform: translateX(-50%) translateY(0) scale(1) !important;
+  } */
+
+  /* 移动端动画效果（保留，启用时取消注释） */
+  /* .hot-comment-popup.slide-in {
+    animation: mobileSlideInUp 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) forwards !important;
+  }
+
+  .hot-comment-popup.slide-out {
+    animation: mobileSlideOutDown 0.3s cubic-bezier(0.4, 0, 0.6, 1) forwards !important;
+  } */
+}
+
+/* 两行内容时的高度 */
+.hot-comment-popup.two-lines {
+  height: 92px; /* 继续调整高度：原72px + 顶部9px + 底部11px留白 = 92px */
+}
+
+.hot-comment-popup.show {
+  opacity: 1;
+  transform: translateY(0) scale(1); /* 显示时恢复正常大小 */
+}
+
+/* 弹窗头部 */
+.hot-comment-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 16px 2px; /* 进一步减少头部padding */
+  margin-top: 9px; /* 继续减小顶部留白：11px - 2px = 9px */
+  flex-shrink: 0; /* 防止头部被压缩 */
+  height: 32px; /* 固定头部高度 */
+}
+
+.hot-comment-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hot-comment-title-text {
+  background: #333;
+  color: white;
+  padding: 0 8px;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 22px;
+  min-width: 40px;
+  line-height: 1;
+  box-sizing: border-box;
+}
+
+/* 普通评论悬停效果 */
+.hot-comment-title-text:hover {
+  background: #3d9df2;
+}
+
+/* 博主标识样式 */
+.hot-comment-title-text.blogger {
+  background: #3d9df2;
+  color: white;
+}
+
+.hot-comment-title-text.blogger:hover {
+  background: #333333;
+}
+
+.hot-comment-author {
+  font-size: 12px;
+  color: #333;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  height: 20px;
+}
+
+.hot-comment-close {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hot-comment-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #f0f0f0;
+}
+
+.hot-comment-close-btn {
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  padding: 0;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  line-height: 1;
+}
+
+.hot-comment-close-btn i {
+  font-size: 14px;
+}
+
+.hot-comment-close-btn:hover {
+  color: #3d9df2;
+}
+
+/* 分割线 */
+.hot-comment-divider {
+  height: 1px;
+  background: repeating-linear-gradient(
+    to right,
+    #ddd 0px,
+    #ddd 4px,
+    transparent 4px,
+    transparent 8px
+  );
+  margin: 4px 16px 0; /* 增加分割线上边距 */
+  flex-shrink: 0; /* 防止分割线被压缩 */
+}
+
+/* 弹窗内容 */
+.hot-comment-content {
+  padding: 6px 16px 10px; /* 恢复合理的内容padding：上6px，左右16px，下10px */
+  margin-bottom: 11px; /* 继续减小底部留白：13px - 2px = 11px */
+  font-size: 14px;
+  line-height: 1; /* 行间距设为1 */
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  height: 30px; /* 恢复单行高度：6px + 14px + 10px */
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 1; /* 默认显示1行 */
+  line-clamp: 1;
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
+  word-wrap: break-word;
+  word-break: break-word;
+}
+
+/* 两行内容时的样式 */
+.hot-comment-popup.two-lines .hot-comment-content {
+  height: 38px; /* 恢复两行高度：6px + 28px + 4px */
+  padding-bottom: 4px; /* 两行时减少底部padding */
+  -webkit-line-clamp: 2; /* 显示2行 */
+  line-clamp: 2;
+}
+
+/* 弹窗整体悬停效果 */
+.hot-comment-popup:hover {
+  border-color: #3d9df2;
+}
+
+.hot-comment-content:hover {
+  color: #3d9df2;
+}
+
+/* 暗色模式适配 */
+[data-theme="dark"] .hot-comment-popup {
+  background: #121212;
+  border: 1px solid #3d3d3f;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+[data-theme="dark"] .hot-comment-popup:hover {
+  border-color: #787878;
+}
+
+[data-theme="dark"] .hot-comment-title-text {
+  background: #555;
+  color: #fff;
+}
+
+[data-theme="dark"] .hot-comment-title-text:hover {
+  background: #787878;
+}
+
+[data-theme="dark"] .hot-comment-author {
+  color: #b8b8b8;
+}
+
+[data-theme="dark"] .hot-comment-content {
+  color: #b8b8b8;
+}
+
+[data-theme="dark"] .hot-comment-content:hover {
+  color: #ffffff; /* 暗色模式下悬停时文字变为白色 */
+}
+
+[data-theme="dark"] .hot-comment-close-btn {
+  color: #555555;
+}
+
+[data-theme="dark"] .hot-comment-close-btn:hover {
+  color: #b8b8b8;
+}
+
+[data-theme="dark"] .hot-comment-divider {
+  background: repeating-linear-gradient(
+    to right,
+    #666 0px,
+    #666 4px,
+    transparent 4px,
+    transparent 8px
+  );
+}
+
+/* 优化的动画效果 - 添加回弹 */
+@keyframes slideInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.9);
+  }
+  70% {
+    transform: translateY(-5px) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes slideOutDown {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(40px) scale(0.85);
+  }
+}
+
+/* 移动端专用动画（保留，启用时生效） */
+@keyframes mobileSlideInUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(100px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+@keyframes mobileSlideOutDown {
+  from {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(100px) scale(0.9);
+  }
+}
+
+.hot-comment-popup.slide-in {
+  animation: slideInUp 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+.hot-comment-popup.slide-out {
+  animation: slideOutDown 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
