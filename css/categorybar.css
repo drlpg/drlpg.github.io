@@ -1,0 +1,254 @@
+/* 分类卡片容器样式 */
+#categoryBar {
+  width: 100% !important;
+  margin: 0 0 1rem 0 !important;
+  padding: 0 !important;
+}
+
+ul.categoryBar-list {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  gap: 1rem !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  list-style: none !important;
+  max-height: none !important;
+  overflow: visible !important;
+  height: auto !important;
+  position: relative !important;
+}
+
+/* 分类卡片基础样式 */
+li.categoryBar-list-item {
+  position: relative !important;
+  flex: 1 !important;
+  min-width: 0 !important;
+  height: 90px !important;
+  margin: 0 !important;
+  padding: 25px !important;
+  border-radius: 10px !important;
+  overflow: hidden !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  box-shadow: none !important;
+  font-weight: bold !important;
+  transition: flex 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+  pointer-events: auto !important;
+}
+
+/* 三种背景色 */
+li.categoryBar-list-item:nth-child(1) {
+  background: #2e97ff !important;
+}
+
+li.categoryBar-list-item:nth-child(2) {
+  background: #ff7551 !important;
+}
+
+li.categoryBar-list-item:nth-child(3) {
+  background: #19e8ba !important;
+}
+
+/* 悬停时增大flex值，其他卡片自动缩小 */
+li.categoryBar-list-item:hover {
+  flex: 1.2 !important;
+  z-index: 10 !important;
+}
+
+/* 链接覆盖整个卡片 */
+li.categoryBar-list-item > a {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  padding: 25px !important;
+  z-index: 5 !important;
+}
+
+/* 分类链接样式 */
+a.categoryBar-list-link {
+  position: relative !important;
+  z-index: 10 !important;
+  color: #fff !important;
+  font-size: 1.5em !important;
+  font-weight: bold !important;
+  text-decoration: none !important;
+  display: inline-block !important;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  line-height: 1.2 !important;
+}
+
+/* 标题下方细线 - 使用li的before伪元素 */
+li.categoryBar-list-item::before {
+  content: "" !important;
+  display: block !important;
+  position: absolute !important;
+  left: 25px !important;
+  top: 50% !important;
+  transform: translateY(calc(1.5em * 0.6 + 3px)) !important;
+  width: 0 !important;
+  height: 1px !important;
+  background-color: #fff !important;
+  transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+  z-index: 6 !important;
+}
+
+/* 悬停时细线拉伸到容器宽度的50% */
+li.categoryBar-list-item:hover::before {
+  width: calc(50% - 25px) !important;
+}
+
+/* 暗色模式 */
+[data-theme="dark"] li.categoryBar-list-item:nth-child(1) {
+  background: #174d80 !important;
+}
+
+[data-theme="dark"] li.categoryBar-list-item:nth-child(2) {
+  background: #803a29 !important;
+}
+
+[data-theme="dark"] li.categoryBar-list-item:nth-child(3) {
+  background: #0d745d !important;
+}
+
+[data-theme="dark"] a.categoryBar-list-link {
+  color: #e8e8e8 !important;
+}
+
+[data-theme="dark"] li.categoryBar-list-item::before {
+  background-color: #e8e8e8 !important;
+}
+
+[data-theme="dark"] span.categoryBar-list-count {
+  color: #e8e8e8 !important;
+}
+
+/* 分类数量显示 */
+span.categoryBar-list-count {
+  position: absolute !important;
+  left: 25px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  color: #fff !important;
+  font-size: 1.5em !important;
+  font-weight: normal !important;
+  line-height: 1.2 !important;
+  opacity: 0 !important;
+  transition: left 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+  pointer-events: none !important;
+  z-index: 11 !important;
+}
+
+/* 悬停时数量显示并位移到细线末端，右对齐 */
+li.categoryBar-list-item:hover span.categoryBar-list-count {
+  left: calc(50% - 1ch + 2px) !important;
+  opacity: 1 !important;
+  transition: left 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.4s 0s ease-in !important;
+}
+
+/* 分类描述隐藏 */
+span.categoryBar-list-descr {
+  display: none !important;
+}
+
+/* 背景图标容器 */
+li.categoryBar-list-item::after {
+  content: "" !important;
+  position: absolute !important;
+  right: 0.9375rem !important;
+  top: 50% !important;
+  transform: translateY(-50%) rotate(-15deg) scale(1.5) !important;
+  width: 90px !important;
+  height: 90px !important;
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-color: transparent !important;
+  opacity: 0.5 !important;
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+  pointer-events: none !important;
+  z-index: 1 !important;
+}
+
+/* 第一个卡片图标 - 分类 (fa-archive) */
+li.categoryBar-list-item:nth-child(1)::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%23ffffff' d='M32 32H480c17.7 0 32 14.3 32 32V96c0 17.7-14.3 32-32 32H32C14.3 128 0 113.7 0 96V64C0 46.3 14.3 32 32 32zm0 128H480V416c0 35.3-28.7 64-64 64H96c-35.3 0-64-28.7-64-64V160zm128 80c0 8.8 7.2 16 16 16H336c8.8 0 16-7.2 16-16s-7.2-16-16-16H176c-8.8 0-16 7.2-16 16z'/%3E%3C/svg%3E") !important;
+}
+
+/* 第二个卡片图标 - 标签 (fa-tags) */
+li.categoryBar-list-item:nth-child(2)::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%23ffffff' d='M345 39.1L472.8 168.4c52.4 53 52.4 138.2 0 191.2L360.8 472.9c-9.3 9.4-24.5 9.5-33.9 .2s-9.5-24.5-.2-33.9L438.6 325.9c33.9-34.3 33.9-89.4 0-123.7L310.9 72.9c-9.3-9.4-9.2-24.6 .2-33.9s24.6-9.2 33.9 .2zM0 229.5V80C0 53.5 21.5 32 48 32H197.5c17 0 33.3 6.7 45.3 18.7l168 168c25 25 25 65.5 0 90.5L277.3 442.7c-25 25-65.5 25-90.5 0l-168-168C6.7 262.7 0 246.5 0 229.5zM144 144a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z'/%3E%3C/svg%3E") !important;
+}
+
+/* 第三个卡片图标 - 归档 (fa-folder-open) */
+li.categoryBar-list-item:nth-child(3)::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 576 512'%3E%3Cpath fill='%23ffffff' d='M384 480h48c11.4 0 21.9-6 27.6-15.9l112-192c5.8-9.9 5.8-22.1 .1-32.1S555.5 224 544 224H144c-11.4 0-21.9 6-27.6 15.9L48 357.1V96c0-8.8 7.2-16 16-16H181.5c4.2 0 8.3 1.7 11.3 4.7l26.5 26.5c21 21 49.5 32.8 79.2 32.8H416c8.8 0 16 7.2 16 16v32h48V160c0-35.3-28.7-64-64-64H298.5c-17 0-33.3-6.7-45.3-18.7L226.7 50.7c-12-12-28.3-18.7-45.3-18.7H64C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H87.7 384z'/%3E%3C/svg%3E") !important;
+}
+
+/* 悬停时图标效果 - 还原旋转并缩小，同时向左移动 */
+li.categoryBar-list-item:hover::after {
+  right: 0.625rem !important;
+  transform: translateY(-50%) rotate(0deg) scale(0.8) !important;
+  opacity: 0.7 !important;
+}
+/* 移动端分类卡片样式 - 必须放在最后以覆盖桌面端样式 */
+@media screen and (max-width: 768px) {
+  #categoryBar {
+    display: block !important;
+  }
+
+  ul.categoryBar-list {
+    gap: 6px !important;
+  }
+
+  li.categoryBar-list-item {
+    height: 60px !important;
+    padding: 10px !important;
+    border-radius: 8px !important;
+  }
+
+  li.categoryBar-list-item > a {
+    padding: 10px !important;
+  }
+
+  a.categoryBar-list-link {
+    font-size: 1.4em !important;
+  }
+
+  /* 移动端图标调整 */
+  li.categoryBar-list-item::after {
+    width: 60px !important;
+    height: 60px !important;
+    right: -10px !important;
+    transform: translateY(-50%) rotate(-15deg) scale(1.2) !important;
+  }
+
+  /* 移动端禁用悬停效果 */
+  li.categoryBar-list-item:hover {
+    flex: 1 !important;
+  }
+
+  li.categoryBar-list-item:hover::after {
+    right: -10px !important;
+    transform: translateY(-50%) rotate(-15deg) scale(1.2) !important;
+    opacity: 0.5 !important;
+  }
+
+  /* 移动端禁用细线悬停效果 */
+  li.categoryBar-list-item:hover::before {
+    width: 0 !important;
+  }
+
+  /* 移动端禁用数量悬停效果 */
+  li.categoryBar-list-item:hover span.categoryBar-list-count {
+    left: 25px !important;
+    opacity: 0 !important;
+    transition: left 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+  }
+}

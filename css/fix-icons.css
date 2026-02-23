@@ -1,0 +1,28 @@
+/* 修复搜索框中的图标显示问题 */
+.search-dialog hr:before {
+  font-family: 'Font Awesome 6 Free', 'Font Awesome 5 Free', 'FontAwesome' !important;
+  font-weight: 900 !important;
+  content: '\f0c4' !important;
+  display: inline-block !important;
+  font-style: normal !important;
+  font-variant: normal !important;
+  text-rendering: auto !important;
+  -webkit-font-smoothing: antialiased !important;
+}
+
+/* 确保Font Awesome图标正确加载 */
+.fontawesomeIcon {
+  font-family: 'Font Awesome 6 Free', 'Font Awesome 5 Free', 'FontAwesome' !important;
+  font-weight: 900 !important;
+  font-style: normal !important;
+  font-variant: normal !important;
+  text-rendering: auto !important;
+  -webkit-font-smoothing: antialiased !important;
+}
+
+/* 修复hr图标显示 */
+.custom-hr:before {
+  font-family: 'Font Awesome 6 Free', 'Font Awesome 5 Free', 'FontAwesome' !important;
+  font-weight: 900 !important;
+  content: '\f0c4' !important;
+}

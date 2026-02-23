@@ -1,0 +1,14 @@
+/* 页面背景 */
+#body-wrap {
+  background: linear-gradient(
+    rgba(255, 255, 255, 0.1) 0,
+    rgba(255, 255, 255, 0.1) 400px,
+    rgba(109, 186, 130, 0.1) calc(400px + 10%),
+    rgba(7, 179, 155, 0.1) calc(400px + 25%),
+    rgba(16, 152, 173, 0.1) calc(400px + 40%),
+    rgba(80, 115, 184, 0.1) calc(400px + 55%),
+    rgba(161, 102, 171, 0.1) calc(400px + 70%),
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  background-repeat: no-repeat;
+}

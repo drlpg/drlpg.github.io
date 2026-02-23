@@ -1,0 +1,47 @@
+/* Header 底部装饰条 - 全局显示，首页和文章页除外 */
+#page-header-decoration {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 16px;
+  background-color: #f8fafe;
+  border-radius: 16px 16px 0 0;
+  z-index: 15;
+  pointer-events: none;
+  display: block;
+  margin-bottom: -1px;
+}
+
+/* 暗色模式颜色 */
+[data-theme="dark"] #page-header-decoration {
+  background-color: #302f34;
+}
+
+/* 首页隐藏装饰条 */
+#page-header.full_page #page-header-decoration {
+  display: none;
+}
+
+/* 文章页面浅色模式隐藏装饰条（因为有波浪动画） */
+#page-header.post-bg #page-header-decoration {
+  display: none;
+}
+
+/* 文章页面暗色模式显示装饰条（波浪动画在暗色模式隐藏） */
+[data-theme="dark"] #page-header.post-bg #page-header-decoration {
+  display: block;
+  z-index: 10;
+  margin-bottom: -1px;
+}
+
+/* 确保装饰条在所有元素之上，但不影响导航栏 */
+#page-header {
+  position: relative;
+}
+
+#page-header #nav {
+  z-index: 100;
+}

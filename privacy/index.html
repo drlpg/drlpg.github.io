@@ -1,0 +1,553 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><meta name="referrer" content="no-referrer-when-downgrade"><title>隐私协议 | Dran</title><meta name="author" content="Dran"><meta name="copyright" content="Dran"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta http-equiv="Cache-Control" content="public, max-age=3600"><meta name="description" content="隐私政策信息收集本网站可能会收集以下信息：  访问日志（IP地址、浏览器信息、访问时间等） 评论时提供的个人信息（昵称、邮箱等） Cookie和本地存储数据  信息使用收集的信息仅用于：  改善网站服务质量 统计分析网站访问情况 回复评论和互动  信息保护我们承诺：  不会向第三方出售或泄露您的个人信息 采用合理的安全措施保护您的数据 您有权要求删除或修改您的个人信息  第三方服务本网站可能使用以">
+<meta property="og:type" content="website">
+<meta property="og:title" content="隐私协议">
+<meta property="og:url" content="https://lpblog.dpdns.org/privacy/index.html">
+<meta property="og:site_name" content="Dran">
+<meta property="og:description" content="隐私政策信息收集本网站可能会收集以下信息：  访问日志（IP地址、浏览器信息、访问时间等） 评论时提供的个人信息（昵称、邮箱等） Cookie和本地存储数据  信息使用收集的信息仅用于：  改善网站服务质量 统计分析网站访问情况 回复评论和互动  信息保护我们承诺：  不会向第三方出售或泄露您的个人信息 采用合理的安全措施保护您的数据 您有权要求删除或修改您的个人信息  第三方服务本网站可能使用以">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://lpblog.dpdns.org/img/placeholder-minimal.svg">
+<meta property="article:published_time" content="2025-07-29T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-02-23T08:04:27.407Z">
+<meta property="article:author" content="Dran">
+<meta property="article:tag" content="Hexo博客,Web开发,技术博客,Vercel,API开发,前端开发,全栈开发,Dran,博客搭建,Twikoo评论,MongoDB,Supabase,静态网站,JavaScript,Node.js">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://lpblog.dpdns.org/img/og-image.jpg"><link rel="shortcut icon" href="/img/dran-blog.ico"><link rel="canonical" href="https://lpblog.dpdns.org/privacy/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preload" href="/css/index.css" as="style"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" as="style"><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="/css/bilibili-bg.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+          
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script defer src="https://umami.lpblog.dpdns.org/script.js" data-website-id="cbe639f4-a3a8-4f91-a842-01529f2c2b82"></script><script>window.GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"简"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true,
+  bilibiBg: {"enable":true,"phoneText":[{"time":0,"text":"凌晨啦!"},{"time":6,"text":"早上好!"},{"time":8,"text":"上午好!"},{"time":11,"text":"你吃了吗"},{"time":13,"text":"下午好鸭!"},{"time":16,"text":"傍晚咯!"},{"time":19,"text":"晚安!"}]},
+  headerSlideshow: {"enable":false,"slides":[{"image":"/img/slideshow/slide1.jpg","link":"https://lpblog.dpdns.org/","title":null},{"image":"/img/slideshow/slide2.jpg","link":"https://lpblog.dpdns.org/","title":null}],"interval":5000,"transition":1000}
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '隐私协议',
+  isPost: false,
+  isHome: false,
+  isHighlightShrink: true,
+  isToc: false,
+  isShuoshuo: false
+}</script><meta name="google-site-verification" content="27pbAQuPln2n6iS8Ap_FPOU48EoOPahrhZ9RHOQZ_Fw" /><meta name="msvalidate.01" content="59F6DC190A75D1204D320F98E16A720B" /><meta name="baidu-site-verification" content="codeva-C4k9i9Qb36" /><script src="/js/console-welcome.js" data-cfasync="false"></script><meta http-equiv="Cache-Control" content="public, max-age=180, s-maxage=300"><script src="/js/fontawesome-fix.js" data-cfasync="false"></script><link rel="stylesheet" href="/css/bg_color.css"><link rel="stylesheet" href="/css/navigation_bar.css"><link rel="stylesheet" href="/css/loading_img.css"><link rel="stylesheet" href="/css/wavy.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="/css/remove-shadows.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="/css/clock-custom.css?v=20250914" media="print" onload="this.media='all'"><link rel="stylesheet" href="/css/button-hover-color.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="/css/rightside-position-fix.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="/css/footer.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="/css/font-optimization.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="/css/mobile-pullrefresh-fix.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="/css/grayscale-toggle.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="/css/code-block-spacing.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="/css/page-card-controller.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="/css/sweetalert-custom.css" media="print" onload="this.media='all'"><style>/* 文章页面首张图片隐藏 */
+.post-content #article-container > p:first-child > img:first-child,
+.post-content #article-container > img:first-child,
+.post-content #article-container > figure:first-child img,
+.post-content #article-container > div:first-child > img:first-child {
+  display: none !important;
+}
+
+/* 确保首页缩略图正常显示 */
+.recent-post-item .post_cover img,
+.card-widget .item-headline img,
+.flink .flink-item-icon img {
+  display: block !important;
+}
+
+/* 文章页标题背景光晕效果 */
+#page-header.post-bg {
+  position: relative;
+  transition: background 0.5s ease;
+  overflow: hidden;
+}
+
+/* 柔和光效果 - 直接在父元素背景上 */
+#page-header.post-bg.has-glow-effect {
+  background-image: radial-gradient(circle 500px at 80% 85%, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.17) 10%, rgba(255, 255, 255, 0.15) 20%, rgba(255, 255, 255, 0.12) 30%, rgba(255, 255, 255, 0.10) 40%, rgba(255, 255, 255, 0.08) 50%, rgba(255, 255, 255, 0.06) 60%, rgba(255, 255, 255, 0.04) 70%, rgba(255, 255, 255, 0.03) 80%, rgba(255, 255, 255, 0.01) 90%, transparent 100%);
+}
+
+
+
+/* 移除动画，使光晕静态显示 */
+
+#page-header.post-bg #post-info {
+  position: relative;
+  z-index: 10;
+}
+
+/* 确保波浪动画在正确位置 */
+#page-header.post-bg .main-hero-waves-area {
+  position: absolute !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  z-index: 5 !important;
+  pointer-events: none !important;
+}
+
+/* 确保导航栏在最上层 */
+#page-header #nav {
+  position: relative;
+  z-index: 100;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  #page-header.post-bg.has-glow-effect::after {
+    width: 300px;
+    height: 300px;
+    bottom: -100px;
+    right: -100px;
+  }
+}
+
+@media (max-width: 480px) {
+  #page-header.post-bg.has-glow-effect::after {
+    width: 250px;
+    height: 250px;
+    bottom: -80px;
+    right: -80px;
+  }
+}</style><!-- hexo injector head_end start --><link rel="stylesheet" href="/css/categorybar.css"><link rel="stylesheet" href="/css/clock-custom.css?v=20250914" /><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0">
+    <script>
+      window.APLAYER_BREATHING_LIGHT = true;
+    </script>
+  </head><body><div id="loading-box" onclick="document.getElementById(&quot;loading-box&quot;).classList.add(&quot;loaded&quot;)"><div class="loading-bg"><div class="loading-img"></div><div class="loading-progress-bar"><div class="loading-progress-fill"></div></div></div></div><script>const preloader = {
+  progressFill: null,
+  progressInterval: null,
+  currentProgress: 0,
+  
+  updateProgress: (progress) => {
+    if (!preloader.progressFill) {
+      preloader.progressFill = document.querySelector('.loading-progress-fill');
+    }
+    if (preloader.progressFill) {
+      preloader.currentProgress = Math.min(progress, 100);
+      preloader.progressFill.style.width = preloader.currentProgress + '%';
+    }
+  },
+  
+  startProgress: () => {
+    // 清除之前的interval
+    if (preloader.progressInterval) {
+      clearInterval(preloader.progressInterval);
+      preloader.progressInterval = null;
+    }
+    
+    preloader.progressFill = document.querySelector('.loading-progress-fill');
+    preloader.currentProgress = 0;
+    
+    // 强制从0开始
+    if (preloader.progressFill) {
+      preloader.progressFill.style.transition = 'none';
+      preloader.progressFill.style.width = '0%';
+      // 强制重绘
+      preloader.progressFill.offsetHeight;
+      preloader.progressFill.style.transition = '';
+    }
+    
+    // 模拟加载进度
+    let progress = 0;
+    preloader.progressInterval = setInterval(() => {
+      if (progress < 90) {
+        progress += Math.random() * 10;
+        preloader.updateProgress(progress);
+      }
+    }, 200);
+  },
+  
+  endLoading: () => {
+    if (preloader.progressInterval) {
+      clearInterval(preloader.progressInterval);
+      preloader.progressInterval = null;
+    }
+    preloader.updateProgress(100);
+    
+    setTimeout(() => {
+      document.body.style.overflow = 'auto';
+      document.getElementById('loading-box').classList.add("loaded");
+    }, 150);
+  },
+  
+  initLoading: () => {
+    document.body.style.overflow = '';
+    const loadingBox = document.getElementById('loading-box');
+    loadingBox.classList.remove("loaded");
+    loadingBox.style.display = 'block';
+    preloader.startProgress();
+  }
+}
+
+// 页面首次加载 - 等待DOM准备好
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    preloader.startProgress();
+  });
+} else {
+  preloader.startProgress();
+}
+
+window.addEventListener('load', () => { preloader.endLoading() })
+
+if (true) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { 
+    setTimeout(() => { preloader.endLoading() }, 50)
+  })
+}</script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="sidebar-avatar-wrapper"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/dran_icon.ico" onerror="onerror=null;src='/img/placeholder-minimal.svg'" alt="avatar"/></div></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">1</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">1</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">1</div></a></div><div class="menus_items visible"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-bookmark"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://foreverblog.cn/go.html" data-tooltip="随机前往一个友链"><i class="fa-fw fa fa-circle"></i><span> 虫洞</span></a></div><div class="menus_item"><a class="site-page" href="/about/" data-tooltip="个人简历和作品集"><i class="fa-fw fas fa-user"></i><span> 关于我</span></a></div></div></div></div><div class="page type-privacy" id="body-wrap"><header class="not-home-page" id="page-header" style="background-image: url(/img/top-background.jpg);" data-cover-img=""><div id="page-header-decoration"></div><nav id="nav"><span id="blog-info"><a href="/" title="回到主页"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/web_icon.ico"><span class="site-name">Dran</span></a></span><div id="menus"></div><div class="menus_items visible"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-bookmark"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://foreverblog.cn/go.html" data-tooltip="随机前往一个友链"><i class="fa-fw fa fa-circle"></i><span> 虫洞</span></a></div><div class="menus_item"><a class="site-page" href="/about/" data-tooltip="个人简历和作品集"><i class="fa-fw fas fa-user"></i><span> 关于我</span></a></div></div><center id="name-container"><a id="page-name" href="javascript:btf.scrollToDest(0, 500)">PAGE_NAME</a></center><div id="menus"><div id="search-button"><span class="site-page social-icon search" data-tooltip="搜索"><i class="fas fa-search fa-fw"></i></span></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></nav><div id="page-site-info"><h1 id="site-title">隐私协议</h1></div></header><main class="layout" id="content-inner"><div id="page"><div class="container" id="article-container"><h2 id="隐私政策"><a href="#隐私政策" class="headerlink" title="隐私政策"></a>隐私政策</h2><h3 id="信息收集"><a href="#信息收集" class="headerlink" title="信息收集"></a>信息收集</h3><p>本网站可能会收集以下信息：</p>
+<ul>
+<li>访问日志（IP地址、浏览器信息、访问时间等）</li>
+<li>评论时提供的个人信息（昵称、邮箱等）</li>
+<li>Cookie和本地存储数据</li>
+</ul>
+<h3 id="信息使用"><a href="#信息使用" class="headerlink" title="信息使用"></a>信息使用</h3><p>收集的信息仅用于：</p>
+<ul>
+<li>改善网站服务质量</li>
+<li>统计分析网站访问情况</li>
+<li>回复评论和互动</li>
+</ul>
+<h3 id="信息保护"><a href="#信息保护" class="headerlink" title="信息保护"></a>信息保护</h3><p>我们承诺：</p>
+<ul>
+<li>不会向第三方出售或泄露您的个人信息</li>
+<li>采用合理的安全措施保护您的数据</li>
+<li>您有权要求删除或修改您的个人信息</li>
+</ul>
+<h3 id="第三方服务"><a href="#第三方服务" class="headerlink" title="第三方服务"></a>第三方服务</h3><p>本网站可能使用以下第三方服务：</p>
+<ul>
+<li>评论系统</li>
+<li>统计分析工具</li>
+<li>CDN服务</li>
+</ul>
+<p>这些服务有各自的隐私政策，请查阅相关条款。</p>
+<h3 id="联系我们"><a href="#联系我们" class="headerlink" title="联系我们"></a>联系我们</h3><p>如有隐私相关问题，请通过以下方式联系：</p>
+<ul>
+<li>邮箱：[您的邮箱]</li>
+<li>留言：在网站留言板留言</li>
+</ul>
+<p>本隐私政策最后更新时间：2025年7月30日</p>
+</div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="greeting-message" id="greeting-message"></div><div class="avatar-container"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/dran_icon.ico" onerror="this.onerror=null;this.src='/img/placeholder-minimal.svg'" alt="avatar"/></div><div class="avatar-description">个人博客，分享日常、博客部署等相关技术经验~</div><div class="sr-only">Be brave to do</div></div><div class="author-info"><div class="author-info__left"><div class="author-info-name">Dran</div><div class="author-info-description">Be brave to do</div></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/drlpg" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:danranlpg@163.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/drlpg"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/api/" title="Vercel + Supabase 搭建博客数据统计API"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://r2.lpblog.dpdns.org/Qexo/2025/09/25/07.jpg" onerror="this.onerror=null;this.src='/img/placeholder-minimal.svg'" alt="Vercel + Supabase 搭建博客数据统计API"/></a><div class="content"><a class="title" href="/posts/api/" title="Vercel + Supabase 搭建博客数据统计API">Vercel + Supabase 搭建博客数据统计API</a><time datetime="2025-10-02T03:19:24.915Z" title="发表于 2025-10-02 11:19:24">2025-10-02</time></div></div></div></div><div class="card-widget card-categories"><div class="item-headline">
+            <i class="fas fa-folder-open"></i>
+            <span>分类</span>
+            
+          </div>
+          <ul class="card-category-list expandBtn" id="aside-cat-list">
+            <li class="card-category-list-item "><a class="card-category-list-link" href="/categories/API/"><span class="card-category-list-name">API</span><span class="card-category-list-count">1</span></a></li>
+          </ul></div><div class="card-widget card-tags"><div class="item-headline"><i class="fas fa-tags"></i><span>标签</span></div><div class="card-tag-cloud"><a href="/tags/api/">api<span class="tag-count">1</span></a></div></div><div class="card-widget card-archives">
+    <div class="item-headline">
+      <i class="fas fa-archive"></i>
+      <span>归档</span>
+      
+    </div>
+    <ul class="card-archive-list">
+  
+      <li class="card-archive-list-item">
+        <a class="card-archive-list-link" href="/archives/2025/10/">
+          <span class="card-archive-list-date">十月 2025</span>
+          <span class="card-archive-list-count">1</span>
+        </a>
+      </li>
+    </ul></div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>网站信息</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">文章数目 :</div><div class="item-count">1</div></div><div class="webinfo-item"><div class="item-name">本站总字数 :</div><div class="item-count">555</div></div><div class="webinfo-item"><div class="item-name">本站访客数 :</div><div class="item-count" id="busuanzi_container_site_uv"><span id="busuanzi_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></span></div></div><div class="webinfo-item"><div class="item-name">本站总浏览量 :</div><div class="item-count" id="busuanzi_container_site_pv"><span id="busuanzi_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></div></div><div class="webinfo-item"><div class="item-name">最后更新时间 :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-02-23T08:04:51.509Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="footer-container"><div class="footer-left"><div class="copyright"><span><b>&copy;2024 - 2026</b></span><span><b>&nbsp;&nbsp;By Dran</b></span></div><div id="workboard"></div></div><div class="footer-filing"></div><div class="footer-right"><p id="ghbdages"><a class="github-badge" target="_blank" href="https://hexo.io/" title="博客框架为Hexo_v7.3.0"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/badges/hexo.svg" alt=""/></a><a class="github-badge" target="_blank" href="https://butterfly.js.org/" title="主题版本Butterfly_v5.2.2"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/badges/butterfly.svg" alt=""/></a><a class="github-badge" target="_blank" href="https://vercel.com/" title="本站采用多线部署，主线路托管于Vercel"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/badges/vercel.svg" alt=""/></a><a class="github-badge" target="_blank" href="https://github.com/" title="本网站源码由Github提供存储仓库"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/badges/github.svg" alt=""/></a></p></div></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><!-- 分享按钮已被移除--><button id="translateLink" type="button" title="简繁转换">繁</button><button id="grayscale-toggle" type="button" title="灰度和明度模式切换">灰</button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button><button id="header-bg-toggle" type="button" title="切换首页背景"><i class="fas fa-image"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button><button id="go-down" type="button" title="直达底部" onclick="btf.scrollToDest(document.body.scrollHeight, 500)"><i class="fas fa-arrow-down"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = null
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://twikoo.lpblog.dpdns.org',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(res => {
+      countELement.textContent = res[0].count
+    }).catch(err => {
+      console.error(err)
+    })
+  }
+
+  const init = (el = document, path = location.pathname) => {
+    twikoo.init({
+      el: el.querySelector('#twikoo-wrap'),
+      envId: 'https://twikoo.lpblog.dpdns.org',
+      region: '',
+      onCommentLoaded: () => {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      },
+      ...option,
+      path: isShuoshuo ? path : (option && option.path) || path
+    })
+
+    
+
+    isShuoshuo && (window.shuoshuoComment.destroyTwikoo = () => {
+      if (el.children.length) {
+        el.innerHTML = ''
+        el.classList.add('no-comment')
+      }
+    })
+  }
+
+  const loadTwikoo = (el, path) => {
+    if (typeof twikoo === 'object') setTimeout(() => init(el, path), 0)
+    else btf.getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(() => init(el, path))
+  }
+
+  if (isShuoshuo) {
+    'Twikoo' === 'Twikoo'
+      ? window.shuoshuoComment = { loadComment: loadTwikoo }
+      : window.loadOtherComment = loadTwikoo
+    return
+  }
+
+  if ('Twikoo' === 'Twikoo' || !false) {
+    if (false) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else loadTwikoo()
+  } else {
+    window.loadOtherComment = loadTwikoo
+  }
+})()</script></div><link rel="stylesheet" href="/css/APlayer.css"><link rel="stylesheet" href="/css/APlayer_diy.css"><link rel="stylesheet" href="/css/APlayer_color.css"><link rel="stylesheet" href="/css/music-player-fix.css"><link rel="stylesheet" href="/css/music-context-menu.css"><link rel="stylesheet" href="/css/fix-icons.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="/css/hide-site-title.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="/css/footer-height.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="/css/header-slideshow.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="/css/custom-context-menu.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="/css/hot-comment-popup.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="/css/post-header-center.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="/css/ai-summary.css" media="print" onload="this.media='all'"><script src="/js/console-filter.js" data-cfasync="false"></script><script src="/js/cdn-fallback.js" data-cfasync="false"></script><script src="/js/weather-icons.js?v=20250914" data-cfasync="false"></script><script src="/js/mobile-fix-immediate.js" data-cfasync="false"></script><script src="/js/mobile-viewport-fix.js" data-cfasync="false"></script><script src="/js/rightside-mobile-fix.js" data-cfasync="false"></script><script src="/js/article-dynamic-theme-color.js" data-cfasync="false"></script><script src="/js/aside-dynamic-theme-color.js" data-cfasync="false"></script><script defer src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script><script defer src="/js/dynamic-loader.js"></script><script defer src="/js/navigation_bar.js"></script><script defer src="/js/lunar.js"></script><script defer src="/js/day.js"></script><script defer src="/js/image-watermark.js"></script><script defer src="/js/blind-watermark.js"></script><script defer src="/js/runtime.js"></script><script defer src="/js/header-slideshow-simple.js"></script><script defer src="/js/page-card-controller.js"></script><script defer src="/js/page-scroll-fix.js"></script><script defer src="/js/search-tooltip.js"></script><script defer src="/js/greeting-message.js"></script><script defer src="/js/article-color-preloader.js"></script><script defer src="/js/article-first-image-handler.js"></script><script defer src="/js/devtools-detector.js"></script><script defer src="/js/APlayer.js"></script><script defer src="/js/Meting.js"></script><script defer src="/js/music-player-unified.js"></script><script defer src="/js/blind-watermark-verifier.js"></script><script async data-pjax src="/js/anzhiyufunction.js"></script><script async data-pjax src="/js/anzhiyu.js"></script><script async src="/js/anzhiyuOnlyOne.js"></script><script async src="/js/happy-title.js"></script><script defer src="/js/header-bg-toggle.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script>(() => {
+  const destroyAplayer = () => {
+    if (window.aplayers) {
+      for (let i = 0; i < window.aplayers.length; i++) {
+        if (!window.aplayers[i].options.fixed) {
+          window.aplayers[i].destroy()
+        }
+      }
+    }
+  }
+
+  const runMetingJS = () => {
+    typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+  }
+
+  btf.addGlobalFn('pjaxSend', destroyAplayer, 'destroyAplayer')
+  btf.addGlobalFn('pjaxComplete', loadMeting, 'runMetingJS')
+})()</script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      pjax.loadUrl('/404.html')
+    }
+  })
+})()</script><script async data-pjax src="/js/blog-stats-loader.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div><script defer src="/js/bilibili-bg.js"></script><script src="/js/mobile-gradient-bg.js"></script></div><div id="nav-music"><div id="nav-music-hoverTips" onclick="anzhiyu.musicToggle()" title="播放"><i class="fa-solid fa-play music-icon-large"></i></div><meting-js id="13156541985" server="netease" type="playlist" mutex="true" preload="none" theme="var(--anzhiyu-main)" data-lrctype="0" order="list"></meting-js></div><!-- hexo injector body_end start --><script data-pjax>
+    function butterfly_categories_card_injector_config(){
+      var parent_div_git = document.getElementById('recent-posts');
+      var item_html = '<div id="categoryBar"><ul class="categoryBar-list"><li class="categoryBar-list-item" style="background:url();"><a class="categoryBar-list-link" href="/categories/" data-pjax-state="">分类</a><span class="categoryBar-list-count">1</span><span class="categoryBar-list-descr">分类</span></li><li class="categoryBar-list-item" style="background:url();"><a class="categoryBar-list-link" href="/tags/" data-pjax-state="">标签</a><span class="categoryBar-list-count">1</span><span class="categoryBar-list-descr">标签</span></li><li class="categoryBar-list-item" style="background:url();"><a class="categoryBar-list-link" href="/archives/" data-pjax-state="">归档</a><span class="categoryBar-list-count">1</span><span class="categoryBar-list-descr">归档</span></li></ul></div>';
+      parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+      
+      // 手动为动态插入的链接添加点击事件
+      if (typeof Pjax !== 'undefined') {
+        document.querySelectorAll('.categoryBar-list-link').forEach(function(link) {
+          link.addEventListener('click', function(e) {
+            e.preventDefault();
+            var url = this.getAttribute('href');
+            if (window.pjax) {
+              window.pjax.loadUrl(url);
+            } else {
+              window.location.href = url;
+            }
+          });
+        });
+      }
+    }
+    if(document.getElementById('recent-posts') && (location.pathname ==='/' || '/' ==='all')){
+      butterfly_categories_card_injector_config()
+    }
+  </script><script data-pjax>
+  function butterfly_clock_anzhiyu_injector_config(){
+    var parent_div_git = document.getElementsByClassName('sticky_layout')[0];
+    var item_html = '<div class="card-widget card-clock"><div class="card-glass"><div class="card-background"><div class="card-content"><div id="hexo_electric_clock"><div class="clock-loading" id="card-clock-loading" style="display: flex; align-items: center; justify-content: center; background: transparent; padding: 10px 0;"><div style="text-align: center; background: transparent;"><div style="font-size: 14px; opacity: 0.7; background: transparent;">正在加载天气数据...</div></div></div></div></div></div></div></div>';
+    console.log('已挂载butterfly_clock_anzhiyu')
+    if(parent_div_git) {
+      parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+    }
+  }
+  var elist = 'null'.split(',');
+  var cpage = location.pathname;
+  var epage = '/';
+  var qweather_key = 'a17e385cf6d94f078f77b3dde0c2a18c';
+  var gaud_map_key = '5f5c8c34b248d5f76b10b65f8a7fa1d0';
+  var baidu_ak_key = 'undefined';
+  var flag = 0;
+  var clock_rectangle = '116.404000,39.928000';
+  var clock_default_rectangle_enable = 'false';
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_clock_anzhiyu_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_clock_anzhiyu_injector_config();
+  }
+  </script><script src="https://nx6yvwhdc7.re.qweatherapi.com/v7/weather/now"></script><script data-pjax src="/js/clock-fix.js?v=20250914"></script><!-- hexo injector body_end end --></body></html>

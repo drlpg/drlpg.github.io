@@ -1,0 +1,229 @@
+/* 音乐播放器图标放大样式 */
+.music-icon-large {
+  font-size: 1.25em !important;
+  /* 放大0.25倍，即1 + 0.25 = 1.25 */
+  transform: scale(1.25);
+  display: inline-block;
+}
+
+/* 音乐播放器按钮毛玻璃效果 */
+#nav-music-hoverTips {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* 毛玻璃效果背景 - 由JavaScript动态设置 */
+  background: rgba(0, 0, 0, 0.1) !important;
+  /* 默认10%透明度黑色，会被JavaScript覆盖 */
+  backdrop-filter: blur(10px) !important;
+  /* 毛玻璃模糊效果 */
+  -webkit-backdrop-filter: blur(10px) !important;
+  /* Safari兼容性 */
+  border: none !important;
+  /* 移除边框 */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+  /* 轻微阴影 */
+}
+
+/* 播放状态 - 移除外侧边框和阴影 */
+#nav-music.playing {
+  box-shadow: none !important;
+  /* 移除外侧阴影 */
+  animation: none !important;
+  /* 移除动画效果 */
+}
+
+/* 播放状态 - 使用动态封面颜色 */
+#nav-music.playing .aplayer {
+  background: var(--music-dynamic-background, var(--card-bg)) !important;
+  transition: background 0.5s ease !important;
+  /* 平滑过渡效果 */
+  border: none !important;
+  /* 移除播放状态的边框 */
+  box-shadow: none !important;
+  /* 移除播放状态的阴影 */
+}
+
+/* 暂停状态 - 使用固定白色背景 */
+#nav-music:not(.playing) .aplayer {
+  background: #ffffff !important;
+  /* 固定白色背景 */
+  transition: background 0.5s ease !important;
+  /* 平滑过渡效果 */
+}
+
+/* 暂停状态的文字颜色 */
+#nav-music:not(.playing) .aplayer .aplayer-info {
+  color: #000000 !important;
+  /* 黑色文字 */
+}
+
+#nav-music:not(.playing) .aplayer .aplayer-info .aplayer-music .aplayer-title {
+  color: #000000 !important;
+  /* 歌曲标题黑色 */
+}
+
+/* 确保在任何状态下都正确应用背景 */
+body #nav-music.playing .aplayer {
+  background: var(--music-dynamic-background, var(--card-bg)) !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+body #nav-music:not(.playing) .aplayer {
+  background: #ffffff !important;
+}
+
+/* 歌词右侧间距优化 */
+#nav-music.stretch .aplayer.aplayer-withlrc .aplayer-lrc {
+  padding-right: 15px !important;
+  /* 增加右侧间距 */
+  box-sizing: border-box !important;
+  /* 确保padding不影响宽度 */
+}
+
+/* 歌词容器高度优化 */
+#nav-music .aplayer.aplayer-withlrc .aplayer-lrc {
+  padding: 0 !important;
+  /* 移除所有内边距 */
+}
+
+/* 歌词区域点击控制功能已被专门的禁用文件管理 */
+/* 请参考 disable-lyrics-progress-control.css 文件 */
+
+/* 保留左侧歌名区域的点击功能（缩进/展开控制） */
+html body #nav-music .aplayer .aplayer-info .aplayer-music,
+html body #nav-music .aplayer .aplayer-info .aplayer-music .aplayer-title,
+html body #nav-music .aplayer .aplayer-info .aplayer-music .aplayer-author {
+  pointer-events: auto !important;
+  /* 恢复歌名区域的点击功能 */
+  cursor: pointer !important;
+  /* 恢复点击光标 */
+}
+
+/* 保留播放按钮区域的点击功能 */
+html body #nav-music .aplayer .aplayer-pic,
+html body #nav-music .aplayer .aplayer-pic .aplayer-button {
+  pointer-events: auto !important;
+  /* 恢复播放按钮的点击功能 */
+  cursor: pointer !important;
+  /* 恢复点击光标 */
+}
+
+/* 动态背景色变量 */
+:root {
+  --music-dynamic-background: var(--card-bg);
+}
+
+/* 隐藏音乐播放器加载图标及相关元素 */
+#nav-music .aplayer .aplayer-info .aplayer-controller .aplayer-loading-icon,
+#nav-music
+  .aplayer.aplayer-loading
+  .aplayer-info
+  .aplayer-controller
+  .aplayer-loading-icon,
+#nav-music .aplayer .aplayer-loading-icon,
+#nav-music .aplayer.aplayer-loading .aplayer-loading-icon {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+/* 确保在任何状态下都隐藏加载图标 */
+.aplayer .aplayer-loading-icon,
+.aplayer.aplayer-loading .aplayer-loading-icon,
+.aplayer .aplayer-info .aplayer-controller .aplayer-loading-icon,
+.aplayer.aplayer-loading
+  .aplayer-info
+  .aplayer-controller
+  .aplayer-loading-icon {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+/* 隐藏加载图标的SVG元素 */
+.aplayer .aplayer-loading-icon svg,
+.aplayer.aplayer-loading .aplayer-loading-icon svg,
+#nav-music .aplayer .aplayer-loading-icon svg,
+#nav-music .aplayer.aplayer-loading .aplayer-loading-icon svg {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+/* 移除加载状态下的特殊样式 */
+.aplayer.aplayer-loading
+  .aplayer-info
+  .aplayer-controller
+  .aplayer-bar-wrap
+  .aplayer-bar
+  .aplayer-played
+  .aplayer-thumb,
+#nav-music
+  .aplayer.aplayer-loading
+  .aplayer-info
+  .aplayer-controller
+  .aplayer-bar-wrap
+  .aplayer-bar
+  .aplayer-played
+  .aplayer-thumb {
+  transform: scale(0) !important;
+}
+
+/* 隐藏所有可能的加载相关元素 */
+.aplayer *[class*="loading"],
+.aplayer *[class*="spinner"],
+.aplayer *[class*="rotate"],
+#nav-music .aplayer *[class*="loading"],
+#nav-music .aplayer *[class*="spinner"],
+#nav-music .aplayer *[class*="rotate"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+/* 隐藏可能的圆形加载背景 */
+.aplayer .aplayer-loading-icon::before,
+.aplayer .aplayer-loading-icon::after,
+#nav-music .aplayer .aplayer-loading-icon::before,
+#nav-music .aplayer .aplayer-loading-icon::after {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+} /* 歌词文本
+溢出处理 - 使用省略号 */
+.aplayer-lrc p,
+#nav-music .aplayer-lrc p,
+html body #nav-music .aplayer-lrc p {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* 确保歌词容器也有正确的溢出处理 */
+.aplayer-lrc,
+#nav-music .aplayer-lrc,
+html body #nav-music .aplayer-lrc {
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+/* 移动端歌词溢出处理 */
+@media screen and (max-width: 768px) {
+  .aplayer-lrc p,
+  #nav-music .aplayer-lrc p {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 100% !important;
+  }
+}
+
+/* 展开播放状态 - 移除动态边框和阴影 */
+#nav-music.stretch.playing .aplayer {
+  border: none !important;
+  box-shadow: none !important;
+  transition: background 0.5s ease !important;
+}

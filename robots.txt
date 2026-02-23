@@ -1,0 +1,14 @@
+# Robots.txt for lpblog.dpdns.org
+# Note: Content-signal directive is automatically added by Cloudflare
+# and is not a standard robots.txt directive. It can be safely ignored.
+
+User-agent: *
+Allow: /
+Disallow: /go.html
+Disallow: /js/
+Disallow: /css/
+Disallow: /img/
+
+# Sitemap
+Sitemap: https://lpblog.dpdns.org/sitemap.xml
+Sitemap: https://lpblog.dpdns.org/baidusitemap.xml

@@ -1,0 +1,45 @@
+/* 字体加载优化 */
+
+/* 预加载关键字体 */
+@font-face {
+  font-family: "qweather-icons";
+  src: url("https://cdn.jsdelivr.net/npm/hexo-butterfly-clock-anzhiyu@1.0.0/lib/fonts/qweather-icons.woff2") format("woff2");
+  font-display: swap;
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* FontAwesome 图标优化 */
+.fas, .far, .fab, .fa {
+  font-display: swap;
+}
+
+/* 避免字体加载时的布局偏移 */
+.card-clock-weather,
+.card-clock-location,
+.card-clock-windDir {
+  font-family: "qweather-icons", "FontAwesome", sans-serif;
+  font-display: swap;
+}
+
+/* 防止content_script错误的样式 */
+body {
+  position: relative;
+}
+
+/* 优化图标加载 */
+i[class*="fa-"]::before {
+  font-display: swap;
+}
+
+/* 减少重绘重排 */
+.main-hero-waves-area {
+  will-change: transform;
+  contain: layout style paint;
+}
+
+/* 优化动画性能 */
+.parallax > use {
+  will-change: transform;
+  transform: translateZ(0);
+}
