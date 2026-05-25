@@ -11,9 +11,7 @@
       /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
         navigator.userAgent
       ) ||
-      window.innerWidth <= 768 ||
-      "ontouchstart" in window ||
-      navigator.maxTouchPoints > 0
+      window.innerWidth <= 768
     );
   }
 

@@ -25,12 +25,18 @@
     const currentIndex = aplayer.list.index;
 
     const title = isTrad ? "所有歌曲" : "所有歌曲";
+    const searchPlaceholder = isTrad ? "搜尋歌曲或歌手..." : "搜索歌曲或歌手...";
 
     const modalHTML = `
       <div class="music-modal-overlay" id="musicModalOverlay">
         <div class="music-modal">
           <div class="music-modal-header">
             <h3>${title}</h3>
+            <div class="music-modal-search-container">
+              <i class="fa fa-search search-icon"></i>
+              <input type="text" id="musicModalSearchInput" placeholder="${searchPlaceholder}" />
+              <i class="fa fa-times-circle search-clear-icon" id="musicModalSearchClear" style="display: none;"></i>
+            </div>
             <button class="music-modal-close" id="musicModalClose">
               <i class="fa fa-times"></i>
             </button>
@@ -59,8 +65,45 @@
     // 使用事件委托绑定事件
     bindModalEventsWithDelegation(aplayer);
 
-    // 分批渲染歌曲列表
-    renderSongsInBatches(songs, currentIndex, aplayer);
+    // 映射带有原始索引的歌曲列表，用于搜索与播放完美定位
+    const songsWithIndex = songs.map((song, idx) => ({
+      ...song,
+      originalIndex: idx
+    }));
+
+    // 绑定搜索输入与清空事件
+    const searchInput = document.getElementById("musicModalSearchInput");
+    const searchClear = document.getElementById("musicModalSearchClear");
+
+    if (searchInput) {
+      searchInput.addEventListener("input", function (e) {
+        const keyword = e.target.value.trim().toLowerCase();
+        if (keyword) {
+          if (searchClear) searchClear.style.display = "block";
+          const filteredSongs = songsWithIndex.filter(song => {
+            const songName = (song.name || song.title || "").toLowerCase();
+            const songArtist = (song.artist || song.author || "").toLowerCase();
+            return songName.includes(keyword) || songArtist.includes(keyword);
+          });
+          renderSongsInBatches(filteredSongs, currentIndex, aplayer);
+        } else {
+          if (searchClear) searchClear.style.display = "none";
+          renderSongsInBatches(songsWithIndex, currentIndex, aplayer);
+        }
+      });
+    }
+
+    if (searchClear) {
+      searchClear.addEventListener("click", function () {
+        searchInput.value = "";
+        searchClear.style.display = "none";
+        renderSongsInBatches(songsWithIndex, currentIndex, aplayer);
+        searchInput.focus();
+      });
+    }
+
+    // 初始渲染全部歌曲
+    renderSongsInBatches(songsWithIndex, currentIndex, aplayer);
   }
 
   // 禁用背景滚动
@@ -88,15 +131,16 @@
 
   // 创建歌曲项 DOM（优化版，避免 innerHTML）
   function createSongItem(song, index, currentIndex, aplayer) {
-    const isActive = index === currentIndex;
+    const originalIndex = song.originalIndex !== undefined ? song.originalIndex : index;
+    const isActive = originalIndex === currentIndex;
     const isPlaying = isActive && !aplayer.paused;
 
     const songItem = document.createElement("div");
     songItem.className = `song-item ${isActive ? "active" : ""}`;
-    songItem.setAttribute("data-index", index);
+    songItem.setAttribute("data-index", originalIndex);
     songItem.style.cssText = `position: absolute; top: ${
       index * 80
-    }px; width: 100%; box-sizing: border-box;`;
+    }px; left: 0; right: 0; box-sizing: border-box;`;
 
     // 封面
     const coverDiv = document.createElement("div");
@@ -144,6 +188,9 @@
   function renderSongsInBatches(songs, currentIndex, aplayer) {
     const container = document.getElementById("musicModalBody");
     if (!container) return;
+
+    // 每次重新过滤渲染时需清空容器
+    container.textContent = "";
 
     const itemHeight = 80;
     const bufferSize = 5;
@@ -201,18 +248,21 @@
       });
     }
 
-    // 滚动事件处理（优化节流）
-    container.addEventListener(
-      "scroll",
-      () => {
-        if (scrollTimeout) return;
-        scrollTimeout = setTimeout(() => {
-          renderVisibleItems();
-          scrollTimeout = null;
-        }, 16);
-      },
-      { passive: true }
-    );
+    // 清除上一次的滚动监听器以避免重复绑定
+    if (container._scrollHandler) {
+      container.removeEventListener("scroll", container._scrollHandler);
+    }
+
+    const scrollHandler = () => {
+      if (scrollTimeout) return;
+      scrollTimeout = setTimeout(() => {
+        renderVisibleItems();
+        scrollTimeout = null;
+      }, 16);
+    };
+
+    container._scrollHandler = scrollHandler;
+    container.addEventListener("scroll", scrollHandler, { passive: true });
 
     // 初始渲染
     renderVisibleItems();
@@ -271,8 +321,9 @@
           color: #ffffff;
         }
         [data-theme="dark"] .music-modal-body::-webkit-scrollbar-thumb:hover {
-          background: #525252;
-          background-clip: content-box;
+          background: #525252 !important;
+          border: 1px solid transparent !important;
+          background-clip: content-box !important;
         }
         [data-theme="dark"] .song-item.active {
           background: #3C3C3C;
@@ -305,6 +356,59 @@
           margin: 0;
           font-size: 18px;
           color: var(--font-color);
+          flex-shrink: 0;
+        }
+        .music-modal-search-container {
+          position: relative;
+          flex: 1;
+          max-width: 180px;
+          margin: 0 auto;
+          display: flex;
+          align-items: center;
+        }
+        .music-modal-search-container input {
+          width: 100%;
+          padding: 6px 32px 6px 30px;
+          border-radius: 20px;
+          border: 1px solid rgba(128, 128, 128, 0.2);
+          background: rgba(255, 255, 255, 0.5);
+          font-size: 13px;
+          color: var(--font-color);
+          outline: none;
+          transition: all 0.25s ease;
+        }
+        .music-modal-search-container input:focus {
+          border-color: #3D9DF2;
+          background: rgba(255, 255, 255, 0.9);
+        }
+        [data-theme="dark"] .music-modal-search-container input {
+          background: rgba(50, 50, 50, 0.5);
+          border-color: rgba(255, 255, 255, 0.1);
+        }
+        [data-theme="dark"] .music-modal-search-container input:focus {
+          background: rgba(50, 50, 50, 0.8);
+          border-color: #3D9DF2;
+        }
+        .music-modal-search-container .search-icon {
+          position: absolute;
+          left: 10px;
+          font-size: 13px;
+          color: var(--font-color);
+          opacity: 0.5;
+          pointer-events: none;
+        }
+        .music-modal-search-container .search-clear-icon {
+          position: absolute;
+          right: 10px;
+          font-size: 14px;
+          color: var(--font-color);
+          opacity: 0.5;
+          cursor: pointer;
+          transition: opacity 0.2s, color 0.2s;
+        }
+        .music-modal-search-container .search-clear-icon:hover {
+          opacity: 0.8;
+          color: #ff6b6b;
         }
         .music-modal-close {
           background: none;
@@ -320,26 +424,30 @@
           color: #3D9DF2;
         }
         .music-modal-body {
-          padding: 10px 0 10px 10px;
+          padding: 10px;
           overflow-y: auto;
           overflow-x: hidden;
           flex: 1;
         }
         .music-modal-body::-webkit-scrollbar {
-          width: 10px !important;
+          width: 8px !important;
         }
         .music-modal-body::-webkit-scrollbar-track {
-          background: transparent !important;
+          background: rgba(128, 128, 128, 0.1) !important;
+          border-radius: 10px !important;
+          border: 1px solid transparent !important;
+          background-clip: content-box !important;
           margin: 8px 0;
         }
         .music-modal-body::-webkit-scrollbar-thumb {
           background: rgba(128, 128, 128, 0.3) !important;
-          border-radius: 5px !important;
-          border: 2px solid transparent !important;
+          border-radius: 10px !important;
+          border: 1px solid transparent !important;
           background-clip: content-box !important;
         }
         .music-modal-body::-webkit-scrollbar-thumb:hover {
           background: rgba(128, 128, 128, 0.5) !important;
+          border: 1px solid transparent !important;
           background-clip: content-box !important;
         }
         .song-item {

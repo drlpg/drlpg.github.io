@@ -8,9 +8,9 @@
   --clock-margin: 8px;
 
   /* 自定义字体变量 */
-  --clock-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+  --clock-font-family: "Plus Jakarta Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     "Helvetica Neue", Lato, Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
-  --clock-time-font-family: "SF Mono", "Monaco", "Menlo", "Consolas",
+  --clock-time-font-family: "Plus Jakarta Sans", "SF Mono", "Monaco", "Menlo", "Consolas",
     "Liberation Mono", "Courier New", monospace;
 }
 

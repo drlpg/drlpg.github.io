@@ -5,9 +5,7 @@
   // 检测是否为移动设备
   function isMobileDevice() {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-           window.innerWidth <= 768 ||
-           ('ontouchstart' in window) ||
-           (navigator.maxTouchPoints > 0);
+           window.innerWidth <= 768;
   }
 
   // 仅在移动端执行
