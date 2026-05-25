@@ -119,7 +119,7 @@
     detectApple()
   
     })()
-  </script><script defer="" src="https://umami.lpblog.dpdns.org/recorder.js" data-website-id="89ff2227-f709-42ef-81ed-0d5fea4b1542" data-sample-rate="0.15" data-mask-level="moderate" data-max-duration="300000"></script><script>window.GLOBAL_CONFIG = {
+  </script><script defer="" src="https://umami.lpblog.dpdns.org/recorder.js" data-website-id="89ff2227-f709-42ef-81ed-0d5fea4b1542" data-mask-level="moderate" data-max-duration="300000"></script><script>window.GLOBAL_CONFIG = {
   root: '/',
   algolia: undefined,
   localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
@@ -235,7 +235,7 @@
     bottom: -80px;
     right: -80px;
   }
-}</style><!-- hexo injector head_end start --><link rel="stylesheet" href="/css/categorybar.css"><link rel="stylesheet" href="/css/clock-custom.css?v=20250914"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 8.1.2">
+}</style><!-- hexo injector head_end start --><link rel="stylesheet" href="/css/clock-custom.css?v=20250914"><link rel="stylesheet" href="/css/categorybar.css"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 8.1.2">
     <script>
       window.APLAYER_BREATHING_LIGHT = true;
     </script>
@@ -785,30 +785,6 @@ if (true) {
     }
   })
 })()</script><script async="" data-pjax="" src="/js/blog-stats-loader.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"></div></div><hr><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div><script defer="" src="/js/bilibili-bg.js"></script><script src="/js/mobile-gradient-bg.js"></script></div><div id="nav-music"><div id="nav-music-hoverTips" onclick="anzhiyu.musicToggle()" title="播放"><i class="fa-solid fa-play music-icon-large"></i></div><meting-js id="13156541985" server="netease" type="playlist" mutex="true" preload="none" theme="var(--anzhiyu-main)" data-lrctype="0" order="list"></meting-js></div><!-- hexo injector body_end start --><script data-pjax="">
-    function butterfly_categories_card_injector_config(){
-      var parent_div_git = document.getElementById('recent-posts');
-      var item_html = '<div id="categoryBar"><ul class="categoryBar-list"><li class="categoryBar-list-item" style="background:url();"><a class="categoryBar-list-link" href="/categories/" data-pjax-state="">分类</a><span class="categoryBar-list-count">1</span><span class="categoryBar-list-descr">分类</span></li><li class="categoryBar-list-item" style="background:url();"><a class="categoryBar-list-link" href="/tags/" data-pjax-state="">标签</a><span class="categoryBar-list-count">1</span><span class="categoryBar-list-descr">标签</span></li><li class="categoryBar-list-item" style="background:url();"><a class="categoryBar-list-link" href="/archives/" data-pjax-state="">归档</a><span class="categoryBar-list-count">1</span><span class="categoryBar-list-descr">归档</span></li></ul></div>';
-      parent_div_git.insertAdjacentHTML("afterbegin",item_html)
-      
-      // 手动为动态插入的链接添加点击事件
-      if (typeof Pjax !== 'undefined') {
-        document.querySelectorAll('.categoryBar-list-link').forEach(function(link) {
-          link.addEventListener('click', function(e) {
-            e.preventDefault();
-            var url = this.getAttribute('href');
-            if (window.pjax) {
-              window.pjax.loadUrl(url);
-            } else {
-              window.location.href = url;
-            }
-          });
-        });
-      }
-    }
-    if(document.getElementById('recent-posts') && (location.pathname ==='/' || '/' ==='all')){
-      butterfly_categories_card_injector_config()
-    }
-  </script><script data-pjax="">
   function butterfly_clock_anzhiyu_injector_config(){
     var parent_div_git = document.getElementsByClassName('sticky_layout')[0];
     var item_html = '<div class="card-widget card-clock"><div class="card-glass"><div class="card-background"><div class="card-content"><div id="hexo_electric_clock"><div class="clock-loading" id="card-clock-loading" style="display: flex; align-items: center; justify-content: center; background: transparent; padding: 10px 0;"><div style="text-align: center; background: transparent;"><div style="font-size: 14px; opacity: 0.7; background: transparent;">正在加载天气数据...</div></div></div></div></div></div></div></div>';
@@ -839,4 +815,28 @@ if (true) {
   else if (epage === cpage){
     butterfly_clock_anzhiyu_injector_config();
   }
-  </script><script src="https://nx6yvwhdc7.re.qweatherapi.com/v7/weather/now"></script><script data-pjax="" src="/js/clock-fix.js?v=20250914"></script><!-- hexo injector body_end end --></body></html>
+  </script><script src="https://nx6yvwhdc7.re.qweatherapi.com/v7/weather/now"></script><script data-pjax="" src="/js/clock-fix.js?v=20250914"></script><script data-pjax="">
+    function butterfly_categories_card_injector_config(){
+      var parent_div_git = document.getElementById('recent-posts');
+      var item_html = '<div id="categoryBar"><ul class="categoryBar-list"><li class="categoryBar-list-item" style="background:url();"><a class="categoryBar-list-link" href="/categories/" data-pjax-state="">分类</a><span class="categoryBar-list-count">1</span><span class="categoryBar-list-descr">分类</span></li><li class="categoryBar-list-item" style="background:url();"><a class="categoryBar-list-link" href="/tags/" data-pjax-state="">标签</a><span class="categoryBar-list-count">1</span><span class="categoryBar-list-descr">标签</span></li><li class="categoryBar-list-item" style="background:url();"><a class="categoryBar-list-link" href="/archives/" data-pjax-state="">归档</a><span class="categoryBar-list-count">1</span><span class="categoryBar-list-descr">归档</span></li></ul></div>';
+      parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+      
+      // 手动为动态插入的链接添加点击事件
+      if (typeof Pjax !== 'undefined') {
+        document.querySelectorAll('.categoryBar-list-link').forEach(function(link) {
+          link.addEventListener('click', function(e) {
+            e.preventDefault();
+            var url = this.getAttribute('href');
+            if (window.pjax) {
+              window.pjax.loadUrl(url);
+            } else {
+              window.location.href = url;
+            }
+          });
+        });
+      }
+    }
+    if(document.getElementById('recent-posts') && (location.pathname ==='/' || '/' ==='all')){
+      butterfly_categories_card_injector_config()
+    }
+  </script><!-- hexo injector body_end end --></body></html>
