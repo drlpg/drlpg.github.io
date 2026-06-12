@@ -1,0 +1,61 @@
+ .windmill {
+     display: flex;
+     align-items: center;
+     justify-content: center;
+}
+
+svg.windmill {
+  overflow: visible;
+}
+svg .blades.windmill {
+  transform-box: fill-box;
+  transform-origin: center;
+  -webkit-animation: rotate 3s infinite linear;
+          animation: rotate 3s infinite linear;
+}
+svg .clouds.windmill path:nth-child(1) {
+  -webkit-animation: move 3.5s infinite linear;
+          animation: move 3.5s infinite linear;
+}
+svg .clouds path:nth-child(2) {
+  -webkit-animation: move 4s infinite linear;
+          animation: move 4s infinite linear;
+}
+@-webkit-keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(-359deg);
+  }
+}
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(-359deg);
+  }
+}
+@-webkit-keyframes move {
+  0% {
+    transform: translateX(0px);
+  }
+  25% {
+    transform: translateX(-30px);
+  }
+  75% {
+    transform: translateX(30px);
+  }
+}
+@keyframes move {
+  0% {
+    transform: translateX(0px);
+  }
+  25% {
+    transform: translateX(-30px);
+  }
+  75% {
+    transform: translateX(30px);
+  }
+}

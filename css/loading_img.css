@@ -1,0 +1,46 @@
+/* 加载动画图片样式 */
+.loading-img {
+  background: url("/img/loading_img.png") no-repeat center center;
+  background-size: cover;
+}
+
+/* 加载动画容器优化 */
+#loading-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  max-width: 100vw;
+  overflow: hidden;
+}
+
+.loading-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  max-width: 100vw;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 防止加载动画导致横向滚动 */
+.loading-bg,
+#loading-box,
+.loading-img {
+  box-sizing: border-box;
+}
+
+/* 确保加载动画在所有设备上都不会超出 */
+@supports (-webkit-touch-callout: none) {
+  /* iOS Safari 专用 */
+  .loading-bg,
+  #loading-box {
+    -webkit-overflow-scrolling: touch;
+    overflow-x: hidden;
+  }
+}

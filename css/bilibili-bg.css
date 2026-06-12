@@ -1,0 +1,99 @@
+/* 哔哩哔哩动态背景样式 */
+#bilibili-bg-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  overflow: hidden;
+  /* 性能优化：启用GPU加速和布局隔离 */
+  transform: translateZ(0);
+  will-change: transform;
+  contain: layout style paint;
+}
+
+/* 加载指示器 - 白色three-dots动画（等比例缩小40%） */
+#bilibili-bg-container::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.6);
+  width: min(120px, 30vw);
+  height: min(30px, 7.5vw);
+  background-image: url("/img/loaders/three-dots.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  filter: brightness(0) invert(1);
+  z-index: 10;
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+}
+
+/* 移动端优化 */
+@media (max-width: 768px) {
+  #bilibili-bg-container::before {
+    width: min(80px, 25vw);
+    height: min(20px, 6.25vw);
+  }
+}
+
+/* 加载完成后隐藏加载器 */
+#bilibili-bg-container.loaded::before {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* 显示内容区域 */
+#bilibili-display {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease-out;
+  /* 性能优化：启用GPU加速 */
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+#bilibili-bg-container.loaded #bilibili-display {
+  opacity: 1;
+  visibility: visible;
+  will-change: auto;
+}
+
+#bilibili-display {
+  position: absolute;
+  image-rendering: auto;
+  /* 尺寸和位置由JS动态设置 */
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* 确保其他header内容在背景之上 */
+#page-header.full_page #site-info,
+#page-header.full_page #scroll-down,
+#page-header.full_page nav {
+  position: relative;
+  z-index: 1;
+}
+
+/* 加载期间保持静态背景可滚动 */
+#page-header.full_page.bilibili-loading {
+  background-attachment: scroll !important;
+}
+
+/* 加载完成后隐藏静态背景 */
+#page-header.full_page.bilibili-loaded {
+  background-image: none !important;
+  background-color: transparent !important;
+}
+
+#page-header.full_page.bilibili-loaded::before {
+  display: none !important;
+}
