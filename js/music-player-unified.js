@@ -478,47 +478,51 @@
 
   // ==================== 功能模块：滚动隐藏（桌面端） ====================
   function setupScrollHide() {
-    if (window.innerWidth <= 1200) return;
+    if (window.innerWidth <= 768) return; // 仅在移动端（768px及以下）隐藏播放器
 
     // 防止重复绑定滚动事件
     if (window.musicPlayerScrollBound) return;
     window.musicPlayerScrollBound = true;
 
-    let isPlayerHidden = true;
-    const player = document.querySelector("#nav-music");
-    if (!player) return;
-
-    player.style.transition = "left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
-    player.style.willChange = "left";
-
     function handlePlayerScroll() {
+      const player = document.querySelector("#nav-music");
+      if (!player) return;
+
       const scrollTop =
         window.pageYOffset || document.documentElement.scrollTop;
       const windowHeight = window.innerHeight;
       const documentHeight = document.documentElement.scrollHeight;
       const distanceToBottom = documentHeight - (scrollTop + windowHeight);
 
+      // 在最顶部（scrollTop === 0）或接近页脚时隐藏播放器，在页面中间时显示
       if (scrollTop === 0 || distanceToBottom <= 100) {
-        if (!isPlayerHidden) {
+        if (player.style.left !== "-100%") {
           player.style.transition =
             "left 0.4s cubic-bezier(0.55, 0.085, 0.68, 0.53)";
           player.style.left = "-100%";
-          isPlayerHidden = true;
         }
       } else {
-        if (isPlayerHidden) {
+        if (player.style.left !== "20px") {
           player.style.transition =
             "left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
           player.style.left = "20px";
-          isPlayerHidden = false;
         }
       }
     }
 
+    // 初始化时执行一次，设定初始显示状态
+    handlePlayerScroll();
+
     window.addEventListener("scroll", handlePlayerScroll, { passive: true });
 
     document.addEventListener("pjax:complete", () => {
-      isPlayerHidden = true;
+      // PJAX 切换后重置过渡动画和位置状态（新页面处于顶部，需隐藏）
+      const player = document.querySelector("#nav-music");
+      if (player) {
+        player.style.transition = "none";
+        player.style.left = "-100%";
+      }
+      setTimeout(handlePlayerScroll, 100);
     });
   }
 
