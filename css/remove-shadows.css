@@ -1,0 +1,378 @@
+/* 移除阴影并添加边框和悬停效果 - 精确版本 */
+
+/* 重新定义CSS变量，只影响卡片阴影 */
+:root {
+    --card-box-shadow: none !important;
+    --card-hover-box-shadow: none !important;
+    --border-color: #E3E8F7;
+    --hover-border-color: #3D9DF2;
+    --hover-shadow-color: rgba(61, 157, 242, 0.2);
+}
+
+/* 首页文章卡片 - 移除阴影，添加边框和悬停效果 */
+.recent-post-item {
+    border: 1px solid var(--border-color) !important;
+    transition: all 0.3s ease !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+}
+
+.recent-post-item:hover {
+    border-color: var(--hover-border-color) !important;
+    box-shadow: 0 4px 12px var(--hover-shadow-color) !important;
+    -webkit-box-shadow: 0 4px 12px var(--hover-shadow-color) !important;
+    -moz-box-shadow: 0 4px 12px var(--hover-shadow-color) !important;
+}
+
+/* 侧边栏卡片 - 只添加边框，移除阴影 */
+.card-widget {
+    border: 1px solid var(--border-color) !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+}
+
+/* 文章详情页内容区域 - 添加边框，移除阴影 */
+#post {
+    border: 1px solid var(--border-color) !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+}
+
+/* 版权卡片 - 移除阴影和悬停效果 */
+.post-copyright {
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+    animation: none !important;
+}
+
+.post-copyright:hover {
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+    animation: none !important;
+}
+
+/* 其他页面的主内容区域 - 添加边框，移除阴影 */
+body:not(.index) .layout > div:first-child:not(.nc) {
+    border: 1px solid var(--border-color) !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+}
+
+/* 修改分页按钮颜色为悬停颜色 */
+.pagination .page-number.current {
+    background-color: var(--hover-border-color) !important;
+    border-color: var(--hover-border-color) !important;
+}
+
+/* 深色模式下的分页按钮颜色修改为灰色 */
+[data-theme="dark"] .pagination .page-number.current {
+    background-color: #787878 !important;
+    border-color: #787878 !important;
+}
+
+/* 修改TOC目录激活项颜色为悬停颜色 */
+.toc-link.active {
+    background-color: var(--hover-border-color) !important;
+}
+
+/* 修改TOC目录激活项的其他可能选择器 */
+#card-toc .toc-link.active,
+.card-widget .toc-link.active {
+    background-color: var(--hover-border-color) !important;
+}
+
+/* 深色模式下的TOC目录激活项颜色修改为灰色 */
+[data-theme="dark"] .toc-link.active,
+[data-theme="dark"] #card-toc .toc-link.active,
+[data-theme="dark"] .card-widget .toc-link.active {
+    background-color: #787878 !important;
+}
+
+/* 深色模式下的边框颜色优化 */
+[data-theme="dark"] {
+    --border-color: #3D3D3F !important;
+    --hover-border-color: #787878 !important;
+    --hover-shadow-color: rgba(120, 120, 120, 0.2) !important; /* 深色模式下使用灰色阴影，20%透明度 */
+}
+
+/* 深色模式下的边框样式 */
+[data-theme="dark"] .recent-post-item {
+    border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .recent-post-item:hover {
+    border-color: var(--hover-border-color) !important;
+    box-shadow: 0 4px 12px var(--hover-shadow-color) !important;
+    -webkit-box-shadow: 0 4px 12px var(--hover-shadow-color) !important;
+    -moz-box-shadow: 0 4px 12px var(--hover-shadow-color) !important;
+}
+
+[data-theme="dark"] .card-widget {
+    border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] #post {
+    border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] body:not(.index) .layout > div:first-child:not(.nc) {
+    border-color: var(--border-color) !important;
+}
+
+/* 深色模式下的版权卡片 - 移除阴影和动画效果 */
+[data-theme="dark"] .post-copyright {
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+    animation: none !important;
+}
+
+[data-theme="dark"] .post-copyright:hover {
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+    animation: none !important;
+}
+
+/* 移除热评弹窗跳转定位的高亮背景色，仅保留定位功能 */
+/* 只针对评论区域，不影响代码块高亮 */
+
+/* Twikoo评论系统的高亮移除 */
+#twikoo *:target,
+#twikoo .tk-comment:target,
+.twikoo *:target,
+.twikoo .tk-comment:target,
+.tk-comments-container *:target,
+.tk-comments-container .tk-comment:target {
+    background-color: transparent !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+/* 其他评论系统的高亮移除 */
+.comment-item:target,
+.comment:target,
+.comment-body:target,
+#comments *:target,
+.vcomment:target,
+.vcontent:target,
+[id*="comment"]:target:not([class*="highlight"]):not(.highlight) {
+    background-color: transparent !important;
+    background: transparent !important;
+}
+
+/* 深色模式下的评论高亮移除 */
+[data-theme="dark"] #twikoo *:target,
+[data-theme="dark"] #twikoo .tk-comment:target,
+[data-theme="dark"] .twikoo *:target,
+[data-theme="dark"] .twikoo .tk-comment:target,
+[data-theme="dark"] .tk-comments-container *:target,
+[data-theme="dark"] .tk-comments-container .tk-comment:target {
+    background-color: transparent !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+[data-theme="dark"] .comment-item:target,
+[data-theme="dark"] .comment:target,
+[data-theme="dark"] .comment-body:target,
+[data-theme="dark"] #comments *:target,
+[data-theme="dark"] .vcomment:target,
+[data-theme="dark"] .vcontent:target,
+[data-theme="dark"] [id*="comment"]:target:not([class*="highlight"]):not(.highlight) {
+    background-color: transparent !important;
+    background: transparent !important;
+}
+
+/* 确保代码块高亮不受影响 - 恢复正常的代码块背景色 */
+figure.highlight,
+pre.highlight,
+.hljs,
+code[class*="language-"],
+pre[class*="language-"],
+.highlight:not(.comment-item):not(.comment):not(.tk-comment):not(.vcomment) {
+    background-color: var(--hl-bg) !important;
+    background: var(--hl-bg) !important;
+}
+
+/* 代码块内部元素 */
+.highlight table,
+.highlight pre,
+.highlight code {
+    background-color: var(--hl-bg) !important;
+}
+
+/* 深色模式下的代码块背景 */
+[data-theme="dark"] figure.highlight,
+[data-theme="dark"] pre.highlight,
+[data-theme="dark"] .hljs,
+[data-theme="dark"] code[class*="language-"],
+[data-theme="dark"] pre[class*="language-"],
+[data-theme="dark"] .highlight:not(.comment-item):not(.comment):not(.tk-comment):not(.vcomment) {
+    background-color: var(--hl-bg) !important;
+    background: var(--hl-bg) !important;
+}
+
+[data-theme="dark"] .highlight table,
+[data-theme="dark"] .highlight pre,
+[data-theme="dark"] .highlight code {
+    background-color: var(--hl-bg) !important;
+}
+
+/* 天气时钟插件 - 移除内阴影并减小外边距 */
+/* 使用更强的选择器优先级 */
+.card-background,
+#hexo_electric_clock.card-background,
+#hexo_electric_clock .card-background,
+.card-widget .card-background,
+.sticky_layout .card-background,
+div.card-background,
+body .card-background {
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+    margin: 8px !important; /* 从15px减小到8px */
+}
+
+/* 天气时钟插件容器 - 减小内边距并移除可能的阴影 */
+#hexo_electric_clock,
+div#hexo_electric_clock,
+body #hexo_electric_clock {
+    padding: 15px !important; /* 从20px减小到15px */
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+}
+
+/* 深色模式下的天气时钟插件 */
+[data-theme="dark"] .card-background,
+[data-theme="dark"] #hexo_electric_clock.card-background,
+[data-theme="dark"] #hexo_electric_clock .card-background,
+[data-theme="dark"] .card-widget .card-background,
+[data-theme="dark"] .sticky_layout .card-background,
+[data-theme="dark"] div.card-background,
+[data-theme="dark"] body .card-background {
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+    margin: 8px !important;
+}
+
+[data-theme="dark"] #hexo_electric_clock,
+[data-theme="dark"] div#hexo_electric_clock,
+[data-theme="dark"] body #hexo_electric_clock {
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+}/* 天气时
+钟插件 - 激进的阴影移除规则 */
+/* 移除所有可能包含inset阴影的元素 */
+*[class*="card-background"],
+*[id*="clock"] {
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+}
+
+/* 特别针对时钟插件的所有子元素 */
+#hexo_electric_clock *,
+#hexo_electric_clock::before,
+#hexo_electric_clock::after {
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+}
+
+/* 如果阴影是通过伪元素添加的 */
+#hexo_electric_clock::before,
+#hexo_electric_clock::after,
+.card-background::before,
+.card-background::after {
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+    content: none !important;
+}
+
+/* 深色模式下的激进规则 */
+[data-theme="dark"] *[class*="card-background"],
+[data-theme="dark"] *[id*="clock"] {
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+}
+
+[data-theme="dark"] #hexo_electric_clock *,
+[data-theme="dark"] #hexo_electric_clock::before,
+[data-theme="dark"] #hexo_electric_clock::after {
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+}/* 天气时钟插件
+ - 最高优先级的阴影移除规则 */
+/* 使用更高的特异性来覆盖外部CSS */
+html body #hexo_electric_clock.card-background,
+html body .card-background,
+html body div.card-background,
+html body .sticky_layout .card-background,
+html body .card-widget .card-background {
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+    margin: 8px !important;
+}
+
+html body #hexo_electric_clock,
+html body div#hexo_electric_clock {
+    padding: 15px !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+}
+
+/* 深色模式下的最高优先级规则 */
+html[data-theme="dark"] body #hexo_electric_clock.card-background,
+html[data-theme="dark"] body .card-background,
+html[data-theme="dark"] body div.card-background,
+html[data-theme="dark"] body .sticky_layout .card-background,
+html[data-theme="dark"] body .card-widget .card-background {
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+    margin: 8px !important;
+}
+
+html[data-theme="dark"] body #hexo_electric_clock,
+html[data-theme="dark"] body div#hexo_electric_clock {
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+}
+/* 文本
+选中颜色设置 */
+::selection {
+    background-color: #00c4b6; /* 浅色模式下的选中颜色 */
+    color: #ffffff;
+}
+
+::-moz-selection {
+    background-color: #00c4b6; /* Firefox浏览器兼容 */
+    color: #ffffff;
+}
+
+/* 深色模式下的文本选中颜色 */
+[data-theme="dark"] ::selection {
+    background-color: #787878; /* 深色模式下的选中颜色 */
+    color: #ffffff;
+}
+
+[data-theme="dark"] ::-moz-selection {
+    background-color: #787878; /* Firefox浏览器兼容 */
+    color: #ffffff;
+}

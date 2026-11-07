@@ -1,0 +1,11 @@
+# Robots.txt for blog.magisd.com
+# Note: Content-signal directive is automatically added by Cloudflare
+# and is not a standard robots.txt directive. It can be safely ignored.
+
+User-agent: *
+Allow: /
+Disallow: /go.html
+
+# Sitemap
+Sitemap: https://blog.magisd.com/sitemap.xml
+Sitemap: https://blog.magisd.com/baidusitemap.xml

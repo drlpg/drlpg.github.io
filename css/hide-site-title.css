@@ -1,0 +1,11 @@
+/* 隐藏主页头图中的网站标题 */
+#site-info #site-title {
+  display: none !important;
+}
+
+/* 如果需要隐藏整个site-info区域，可以使用下面的代码 */
+/* 
+#site-info {
+  display: none !important;
+}
+*/
