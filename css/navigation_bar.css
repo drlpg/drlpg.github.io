@@ -30,9 +30,6 @@
 }
 /* 顶部栏宽度定义 */
 
-#nav .menus_items .menus_item .menus_item_child {
-  margin-top: 14px;
-}
 #nav .menus_items .menus_item .menus_item_child li a {
   /* padding: 6px 15px; 修改这个为正常值，原0 23 */
   padding-top: 6px; /* 上方padding为 6px */
@@ -62,10 +59,59 @@ nav.show:not(.hide-menu) .menus_item_child:not(#sidebar-menus ul) {
   translate: -50%;
 }
 
-/* 添加边界和圆角 */
+/* 添加边界和圆角及顶部边距 */
 #nav .menus_items .menus_item .menus_item_child {
+  margin-top: 14px;
   padding: 7px;
   border-radius: 50px; /* 半圆胶囊形状 */
+}
+
+/* 导航栏下拉子菜单悬停胶囊滑块位移动画 */
+#nav .menus_items .menus_item .menus_item_child li {
+  position: relative;
+  z-index: 1;
+}
+
+/* 覆盖原生单独 li:hover 的跳变背景，由滑块统一负责平滑位移 */
+#nav .menus_items .menus_item .menus_item_child li:hover {
+  background: transparent !important;
+}
+
+#nav .menus_items .menus_item .menus_item_child li a {
+  position: relative;
+  z-index: 1;
+  transition: color 0.25s ease-in-out !important;
+}
+
+#nav .menus_items .menus_item .menus_item_child li:hover a {
+  color: var(--white) !important;
+}
+
+/* 胶囊滑动指示器主体 */
+#nav .menus_items .menus_item .menus_item_child .menus-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 50px;
+  background-color: var(--text-bg-hover);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+  transform: translate3d(0, 0, 0) scale(0.85);
+  transition: transform 0.28s cubic-bezier(0.25, 1, 0.5, 1),
+              width 0.28s cubic-bezier(0.25, 1, 0.5, 1),
+              height 0.28s cubic-bezier(0.25, 1, 0.5, 1),
+              opacity 0.22s cubic-bezier(0.25, 1, 0.5, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  will-change: transform, width, height, opacity;
+}
+
+#nav .menus_items .menus_item .menus_item_child .menus-indicator.active {
+  opacity: 1;
+}
+
+#nav .menus_items .menus_item .menus_item_child .menus-indicator.no-transition {
+  transition: none !important;
 }
 
 #nav #page-name {

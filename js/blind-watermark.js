@@ -8,7 +8,7 @@
 
   // 盲水印配置
   const config = {
-    text: "By Dran Blog",
+    text: "By Magi Blog",
     enabled: true,
   };
 

@@ -1356,9 +1356,13 @@
   // 原restoreCommentsState函数已移除，现在使用热评弹窗控制
   // function restoreCommentsState() { ... } - 已废弃
 
+  // 防止 PJAX 路由切换重复绑定全局事件监听
+  let isEventsBound = false;
+
   // 初始化事件监听
   function initContextMenu() {
-    // 原评论状态恢复已移除
+    if (isEventsBound) return;
+    isEventsBound = true;
 
     // 右键事件
     document.addEventListener("contextmenu", function (e) {

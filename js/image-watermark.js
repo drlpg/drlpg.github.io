@@ -8,7 +8,7 @@
 
   // 水印配置
   const watermarkConfig = {
-    text: "© Dran Blog", // 水印文字
+    text: "© Magi Blog", // 水印文字
     fontSize: 32, // 字体大小
     fontFamily: "Arial", // 字体
     color: "rgba(0, 0, 0, 0.02)", // 水印颜色

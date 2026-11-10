@@ -43,6 +43,45 @@
   color: #fff !important;
 }
 
+/* 个人主页卡片介绍文本单列排版与按钮分离（文本12px） */
+.card-info .author-info {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  width: 100% !important;
+  margin-top: 10px !important;
+}
+
+.card-info .author-info-name {
+  font-weight: 600 !important;
+  font-size: 22px !important;
+  line-height: 1.2 !important;
+  margin-bottom: 8px !important;
+  text-align: left !important;
+  width: 100% !important;
+}
+
+.card-info .author-info-description {
+  width: 100% !important;
+  font-size: 12px !important;
+  line-height: 1.6 !important;
+  text-align: left !important;
+  margin-top: 0 !important;
+  margin-bottom: 12px !important;
+  opacity: 0.95 !important;
+  word-break: break-word !important;
+}
+
+.card-info .card-info-social-icons {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  width: 100% !important;
+  gap: 12px !important;
+  margin-top: 4px !important;
+}
+
 /* 个人主页卡片社交按钮背景色 */
 .card-info-social-icons .social-icon {
   background-color: #6bd9f2 !important;

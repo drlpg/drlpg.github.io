@@ -1,7 +1,12 @@
 /* 加载动画图片样式 */
+#loading-box .loading-img,
 .loading-img {
-  background: url("/img/loading_img.png") no-repeat center center;
-  background-size: cover;
+  background-color: #ffffff !important;
+  background-image: url("/img/magi_loading.svg") !important;
+  background-repeat: no-repeat !important;
+  background-position: center center !important;
+  /* 缩小加载Logo并居中，为圆形容器四周预留适当留白 */
+  background-size: 60% !important;
 }
 
 /* 加载动画容器优化 */

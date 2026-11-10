@@ -1,0 +1,150 @@
+/* Lanyard 3D 工牌样式 */
+.lanyard-container {
+  position: relative;
+  width: 100%;
+  height: 640px;
+  min-height: 640px;
+  max-height: 85vh;
+  margin: -40px auto 0 auto;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media screen and (max-width: 768px) {
+  .lanyard-container {
+    margin-top: -36px;
+    height: 560px;
+    min-height: 560px;
+  }
+
+  /* 移动端挂绳 Logo 投影尺寸约为 21.7px，点阵动画相应自适应缩小 */
+  .lattice-loader {
+    --ll-cell: 5px;
+    --ll-gap: 3px;
+  }
+}
+
+.lanyard {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.lanyard-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  outline: none;
+}
+
+/* 3D 工牌首屏 LatticeLoader 点阵加载动画（极简纯净版：无文字/无边框胶囊，主题反白/反黑） */
+.lanyard-loader-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 2;
+  transition: opacity 0.35s ease-out, visibility 0.35s ease-out;
+}
+
+.lanyard-loader-wrapper.lanyard-loader-fade {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* 纯净点阵动画变量与主题自适应（尺寸精确对齐挂绳 Logo 投影尺寸：PC端 24px，3*6+2*3） */
+.lattice-loader {
+  --ll-n: 3;
+  --ll-cell: 6px;
+  --ll-gap: 3px;
+  --ll-color: #222222;
+  --ll-idle: 0.16;
+  --ll-peak: 0.95;
+  --ll-cycle: 864ms;
+  --ll-ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 深色模式下反白 */
+[data-theme='dark'] .lattice-loader {
+  --ll-color: #ffffff;
+  --ll-idle: 0.22;
+  --ll-peak: 1;
+}
+
+.lattice-loader__grid {
+  display: grid;
+  flex: none;
+}
+
+.lattice-loader__layer {
+  display: grid;
+  grid-template-columns: repeat(var(--ll-n), var(--ll-cell));
+  gap: var(--ll-gap);
+}
+
+.lattice-loader__cell {
+  width: var(--ll-cell);
+  height: var(--ll-cell);
+  border-radius: 50%;
+  background: var(--ll-color);
+  opacity: var(--ll-idle);
+}
+
+/* 深色模式下为点亮粒子增加纯净微光感（光晕半径随粒子缩放适配） */
+[data-theme='dark'] .lattice-loader__run .lattice-loader__cell:not([data-hole]) {
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.35);
+}
+
+.lattice-loader__run {
+  transition: opacity 200ms ease;
+}
+
+.lattice-loader__run .lattice-loader__cell {
+  animation: lattice-on var(--ll-cycle) var(--ll-ease-in-out) infinite;
+}
+
+.lattice-loader__run .lattice-loader__cell[data-hole] {
+  animation: none;
+  opacity: calc(var(--ll-idle) * 0.4);
+}
+
+@keyframes lattice-on {
+  0%,
+  100% {
+    opacity: var(--ll-idle);
+  }
+
+  18%,
+  42% {
+    opacity: var(--ll-peak);
+  }
+
+  62% {
+    opacity: var(--ll-idle);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lattice-loader__run .lattice-loader__cell {
+    animation-delay: 0ms !important;
+    animation-duration: 1400ms !important;
+  }
+}
+
+

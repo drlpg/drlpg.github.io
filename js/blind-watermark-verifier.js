@@ -498,7 +498,7 @@
           const testImageData = testCtx.getImageData(0, 0, 100, 100);
 
           // 嵌入测试水印
-          const testText = "By Dran Blog";
+          const testText = "By Magi Blog";
           const binary = testText
             .split("")
             .map((char) => char.charCodeAt(0).toString(2).padStart(8, "0"))
