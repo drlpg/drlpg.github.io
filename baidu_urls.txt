@@ -1,1 +1,2 @@
+https://blog.magisd.com/posts/hexo-actions-deploy/
 https://blog.magisd.com/posts/api/
