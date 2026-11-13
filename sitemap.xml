@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://blog.magisd.com/categories/</loc>
+    <loc>https://blog.magisd.com/copyright/</loc>
     
     <lastmod>2026-11-13</lastmod>
     
@@ -11,7 +11,7 @@
   </url>
   
   <url>
-    <loc>https://blog.magisd.com/copyright/</loc>
+    <loc>https://blog.magisd.com/categories/</loc>
     
     <lastmod>2026-11-13</lastmod>
     
@@ -83,27 +83,6 @@
 
   
   <url>
-    <loc>https://blog.magisd.com/tags/hexo/</loc>
-    <lastmod>2026-11-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://blog.magisd.com/tags/github-actions/</loc>
-    <lastmod>2026-11-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://blog.magisd.com/tags/github-pages/</loc>
-    <lastmod>2026-11-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://blog.magisd.com/tags/nginx/</loc>
     <lastmod>2026-11-13</lastmod>
     <changefreq>weekly</changefreq>
@@ -133,6 +112,27 @@
   
   <url>
     <loc>https://blog.magisd.com/tags/https/</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.magisd.com/tags/hexo/</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.magisd.com/tags/github-actions/</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.magisd.com/tags/github-pages/</loc>
     <lastmod>2026-11-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
