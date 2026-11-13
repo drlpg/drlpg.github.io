@@ -654,7 +654,7 @@ if (true) {
 </ol>
 <h2 id="413-Request-Entity-Too-Large"><a href="#413-Request-Entity-Too-Large" class="headerlink" title="413 Request Entity Too Large"></a>413 Request Entity Too Large</h2><p>请求体超过了 <code>client_max_body_size</code>，默认值只有 1m，传个稍大的文件就触发。按文件大小在 server 块里调大（上文配了 50m）。改完记得 <code>nginx -t &amp;&amp; nginx -s reload</code>；只改配置不重载是不生效的。</p>
 <h2 id="504-Gateway-Time-out"><a href="#504-Gateway-Time-out" class="headerlink" title="504 Gateway Time-out"></a>504 Gateway Time-out</h2><p>上游超过 <code>proxy_read_timeout</code> 没返回数据。先确认接口本身是不是真的慢——是的话按上文把 <code>/api/</code> 的超时放宽；如果接口平时很快、偶尔 504，优先查应用日志和数据库慢查询，不要无脑加超时。超时只是兜底，不是修慢接口的办法。</p>
-<h2 id="应用拿到的客户端-IP-不对"><a href="#应用拿到的客户端-IP-不对" class="headerlink" title="应用拿到的客户端 IP 不对"></a>应用拿到的客户端 IP 不对</h2><p>应用日志里全是 <code>127.0.0.1</code>，说明请求头没透传。检查 <code>proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</code> 是否写了；应用层要读 <code>X-Forwarded-For</code> 的第一个 IP，那才是真实客户端 IP，直接读连接来源 IP 读到的永远是 Nginx。</p>
+<h2 id="应用拿到的客户端-IP-不对"><a href="#应用拿到的客户端-IP-不对" class="headerlink" title="应用拿到的客户端 IP 不对"></a>应用拿到的客户端 IP 不对</h2><p>应用日志里全是 <code>127.0.0.1</code>，说明请求头没透传。检查 <code>proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</code> 是否写了；应用层要读 <code>X-Forwarded-For</code> 的最后一项，那才是真实客户端 IP——链上每一跳都会把自己看到的来源 IP 追加到末尾，而前面的项客户端可以随意伪造；直接读连接来源 IP 读到的永远是 Nginx。</p>
 <h2 id="改了配置，线上没变化"><a href="#改了配置，线上没变化" class="headerlink" title="改了配置，线上没变化"></a>改了配置，线上没变化</h2><p>三件套：<code>nginx -t</code> 是否通过、<code>nginx -s reload</code> 是否执行、浏览器是否走了缓存。先用 <code>curl -I</code> 绕过浏览器缓存验证，再怀疑配置。</p>
 <h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><ul>
 <li>Node 进程只监听 <code>127.0.0.1:3000</code>，公网只开 80/443，所有流量经 Nginx 进出。</li>
