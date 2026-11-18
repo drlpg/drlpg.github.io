@@ -15,6 +15,13 @@
   const FALLBACK_URL = "/js/blog-stats-fallback.js";
   const TIMEOUT = 5000; // 5秒超时
 
+  /**
+   * 异步加载外部脚本并返回 Promise，支持超时重试
+   * 
+   * @param {string} url - 脚本请求地址
+   * @param {number} [timeout=TIMEOUT] - 超时时间（毫秒）
+   * @returns {Promise<string>} 成功加载返回 URL
+   */
   function loadScript(url, timeout = TIMEOUT) {
     return new Promise((resolve, reject) => {
       const script = document.createElement("script");
@@ -43,6 +50,11 @@
     });
   }
 
+  /**
+   * 加载统计脚本主逻辑，优先加载远程主脚本，降级时加载本地 fallback 脚本
+   * 
+   * @returns {Promise<void>}
+   */
   async function loadBlogStats() {
     // 显示加载状态
     showLoadingIndicator();
@@ -87,6 +99,11 @@
     }
   }
   
+  /**
+   * 将页面上所有不蒜子计数节点设置为加载中状态（"..."）
+   * 
+   * @returns {void}
+   */
   function showLoadingIndicator() {
     // 立即显示加载指示器
     const elements = document.querySelectorAll(

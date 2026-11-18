@@ -11,7 +11,9 @@
   
   // 移动端立即修复已启用 - 静默运行
   
-  // 立即设置viewport
+  /**
+   * 立即校正并设置标准移动端 Viewport 视口 meta 标签
+   */
   function setViewportImmediate() {
     let viewport = document.querySelector('meta[name="viewport"]');
     if (!viewport) {
@@ -22,7 +24,9 @@
     viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes');
   }
   
-  // 立即确保滚动正常
+  /**
+   * 强制确保 html 和 body 在移动设备上的垂直平滑滚动与缩放还原
+   */
   function ensureScrollableImmediate() {
     if (document.documentElement) {
       document.documentElement.style.overflowY = 'auto';
@@ -35,7 +39,9 @@
     }
   }
   
-  // 立即修复rightside（如果存在）
+  /**
+   * 立即校正移动端右下角悬浮工具条 rightside 的样式与层级
+   */
   function fixRightsideImmediate() {
     const rightside = document.getElementById('rightside');
     if (rightside) {

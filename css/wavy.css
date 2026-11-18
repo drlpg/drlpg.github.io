@@ -14,7 +14,7 @@
   shape-rendering: geometricPrecision;
   transform: translateZ(0);
 }
-/* Animation - 边缘抗锯齿与微像素平滑优化 */
+/* Animation - 边缘抗锯齿与纯净矢量曲面过渡（去除生硬人工描边） */
 
 .parallax > use {
   animation: move-forever 25s cubic-bezier(0.55, 0.5, 0.45, 0.5) infinite;
@@ -22,35 +22,27 @@
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   shape-rendering: geometricPrecision;
-  vector-effect: non-scaling-stroke;
-  stroke-width: 0.8px;
-  stroke-linejoin: round;
-  stroke-linecap: round;
-  paint-order: stroke fill;
+  stroke: none !important;
 }
 .parallax > use:nth-child(1) {
   animation-delay: -2s;
   animation-duration: 7s;
   fill: #f7f9febd;
-  stroke: #f7f9febd;
 }
 .parallax > use:nth-child(2) {
   animation-delay: -3s;
   animation-duration: 10s;
   fill: #f7f9fe82;
-  stroke: #f7f9fe82;
 }
 .parallax > use:nth-child(3) {
   animation-delay: -4s;
   animation-duration: 13s;
   fill: #f7f9fe36;
-  stroke: #f7f9fe36;
 }
 .parallax > use:nth-child(4) {
   animation-delay: -5s;
   animation-duration: 20s;
   fill: #f7f9fe;
-  stroke: #f7f9fe;
 }
 
 /* 黑色模式背景 */
@@ -58,25 +50,21 @@
   animation-delay: -2s;
   animation-duration: 7s;
   fill: #18171dc8;
-  stroke: #18171dc8;
 }
 [data-theme="dark"] .parallax > use:nth-child(2) {
   animation-delay: -3s;
   animation-duration: 10s;
   fill: #18171d80;
-  stroke: #18171d80;
 }
 [data-theme="dark"] .parallax > use:nth-child(3) {
   animation-delay: -4s;
   animation-duration: 13s;
   fill: #18171d3e;
-  stroke: #18171d3e;
 }
 [data-theme="dark"] .parallax > use:nth-child(4) {
   animation-delay: -5s;
   animation-duration: 20s;
   fill: #18171d;
-  stroke: #18171d;
 }
 
 /* 防止页面切换时出现细线 */

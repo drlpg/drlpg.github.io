@@ -15,7 +15,9 @@
     debugMode: false, // 调试模式
   };
 
-  // 初始化
+  /**
+   * 初始化文章首图处理器，并在多重时延节点执行检查
+   */
   function init() {
     // 只在文章页面运行
     if (!isArticlePage()) {
@@ -31,7 +33,11 @@
     setTimeout(() => hideFirstImage(), 1000);
   }
 
-  // 检查是否为文章页面
+  /**
+   * 检查当前页面是否为文章详情页
+   * 
+   * @returns {boolean} 是否处于文章页
+   */
   function isArticlePage() {
     return (
       document.getElementById("article-container") &&
@@ -40,7 +46,11 @@
     );
   }
 
-  // 主要的首图隐藏逻辑
+  /**
+   * 执行首图查找与隐藏主逻辑，支持失败指数退避重试
+   * 
+   * @param {number} [retryCount=0] - 当前重试次数
+   */
   function hideFirstImage(retryCount = 0) {
     const article = document.getElementById("article-container");
     if (!article) {
@@ -74,13 +84,22 @@
 
   // markAllImagesAsProcessed 函数已移除（CSS备用机制已移除）
 
-  // 获取文章封面URL
+  /**
+   * 从顶部页眉 DOM 属性中读取当前文章封面地址
+   * 
+   * @returns {string|null} 封面 URL
+   */
   function getCoverUrl() {
     const header = document.getElementById("page-header");
     return header ? header.getAttribute("data-cover-img") : null;
   }
 
-  // 查找文章中的首张图片
+  /**
+   * 在文章内容 DOM 树中依优先级匹配第一张有效图片
+   * 
+   * @param {HTMLElement} article - 文章主体容器
+   * @returns {HTMLImageElement|null} 首张有效图片或 null
+   */
   function findFirstImage(article) {
     // 按优先级顺序查找首张图片
     const selectors = [
@@ -111,7 +130,12 @@
     return null;
   }
 
-  // 验证图片是否有效（不是装饰性小图标）
+  /**
+   * 校验图片是否有效（过滤已加载尺寸过小、图标、表情或装饰性图片）
+   * 
+   * @param {HTMLImageElement} img - 待检测图片元素
+   * @returns {boolean} 是否为正文有效大图
+   */
   function isValidImage(img) {
     // 检查图片是否已加载
     if (!img.complete && img.naturalWidth === 0) {
@@ -155,7 +179,12 @@
     return true;
   }
 
-  // 验证并隐藏图片
+  /**
+   * 校验图片是否与文章封面图一致，并在确认一致时执行隐藏
+   * 
+   * @param {HTMLImageElement} img - 目标图片元素
+   * @param {string|null} coverUrl - 文章封面 URL
+   */
   function validateAndHideImage(img, coverUrl) {
     // 如果图片还没加载完成，等待加载
     if (!img.complete) {
@@ -202,7 +231,11 @@
     }
   }
 
-  // 安全地隐藏图片
+  /**
+   * 安全隐藏指定图片元素及其独占的空段落父容器
+   * 
+   * @param {HTMLImageElement} img - 待隐藏的图片元素
+   */
   function hideImageSafely(img) {
     try {
       // 标记图片已被处理，避免重复处理
@@ -237,7 +270,11 @@
     }
   }
 
-  // 恢复隐藏的图片（调试用）
+  /**
+   * 恢复所有被隐藏的图片和元素（调试与排错使用）
+   * 
+   * @returns {string} 操作结果描述
+   */
   function restoreHiddenImages() {
     const hiddenImages = document.querySelectorAll(
       '[data-first-image-hidden="true"]'
@@ -258,7 +295,11 @@
     return `已恢复 ${hiddenImages.length} 个隐藏的元素`;
   }
 
-  // 获取隐藏状态信息
+  /**
+   * 获取当前页面首图处理诊断状态
+   * 
+   * @returns {object} 诊断信息对象
+   */
   function getHideStatus() {
     const article = document.getElementById("article-container");
     if (!article) {
@@ -282,7 +323,11 @@
     };
   }
 
-  // 手动触发首图隐藏
+  /**
+   * 手动重新触发一次首图隐藏判断（控制台调用）
+   * 
+   * @returns {string} 执行反馈
+   */
   function manualHide() {
     if (!isArticlePage()) {
       return "当前页面不是文章页";

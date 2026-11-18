@@ -2,6 +2,42 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://blog.magisd.com/categories/</loc>
+    
+    <lastmod>2026-11-18</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.magisd.com/copyright/</loc>
+    
+    <lastmod>2026-11-18</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.magisd.com/privacy/</loc>
+    
+    <lastmod>2026-11-18</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.magisd.com/tags/</loc>
+    
+    <lastmod>2026-11-18</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://blog.magisd.com/posts/docker-multistage-nextjs-image/</loc>
     
     <lastmod>2026-11-16</lastmod>
@@ -46,42 +82,6 @@
     <priority>0.6</priority>
   </url>
   
-  <url>
-    <loc>https://blog.magisd.com/copyright/</loc>
-    
-    <lastmod>2025-07-30</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://blog.magisd.com/privacy/</loc>
-    
-    <lastmod>2025-07-30</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://blog.magisd.com/categories/</loc>
-    
-    <lastmod>2024-12-30</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://blog.magisd.com/tags/</loc>
-    
-    <lastmod>2024-12-30</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
 
   <url>
     <loc>https://blog.magisd.com/</loc>
@@ -92,7 +92,7 @@
 
   
   <url>
-    <loc>https://blog.magisd.com/tags/nginx/</loc>
+    <loc>https://blog.magisd.com/tags/docker/</loc>
     <lastmod>2026-11-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -106,34 +106,6 @@
   </url>
   
   <url>
-    <loc>https://blog.magisd.com/tags/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/</loc>
-    <lastmod>2026-11-18</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://blog.magisd.com/tags/%E9%83%A8%E7%BD%B2/</loc>
-    <lastmod>2026-11-18</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://blog.magisd.com/tags/https/</loc>
-    <lastmod>2026-11-18</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://blog.magisd.com/tags/docker/</loc>
-    <lastmod>2026-11-18</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://blog.magisd.com/tags/%E9%95%9C%E5%83%8F%E4%BC%98%E5%8C%96/</loc>
     <lastmod>2026-11-18</lastmod>
     <changefreq>weekly</changefreq>
@@ -141,7 +113,7 @@
   </url>
   
   <url>
-    <loc>https://blog.magisd.com/tags/api/</loc>
+    <loc>https://blog.magisd.com/tags/%E9%83%A8%E7%BD%B2/</loc>
     <lastmod>2026-11-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -163,6 +135,34 @@
   
   <url>
     <loc>https://blog.magisd.com/tags/github-pages/</loc>
+    <lastmod>2026-11-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.magisd.com/tags/api/</loc>
+    <lastmod>2026-11-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.magisd.com/tags/nginx/</loc>
+    <lastmod>2026-11-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.magisd.com/tags/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/</loc>
+    <lastmod>2026-11-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.magisd.com/tags/https/</loc>
     <lastmod>2026-11-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>

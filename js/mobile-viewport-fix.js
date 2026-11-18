@@ -11,7 +11,13 @@
   let vh = window.innerHeight * 0.01;
   document.documentElement.style.setProperty('--vh', `${vh}px`);
   
-  // 防抖函数
+  /**
+   * 通用高频事件防抖包装函数
+   * 
+   * @param {Function} func - 目标函数
+   * @param {number} wait - 防抖等待时间（毫秒）
+   * @returns {Function} 防抖包装后的函数
+   */
   function debounce(func, wait) {
     let timeout;
     return function executedFunction(...args) {
@@ -24,13 +30,17 @@
     };
   }
   
-  // 更新viewport高度
+  /**
+   * 动态计算并更新 CSS 变量 --vh，修复移动端地址栏伸缩导致的 100vh 高度跳动问题
+   */
   function updateVH() {
     const newVh = window.innerHeight * 0.01;
     document.documentElement.style.setProperty('--vh', `${newVh}px`);
   }
   
-  // 防止下拉刷新导致的页面高度异常
+  /**
+   * 重置 #body-wrap 最小高度，防止移动端下拉回弹刷新后页面高度异常
+   */
   function preventPullRefreshIssues() {
     const bodyWrap = document.getElementById('body-wrap');
     if (bodyWrap) {

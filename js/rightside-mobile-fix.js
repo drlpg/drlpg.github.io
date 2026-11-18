@@ -16,7 +16,9 @@
   }
   window.rightsideMobileFixInitialized = true;
   
-  // 修复rightside按钮定位问题
+  /**
+   * 修复移动端右侧边栏悬浮按钮的定位与硬件加速渲染
+   */
   function fixRightsidePosition() {
     const rightside = document.getElementById('rightside');
     if (!rightside) return;
@@ -27,7 +29,9 @@
     // 不干扰主题的显示/隐藏逻辑，只确保基础定位正确
   }
   
-  // 确保页面滚动正常
+  /**
+   * 确保移动端根节点滚动流畅，防止误锁滚动高度
+   */
   function ensureScrollable() {
     document.documentElement.style.overflowY = 'auto';
     document.body.style.overflowY = 'auto';
@@ -36,11 +40,14 @@
     // 移除可能阻止滚动的样式
     document.documentElement.style.height = '';
     document.body.style.height = '';
-    
-    // 页面滚动已确保正常
   }
   
-  // 等待rightside元素出现
+  /**
+   * 轮询或观察等待 #rightside 元素渲染挂载到 DOM
+   * 
+   * @param {Function} callback - 挂载后的回调处理函数
+   * @param {number} [maxAttempts=50] - 最大轮询重试次数
+   */
   function waitForRightside(callback, maxAttempts = 50) {
     let attempts = 0;
     
@@ -78,7 +85,9 @@
     check();
   }
   
-  // 初始化修复
+  /**
+   * 初始化移动端右侧边栏悬浮按钮的定位自适应与 MutationObserver 观察器
+   */
   function init() {
     // 立即尝试修复
     fixRightsidePosition();

@@ -13,6 +13,9 @@
     setTimeout(init, 1000); // 延迟1秒，避免影响页面性能
   }
 
+  /**
+   * 初始化文章色彩后台预加载管理器
+   */
   function init() {
     // 监听全站文章链接悬停/触摸预热（鼠标滑过卡片即刻后台预热提取，点击时 0 延迟秒开）
     bindHoverPreload();
@@ -24,7 +27,9 @@
     cleanupCache();
   }
 
-  // 绑定鼠标悬停与触摸预加载
+  /**
+   * 绑定鼠标悬停与触摸预加载事件，提前解析文章色调
+   */
   function bindHoverPreload() {
     document.addEventListener('pointerenter', function(e) {
       const target = e.target && e.target.closest ? e.target.closest('a[href*="/posts/"], .recent-post-item a, .related-post-item a') : null;
@@ -35,7 +40,9 @@
     }, { passive: true, capture: true });
   }
 
-  // 预加载相关文章颜色
+  /**
+   * 自动预加载当前页面可视文章卡片列表中前 6 篇的主题色
+   */
   function preloadRelatedArticles() {
     // 查找页面中的文章链接
     const articleLinks = document.querySelectorAll('a[href*="/posts/"], .recent-post-item a, .related-post-item a');
@@ -56,7 +63,11 @@
     });
   }
 
-  // 预加载单个文章的颜色
+  /**
+   * 预加载单篇文章的主题色
+   * 
+   * @param {string} articleUrl - 文章目标 URL
+   */
   function preloadArticleColor(articleUrl) {
     // 检查是否已有缓存
     const articlePath = new URL(articleUrl, window.location.origin).pathname;
@@ -83,7 +94,12 @@
     }
   }
 
-  // 从文章链接中查找封面图片（支持穿透懒加载，过滤无效占位图）
+  /**
+   * 从文章卡片 DOM 中查找封面图片真实地址（穿透懒加载，过滤无效占位图）
+   * 
+   * @param {string} articleUrl - 文章链接
+   * @returns {string|null} 封面图真实 URL 或 null
+   */
   function findCoverImage(articleUrl) {
     // 尝试从相关文章卡片中找到封面图片
     const links = document.querySelectorAll('a[href="' + articleUrl + '"]');
@@ -111,7 +127,12 @@
     return null;
   }
 
-  // 为文章提取颜色
+  /**
+   * 后台异步加载封面图并调用色彩分析算法
+   * 
+   * @param {string} articlePath - 规范化文章相对路径
+   * @param {string} coverUrl - 封面图片地址
+   */
   function extractColorForArticle(articlePath, coverUrl) {
     const img = new Image();
     img.crossOrigin = 'anonymous';
@@ -142,7 +163,12 @@
     img.src = corsProxyUrl;
   }
 
-  // 提取主色调（高精度中心加权算法）
+  /**
+   * 提取图片主色调（高精度中心加权与饱和度过滤采样算法）
+   * 
+   * @param {HTMLImageElement} img - 已加载的封面图片对象
+   * @returns {string|null} RGB 格式字符串（如 '50, 120, 200'）或提取失败返回 null
+   */
   function extractDominantColor(img) {
     try {
       const canvas = document.createElement('canvas');
@@ -210,7 +236,13 @@
     }
   }
 
-  // 后台保存到缓存（防止写入坏死默认色）
+  /**
+   * 将提取出的文章主色异步写入 localStorage 缓存
+   * 
+   * @param {string} articlePath - 规范化文章相对路径
+   * @param {string} coverUrl - 封面图地址
+   * @param {string} color - RGB 主色字符串
+   */
   function saveToCacheBackground(articlePath, coverUrl, color) {
     if (!color || color === '61, 157, 242' || color === '61,157,242') return;
     try {
@@ -242,7 +274,9 @@
     }
   }
 
-  // 清理缓存并剔除历史遗留的坏死默认色
+  /**
+   * 清理过期/超容缓存并剔除历史遗留的假默认色
+   */
   function cleanupCache() {
     try {
       const cacheKey = 'butterfly_article_colors';
