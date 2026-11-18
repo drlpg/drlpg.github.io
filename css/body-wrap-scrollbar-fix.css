@@ -1,0 +1,13 @@
+/* 修复：页面刷新时右侧短暂闪现双滚动条
+   根因：主题给 #body-wrap 设了 overflow-x: hidden，按 CSS 规范，
+   overflow-x/y 其中一个非 visible 时，另一个会被计算为 auto，
+   于是 #body-wrap 的 overflow-y 实际是 auto，成了一个纵向滚动容器。
+   加载瞬间内容短暂超出 12-28px 时，它就刷出自己的滚动条，
+   与 body 的滚动条并排出现在视口右缘；布局稳定后溢出消失，滚动条也随之消失。
+   修复：overflow-y: clip —— 保留横向裁剪，同时保证 #body-wrap 永远不是纵向滚动容器，
+   任何瞬时溢出只会被裁剪，不会再刷出滚动条。
+   注意：必须同步加载（不要用 media=print 异步），否则首屏闪现时修复还没生效。 */
+#body-wrap {
+  overflow-x: hidden;
+  overflow-y: clip;
+}
