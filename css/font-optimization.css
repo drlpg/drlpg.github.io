@@ -32,14 +32,12 @@ i[class*="fa-"]::before {
   font-display: swap;
 }
 
-/* 减少重绘重排 */
+/* 减少重绘重排，避免 paint 边界硬切导致波浪亚像素锯齿 */
 .main-hero-waves-area {
-  will-change: transform;
-  contain: layout style paint;
+  contain: layout style;
 }
 
 /* 优化动画性能 */
 .parallax > use {
   will-change: transform;
-  transform: translateZ(0);
 }
