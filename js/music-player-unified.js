@@ -488,6 +488,13 @@
       const player = document.querySelector("#nav-music");
       if (!player) return;
 
+      // 若页面仍处于 Loading 遮罩阶段，保持隐藏，禁止触发位置计算与过渡动画
+      const loadingBox = document.getElementById("loading-box");
+      if (loadingBox && !loadingBox.classList.contains("loaded")) {
+        player.style.left = "-100%";
+        return;
+      }
+
       const scrollTop =
         window.pageYOffset || document.documentElement.scrollTop;
       const windowHeight = window.innerHeight;
