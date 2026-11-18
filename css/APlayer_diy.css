@@ -28,8 +28,6 @@
   position: fixed;
   bottom: 20px;
   left: -100%;
-  max-width: calc(100vw - 40px);
-  box-sizing: border-box;
   cursor: pointer;
   transition: 0.5s;
   transform-origin: left bottom;

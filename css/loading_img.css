@@ -9,75 +9,33 @@
   background-size: 60% !important;
 }
 
-/* 加载动画容器优化 - 彻底消除由于 100vw 或子元素溢出导致的横向滚动条 */
-#loading-box {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100% !important;
-  height: 100% !important;
-  max-width: 100% !important;
-  overflow: hidden !important;
-  overflow-x: hidden !important;
-  box-sizing: border-box;
-}
-
+/* 全屏加载背景遮罩优化 - 严格限定在视口范围内，杜绝 100vw 导致的 17px 溢出 */
 .loading-bg {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  width: 100% !important;
-  height: 100% !important;
-  max-width: 100% !important;
-  overflow: hidden !important;
-  overflow-x: hidden !important;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
 }
 
-/* 全局强力杜绝横向滚动条，保证在任何平台与加载阶段都不出现水平滚动条 */
-html,
-body {
-  overflow-x: hidden !important;
-  max-width: 100% !important;
-}
-
-/* Loading 期间遮罩存在时，全局严禁滚动 */
-html:has(#loading-box:not(.loaded)),
-body:has(#loading-box:not(.loaded)) {
-  overflow: hidden !important;
-  overflow-x: hidden !important;
-}
-
-/* 音乐播放器首屏防御：在加载遮罩结束前完全隐藏，防止首屏排版或动画抖动影响视口计算 */
-#loading-box:not(.loaded) ~ #nav-music,
-body:has(#loading-box:not(.loaded)) #nav-music {
-  opacity: 0 !important;
-  visibility: hidden !important;
+/* 加载完成后的穿透保护，确保不干扰任何底层滚动与点击 */
+#loading-box.loaded,
+#loading-box.loaded .loading-bg {
   pointer-events: none !important;
-}
-
-/* 防止加载动画导致横向滚动 */
-.loading-bg,
-#loading-box,
-.loading-img {
-  box-sizing: border-box;
 }
 
 /* 确保加载动画在所有设备上都不会超出 */
 @supports (-webkit-touch-callout: none) {
   /* iOS Safari 专用 */
-  .loading-bg,
-  #loading-box {
+  .loading-bg {
     -webkit-overflow-scrolling: touch;
     overflow-x: hidden;
   }

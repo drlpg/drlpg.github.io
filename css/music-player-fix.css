@@ -1,9 +1,3 @@
-/* 音乐播放器基础定位与防溢出限制 */
-#nav-music {
-  box-sizing: border-box !important;
-  max-width: calc(100vw - 40px) !important;
-}
-
 /* 音乐播放器图标放大样式 */
 .music-icon-large {
   font-size: 1.25em !important;
