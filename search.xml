@@ -20,13 +20,13 @@
       
         <tags>
             
-            <tag> docker </tag>
-            
             <tag> nextjs </tag>
             
-            <tag> 镜像优化 </tag>
-            
             <tag> 部署 </tag>
+            
+            <tag> docker </tag>
+            
+            <tag> 镜像优化 </tag>
             
         </tags>
       
@@ -51,13 +51,13 @@
       
         <tags>
             
-            <tag> nextjs </tag>
-            
-            <tag> 部署 </tag>
-            
             <tag> nginx </tag>
             
+            <tag> nextjs </tag>
+            
             <tag> 反向代理 </tag>
+            
+            <tag> 部署 </tag>
             
             <tag> https </tag>
             

@@ -1363,6 +1363,7 @@ canvas:not(#ribbon-canvas),
 }
 body {
   position: relative;
+  overflow-x: hidden;
   overflow-y: scroll;
   min-height: 100%;
   background: var(--global-bg);
@@ -2445,6 +2446,9 @@ figure.highlight pre .javascript .function {
   -ms-flex-direction: column;
   flex-direction: column;
   min-height: 100vh;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 .layout {
   display: -webkit-box;
