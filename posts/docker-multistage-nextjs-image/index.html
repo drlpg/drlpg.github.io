@@ -1,0 +1,991 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><meta name="referrer" content="no-referrer-when-downgrade"><title>Docker 多阶段构建：把 Next.js 生产镜像从 1GB+ 瘦到 200MB 以内 | Magi</title><meta name="author" content="Magi"><meta name="copyright" content="Magi"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta http-equiv="Cache-Control" content="public, max-age=3600"><meta name="description" content="Next.js 应用的 Docker 镜像动不动就 1GB 以上：源码、构建工具、开发依赖和整份 node_modules 全打进去了。本文用 standalone 输出 + 三阶段构建，只把运行必需的文件装进最终镜像，并讲清 Alpine 与 slim 的取舍、环境变量的构建时陷阱和构建缓存的加速方法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker 多阶段构建：把 Next.js 生产镜像从 1GB+ 瘦到 200MB 以内">
+<meta property="og:url" content="https://blog.magisd.com/posts/docker-multistage-nextjs-image/">
+<meta property="og:site_name" content="Magi">
+<meta property="og:description" content="Next.js 应用的 Docker 镜像动不动就 1GB 以上：源码、构建工具、开发依赖和整份 node_modules 全打进去了。本文用 standalone 输出 + 三阶段构建，只把运行必需的文件装进最终镜像，并讲清 Alpine 与 slim 的取舍、环境变量的构建时陷阱和构建缓存的加速方法。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.magisd.com/img/docker-multistage-nextjs-image-cover.jpg">
+<meta property="article:published_time" content="2026-11-16T01:53:00.000Z">
+<meta property="article:modified_time" content="2026-11-16T01:53:00.000Z">
+<meta property="article:author" content="Magi">
+<meta property="article:tag" content="docker">
+<meta property="article:tag" content="nextjs">
+<meta property="article:tag" content="部署">
+<meta property="article:tag" content="镜像优化">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://blog.magisd.com/img/og-image.jpg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.magisd.com/posts/docker-multistage-nextjs-image/"},"headline":"Docker 多阶段构建：把 Next.js 生产镜像从 1GB+ 瘦到 200MB 以内","description":"Next.js 应用的 Docker 镜像动不动就 1GB 以上：源码、构建工具、开发依赖和整份 node_modules 全打进去了。本文用 standalone 输出 + 三阶段构建，只把运行必需的文件装进最终镜像，并讲清 Alpine 与 slim 的取舍、环境变量的构建时陷阱和构建缓存的加速方法。","image":["https://blog.magisd.com/img/docker-multistage-nextjs-image-cover.jpg"],"datePublished":"2026-11-16T01:53:00.000Z","dateModified":"2026-11-16T01:53:00.000Z","author":{"@type":"Person","name":"Magi","url":"https://blog.magisd.com"},"publisher":{"@type":"Organization","name":"Magi","logo":{"@type":"ImageObject","url":"https://blog.magisd.com/img/logo.svg"}}}</script><link rel="shortcut icon" href="/img/magi_blog.ico"><link rel="canonical" href="https://blog.magisd.com/posts/docker-multistage-nextjs-image/"><link rel="preconnect" href="//cdn.jsdelivr.net"><link rel="preconnect" href="//www.google-analytics.com" crossorigin=""><link rel="preload" href="/css/index.css" as="style"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" as="style"><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="/css/bilibili-bg.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+          
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-MNPFHBR22R"></script><script>window.dataLayer = window.dataLayer || []
+function gtag(){dataLayer.push(arguments)}
+gtag('js', new Date())
+gtag('config', 'G-MNPFHBR22R')
+btf.addGlobalFn('pjaxComplete', () => {
+  gtag('config', 'G-MNPFHBR22R', {'page_path': window.location.pathname})
+}, 'google_analytics')
+</script><script defer="" src="https://umami.lpblog.dpdns.org/script.js" data-website-id="01375c94-ea07-46c1-a8e4-a9872d5f0d74"></script><script>window.GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"简"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true,
+  bilibiBg: {"enable":true,"phoneText":[{"time":0,"text":"凌晨啦!"},{"time":6,"text":"早上好!"},{"time":8,"text":"上午好!"},{"time":11,"text":"你吃了吗"},{"time":13,"text":"下午好鸭!"},{"time":16,"text":"傍晚咯!"},{"time":19,"text":"晚安!"}]},
+  headerSlideshow: {"enable":false,"slides":[{"image":"/img/slideshow/slide1.jpg","link":"https://lpblog.dpdns.org/","title":null},{"image":"/img/slideshow/slide2.jpg","link":"https://lpblog.dpdns.org/","title":null}],"interval":5000,"transition":1000}
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Docker 多阶段构建：把 Next.js 生产镜像从 1GB+ 瘦到 200MB 以内',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: true,
+  isToc: true,
+  isShuoshuo: false
+}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&amp;display=swap" rel="stylesheet"><meta name="google-site-verification" content="27pbAQuPln2n6iS8Ap_FPOU48EoOPahrhZ9RHOQZ_Fw"><meta name="msvalidate.01" content="102F38B964881E547BC988A20AFA39D7"><meta name="baidu-site-verification" content="codeva-5tHyQGLFx8"><script src="/js/console-welcome.js" data-cfasync="false"></script><meta http-equiv="Cache-Control" content="public, max-age=180, s-maxage=300"><script src="/js/fontawesome-fix.js" data-cfasync="false"></script><link rel="stylesheet" href="/css/bg_color.css"><link rel="stylesheet" href="/css/navigation_bar.css"><link rel="stylesheet" href="/css/loading_img.css?v=20261107"><link rel="stylesheet" href="/css/wavy.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="/css/remove-shadows.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="/css/clock-custom.css?v=20250914" media="print" onload="this.media='all'"><link rel="stylesheet" href="/css/button-hover-color.css?v=20261107f" media="print" onload="this.media='all'"><link rel="stylesheet" href="/css/rightside-position-fix.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="/css/footer.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="/css/font-optimization.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="/css/mobile-pullrefresh-fix.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="/css/grayscale-toggle.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="/css/code-block-spacing.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="/css/page-card-controller.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="/css/sweetalert-custom.css" media="print" onload="this.media='all'"><style>/* 文章页面首张图片隐藏 */
+.post-content #article-container > p:first-child > img:first-child,
+.post-content #article-container > img:first-child,
+.post-content #article-container > figure:first-child img,
+.post-content #article-container > div:first-child > img:first-child {
+  display: none !important;
+}
+
+/* 确保首页缩略图正常显示 */
+.recent-post-item .post_cover img,
+.card-widget .item-headline img,
+.flink .flink-item-icon img {
+  display: block !important;
+}
+
+/* 文章页标题背景光晕效果 */
+#page-header.post-bg {
+  position: relative;
+  transition: background 0.5s ease;
+  overflow: hidden;
+}
+
+/* 柔和光效果 - 直接在父元素背景上 */
+#page-header.post-bg.has-glow-effect {
+  background-image: radial-gradient(circle 500px at 80% 85%, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.17) 10%, rgba(255, 255, 255, 0.15) 20%, rgba(255, 255, 255, 0.12) 30%, rgba(255, 255, 255, 0.10) 40%, rgba(255, 255, 255, 0.08) 50%, rgba(255, 255, 255, 0.06) 60%, rgba(255, 255, 255, 0.04) 70%, rgba(255, 255, 255, 0.03) 80%, rgba(255, 255, 255, 0.01) 90%, transparent 100%);
+}
+
+
+
+/* 移除动画，使光晕静态显示 */
+
+#page-header.post-bg #post-info {
+  position: relative;
+  z-index: 10;
+}
+
+/* 确保波浪动画在正确位置 */
+#page-header.post-bg .main-hero-waves-area {
+  position: absolute !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  z-index: 5 !important;
+  pointer-events: none !important;
+}
+
+/* 确保导航栏在最上层 */
+#page-header #nav {
+  position: relative;
+  z-index: 100;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  #page-header.post-bg.has-glow-effect::after {
+    width: 300px;
+    height: 300px;
+    bottom: -100px;
+    right: -100px;
+  }
+}
+
+@media (max-width: 480px) {
+  #page-header.post-bg.has-glow-effect::after {
+    width: 250px;
+    height: 250px;
+    bottom: -80px;
+    right: -80px;
+  }
+}</style><!-- hexo injector head_end start --><link rel="stylesheet" href="/css/categorybar.css"><link rel="stylesheet" href="/css/clock-custom.css?v=20250914"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 8.1.2">
+    <script>
+      window.APLAYER_BREATHING_LIGHT = true;
+    </script>
+  </head><body><div id="loading-box" onclick="document.getElementById(&quot;loading-box&quot;).classList.add(&quot;loaded&quot;)"><div class="loading-bg"><div class="loading-img" style="background-color: #ffffff !important;"></div><div class="loading-progress-bar"><div class="loading-progress-fill"></div></div></div></div><script>const preloader = {
+  progressFill: null,
+  progressInterval: null,
+  currentProgress: 0,
+  
+  updateProgress: (progress) => {
+    if (!preloader.progressFill) {
+      preloader.progressFill = document.querySelector('.loading-progress-fill');
+    }
+    if (preloader.progressFill) {
+      preloader.currentProgress = Math.min(progress, 100);
+      preloader.progressFill.style.width = preloader.currentProgress + '%';
+    }
+  },
+  
+  startProgress: () => {
+    // 清除之前的interval
+    if (preloader.progressInterval) {
+      clearInterval(preloader.progressInterval);
+      preloader.progressInterval = null;
+    }
+    
+    preloader.progressFill = document.querySelector('.loading-progress-fill');
+    preloader.currentProgress = 0;
+    
+    // 强制从0开始
+    if (preloader.progressFill) {
+      preloader.progressFill.style.transition = 'none';
+      preloader.progressFill.style.width = '0%';
+      // 强制重绘
+      preloader.progressFill.offsetHeight;
+      preloader.progressFill.style.transition = '';
+    }
+    
+    // 模拟加载进度
+    let progress = 0;
+    preloader.progressInterval = setInterval(() => {
+      if (progress < 90) {
+        progress += Math.random() * 10;
+        preloader.updateProgress(progress);
+      }
+    }, 200);
+  },
+  
+  endLoading: () => {
+    if (preloader.progressInterval) {
+      clearInterval(preloader.progressInterval);
+      preloader.progressInterval = null;
+    }
+    preloader.updateProgress(100);
+    
+    setTimeout(() => {
+      document.body.style.overflow = 'auto';
+      document.getElementById('loading-box').classList.add("loaded");
+    }, 150);
+  },
+  
+  initLoading: () => {
+    document.body.style.overflow = '';
+    const loadingBox = document.getElementById('loading-box');
+    loadingBox.classList.remove("loaded");
+    loadingBox.style.display = 'block';
+    preloader.startProgress();
+  }
+}
+
+// 页面首次加载 - 等待DOM准备好
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    preloader.startProgress();
+  });
+} else {
+  preloader.startProgress();
+}
+
+window.addEventListener('load', () => { preloader.endLoading() })
+
+if (true) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { 
+    setTimeout(() => { preloader.endLoading() }, 50)
+  })
+}</script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="sidebar-avatar-wrapper"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/logo.svg" onerror="onerror=null;src='/img/placeholder-minimal.svg'" alt="avatar"></div></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">4</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><div class="menus_items visible"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-bookmark"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-link"></i><span> 友链</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" target="_blank" rel="noopener" href="https://foreverblog.cn/go.html"><i class="fa-fw fa fa-circle"></i><span> 虫洞</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://tool.magisd.com"><i class="fa-fw fas fa-tools"></i><span> 工具站</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于我</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/docker-multistage-nextjs-image-cover.jpg);" data-cover-img="/img/docker-multistage-nextjs-image-cover.jpg" data-theme-color=""><div id="page-header-decoration"></div><nav id="nav"><span id="blog-info"><a href="/" title="回到主页"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/magi.ico"><span class="site-name">Magi</span></a></span><div id="menus"></div><div class="menus_items visible"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-bookmark"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-link"></i><span> 友链</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" target="_blank" rel="noopener" href="https://foreverblog.cn/go.html"><i class="fa-fw fa fa-circle"></i><span> 虫洞</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://tool.magisd.com"><i class="fa-fw fas fa-tools"></i><span> 工具站</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于我</span></a></div></div><center id="name-container"><a id="page-name" href="javascript:btf.scrollToDest(0, 500)">PAGE_NAME</a></center><div id="menus"><div id="search-button"><span class="site-page social-icon search" data-tooltip="搜索"><i class="fas fa-search fa-fw"></i></span></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></nav><div id="post-info"><h1 class="post-title">Docker 多阶段构建：把 Next.js 生产镜像从 1GB+ 瘦到 200MB 以内</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-11-16T01:53:00.000Z" title="发表于 2026-11-16 09:53:00">2026-11-16</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-11-16T01:53:00.000Z" title="更新于 2026-11-16 09:53:00">2026-11-16</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E9%83%A8%E7%BD%B2/">部署</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">2.4k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>8分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_container_page_pv"><span id="busuanzi_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section><script data-pjax="true" data-cfasync="false">(function() {
+  function initArticleThemeColor() {
+    const header = document.getElementById('page-header');
+    if (!header || !header.classList.contains('post-bg')) return;
+    
+    header.classList.add('has-glow-effect');
+    const customColor = header.getAttribute('data-theme-color');
+    const articlePath = window.location.pathname;
+    const coverUrl = header.getAttribute('data-cover-img');
+    const defaultColor = '61, 157, 242';
+    
+    function hexToRgb(hex) {
+      let c = hex.replace('#', '');
+      if (c.length === 3) c = c.split('').map(x => x + x).join('');
+      const num = parseInt(c, 16);
+      return (num >> 16) + ', ' + ((num >> 8) & 255) + ', ' + (num & 255);
+    }
+
+    function applyBackgroundColor(color) {
+      const rgbVal = color.startsWith('#') ? hexToRgb(color) : color;
+      if (header.classList.contains('has-glow-effect')) {
+        header.style.background = 'radial-gradient(circle 500px at 80% 85%, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.17) 10%, rgba(255, 255, 255, 0.15) 20%, rgba(255, 255, 255, 0.12) 30%, rgba(255, 255, 255, 0.10) 40%, rgba(255, 255, 255, 0.08) 50%, rgba(255, 255, 255, 0.06) 60%, rgba(255, 255, 255, 0.04) 70%, rgba(255, 255, 255, 0.03) 80%, rgba(255, 255, 255, 0.01) 90%, transparent 100%), rgb(' + rgbVal + ')';
+      } else {
+        header.style.background = 'rgb(' + rgbVal + ')';
+      }
+    }
+    
+    // 优先：若 Front-matter 显式配置了自定义主题色，直接应用
+    if (customColor) {
+      applyBackgroundColor(customColor);
+      return;
+    }
+
+    function generateCacheKey(path, cover) {
+      const pathKey = path.replace(/\/$/, '');
+      let hash = 0;
+      const str = cover || '';
+      for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+      }
+      return pathKey + '#' + Math.abs(hash).toString(36);
+    }
+    
+    // 1. 尝试从缓存读取有效颜色（坏死默认色自动剔除并重新提取）
+    let appliedFromCache = false;
+    const cacheKey = 'butterfly_article_colors';
+    try {
+      const cached = localStorage.getItem(cacheKey);
+      if (cached && coverUrl) {
+        const cache = JSON.parse(cached);
+        const articleCacheKey = generateCacheKey(articlePath, coverUrl);
+        const cachedColor = cache[articleCacheKey];
+        
+        if (cachedColor && cachedColor.color) {
+          // 过滤历史误写坏死默认色
+          if (cachedColor.color === defaultColor || cachedColor.color === '61,157,242') {
+            delete cache[articleCacheKey];
+            localStorage.setItem(cacheKey, JSON.stringify(cache));
+          } else {
+            applyBackgroundColor(cachedColor.color);
+            appliedFromCache = true;
+            header.setAttribute('data-color-cached', 'true');
+          }
+        }
+      }
+    } catch (error) {
+      // 静默处理缓存读取错误
+    }
+    
+    // 如果没有有效缓存，先使用默认颜色兜底占位
+    if (!appliedFromCache) {
+      applyBackgroundColor(defaultColor);
+    }
+    
+    // 2. 异步高精度颜色提取与缓存更新
+    if (coverUrl && !appliedFromCache) {
+      const startExtraction = function() {
+        extractAndCacheColor(coverUrl, articlePath, function(extractedColor) {
+          if (extractedColor && extractedColor !== defaultColor && extractedColor !== '61,157,242') {
+            // 保存到缓存
+            try {
+              const cached = localStorage.getItem(cacheKey);
+              const cache = cached ? JSON.parse(cached) : {};
+              const articleCacheKey = generateCacheKey(articlePath, coverUrl);
+              
+              cache[articleCacheKey] = {
+                color: extractedColor,
+                timestamp: Date.now(),
+                articlePath: articlePath,
+                coverUrl: coverUrl
+              };
+              
+              localStorage.setItem(cacheKey, JSON.stringify(cache));
+            } catch (error) {
+              // 静默处理缓存保存错误
+            }
+            
+            // 平滑过渡动画
+            header.style.transition = 'background 0.4s ease-in-out';
+            applyBackgroundColor(extractedColor);
+            setTimeout(function() {
+              header.style.transition = '';
+            }, 400);
+          }
+        });
+      };
+      
+      if (window.requestIdleCallback) {
+        requestIdleCallback(startExtraction, { timeout: 80 });
+      } else {
+        setTimeout(startExtraction, 0);
+      }
+    }
+    
+    // 高精度中心加权颜色提取函数
+    function extractAndCacheColor(imgSrc, articlePath, callback) {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      
+      // 4秒超时兜底
+      const timeoutId = setTimeout(function() {
+        callback(null);
+      }, 4000);
+      
+      img.onload = function() {
+        clearTimeout(timeoutId);
+        try {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d', { willReadFrequently: true });
+          
+          // 采用 64x64 高精度采样
+          const size = 64;
+          canvas.width = size;
+          canvas.height = size;
+          
+          ctx.drawImage(img, 0, 0, size, size);
+          const imageData = ctx.getImageData(0, 0, size, size);
+          const data = imageData.data;
+          
+          const colorCounts = {};
+          const step = 2; // 步长为2密集采样
+          const center = (size - 1) / 2;
+          const maxDist = Math.sqrt(center * center * 2);
+          
+          for (let y = 0; y < size; y += step) {
+            for (let x = 0; x < size; x += step) {
+              const idx = (y * size + x) * 4;
+              const r = data[idx];
+              const g = data[idx + 1];
+              const b = data[idx + 2];
+              const alpha = data[idx + 3];
+              
+              if (alpha < 200) continue;
+              
+              const max = Math.max(r, g, b);
+              const min = Math.min(r, g, b);
+              const saturation = max === 0 ? 0 : (max - min) / max;
+              const brightness = (r + g + b) / 3;
+              
+              // 排除过暗、过亮与低饱和背景色，聚焦画面中心与核心图案
+              if (saturation > 0.18 && brightness > 45 && brightness < 235) {
+                const dist = Math.sqrt((x - center) * (x - center) + (y - center) * (y - center));
+                const centerWeight = 1.0 + 0.8 * (1.0 - dist / maxDist);
+                const weight = Math.floor(Math.pow(saturation, 1.8) * brightness * centerWeight * 10);
+                
+                // 步长为16的精细分桶，避免不同主题色被粗粒度归并
+                const groupedR = Math.floor(r / 16) * 16;
+                const groupedG = Math.floor(g / 16) * 16;
+                const groupedB = Math.floor(b / 16) * 16;
+                
+                const key = groupedR + ', ' + groupedG + ', ' + groupedB;
+                colorCounts[key] = (colorCounts[key] || 0) + weight;
+              }
+            }
+          }
+          
+          let maxWeight = 0;
+          let dominantColor = null;
+          
+          for (const color in colorCounts) {
+            if (colorCounts[color] > maxWeight) {
+              maxWeight = colorCounts[color];
+              dominantColor = color;
+            }
+          }
+          
+          callback(dominantColor);
+        } catch (error) {
+          callback(null);
+        }
+      };
+      
+      img.onerror = function() {
+        clearTimeout(timeoutId);
+        callback(null);
+      };
+      
+      // 尝试CORS代理
+      const corsProxyUrl = imgSrc.replace('r2.lpblog.dpdns.org', 'cors.lpblog.dpdns.org');
+      img.src = corsProxyUrl;
+    }
+  }
+
+  // 首次加载立即执行
+  initArticleThemeColor();
+  
+  // 兼容 PJAX 页面切换
+  document.addEventListener('pjax:complete', initArticleThemeColor);
+  
+  // 静默调试工具 (使用 articleColorDebug.help() 查看帮助)
+  window.articleColorDebug = {
+    getCacheStats: function() {
+      try {
+        const cached = localStorage.getItem('butterfly_article_colors');
+        const cache = cached ? JSON.parse(cached) : {};
+        const total = Object.keys(cache).length;
+        return {
+          total: total,
+          articles: Object.values(cache).map(function(item) {
+            return {
+              path: item.articlePath,
+              color: item.color,
+              coverUrl: item.coverUrl,
+              cached: new Date(item.timestamp).toLocaleString()
+            };
+          })
+        };
+      } catch (error) {
+        return { error: error.message };
+      }
+    },
+    clearCache: function() {
+      localStorage.removeItem('butterfly_article_colors');
+      return '缓存已清除';
+    },
+    setColor: function(color) {
+      const header = document.getElementById('page-header');
+      if (header) {
+        header.style.background = 'rgb(' + color + ')';
+      }
+      return '颜色已设置: ' + color;
+    },
+    forceExtract: function() {
+      const header = document.getElementById('page-header');
+      if (!header) return '未找到页面头部';
+      const coverUrl = header.getAttribute('data-cover-img');
+      const articlePath = window.location.pathname;
+      if (coverUrl) {
+        // 清除当前文章的缓存
+        try {
+          const cacheKey = 'butterfly_article_colors';
+          const cached = localStorage.getItem(cacheKey);
+          if (cached) {
+            const cache = JSON.parse(cached);
+            for (const k in cache) {
+              if (cache[k].articlePath === articlePath) delete cache[k];
+            }
+            localStorage.setItem(cacheKey, JSON.stringify(cache));
+          }
+        } catch (e) {}
+        initArticleThemeColor();
+        return '开始强制重新提取...';
+      }
+      return '当前页面无封面图';
+    },
+    exportCache: function() {
+      try {
+        const cached = localStorage.getItem('butterfly_article_colors');
+        return cached ? JSON.parse(cached) : {};
+      } catch (error) {
+        return { error: error.message };
+      }
+    },
+    help: function() {
+      return '文章颜色调试工具:\\n' +
+        'getCacheStats() - 查看缓存统计\\n' +
+        'clearCache() - 清除所有缓存\\n' +
+        'setColor(color) - 设置颜色 (如: setColor("255,0,0"))\\n' +
+        'forceExtract() - 强制重新提取当前文章颜色\\n' +
+        'exportCache() - 导出缓存数据';
+    }
+  };
+})();</script></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div class="ai-summary-container"><div class="ai-summary-header"><i class="fas fa-robot"></i><span class="ai-summary-title">文章摘要</span></div><div class="ai-summary-content"><p id="ai-summary-text" data-text="本文介绍如何用 Next.js 的 standalone 输出配合 Docker 三阶段构建，把生产镜像从 1GB 以上瘦到 200MB 左右：先开 output: 'standalone' 让构建只追踪运行必需的文件，再用 deps / builder / runner 三个阶段隔离依赖安装、构建与运行，并补齐 public 与 .next/static 的复制、.dockerignore、Alpine 与 slim 的取舍、NEXT_PUBLIC_* 构建时固化的陷阱和构建缓存加速。"></p></div></div><script>(function() {
+  const summaryText = document.getElementById('ai-summary-text');
+  if (!summaryText) return;
+  
+  const fullText = summaryText.getAttribute('data-text');
+  if (!fullText) return;
+  
+  let currentIndex = 0;
+  const typingSpeed = 20; // 打字速度（毫秒）
+  
+  function typeWriter() {
+    if (currentIndex < fullText.length) {
+      summaryText.textContent = fullText.substring(0, currentIndex + 1);
+      currentIndex++;
+      setTimeout(typeWriter, typingSpeed);
+    } else {
+      // 打字完成后添加完成类
+      summaryText.classList.add('typing-complete');
+    }
+  }
+  
+  // 添加打字中的类
+  summaryText.classList.add('typing');
+  
+  // 延迟开始打字效果
+  setTimeout(typeWriter, 300);
+})();</script><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;本文最后更新于&quot;,&quot;messageNext&quot;:&quot;天前，文中所涉及的信息或技术可能已经过时，请注意甄别。&quot;,&quot;postUpdate&quot;:&quot;2026-11-16 09:53:00&quot;}" hidden=""></div><p>给 Next.js 应用写 Dockerfile，最常见的写法是这样的：</p>
+<figure class="highlight dockerfile"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> node:<span class="number">26</span></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="language-bash"> /app</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> . .</span></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> npm ci &amp;&amp; npm run build</span></span><br><span class="line"><span class="keyword">CMD</span><span class="language-bash"> [<span class="string">"npm"</span>, <span class="string">"start"</span>]</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>能跑，但镜像动不动就 1GB 以上。原因不难猜：源码、构建工具、开发依赖、整份 <code>node_modules</code> 全打进去了——而运行时真正需要的，只是一小部分。</p>
+<p>瘦身的办法是两件套：<strong>Next.js 的 standalone 输出</strong> + <strong>Docker 多阶段构建</strong>。下面按这个顺序讲。</p>
+<h2 id="第一步：打开-standalone-输出"><a href="#第一步：打开-standalone-输出" class="headerlink" title="第一步：打开 standalone 输出"></a>第一步：打开 standalone 输出</h2><p>默认情况下，<code>next build</code> 假设运行时整份 <code>node_modules</code> 都在。打开 <code>output: 'standalone'</code> 后，构建会追踪每条路由实际用到的文件，只把这些文件和一个精简的 <code>server.js</code> 复制到 <code>.next/standalone/</code> 里：</p>
+<figure class="highlight ts"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// next.config.ts</span></span><br><span class="line"><span class="keyword">const</span> nextConfig = {</span><br><span class="line">  <span class="attr">output</span>: <span class="string">"standalone"</span>,</span><br><span class="line">};</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> nextConfig;</span><br></pre></td></tr></tbody></table></figure>
+
+<p>构建后看一下产物结构：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">npm run build</span><br><span class="line"><span class="built_in">ls</span> .next/standalone/</span><br><span class="line"><span class="comment"># server.js  node_modules/  （只含被追踪到的依赖）</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>有两件事要注意：</p>
+<ol>
+<li><strong><code>public/</code> 和 <code>.next/static/</code> 不在 standalone 文件夹里。</strong>Next.js 默认假设这些静态资源由 CDN 提供。没有 CDN、要靠容器自己 serve 的话，必须在 Dockerfile 里手动把它们拷进去，漏了就会出现图片、CSS 404。</li>
+<li><strong>启动命令是 <code>node server.js</code>，不是 <code>next start</code>。</strong>用 <code>next start</code> 跑 standalone 产物会收到警告，<code>server.js</code> 本身就是可直接运行的服务器入口。<code>PORT</code> 环境变量可以改监听端口，默认 3000。</li>
+</ol>
+<h2 id="第二步：三阶段-Dockerfile"><a href="#第二步：三阶段-Dockerfile" class="headerlink" title="第二步：三阶段 Dockerfile"></a>第二步：三阶段 Dockerfile</h2><p>下面这份结构取自 Next.js 官方 <code>with-docker</code> 示例的思路，只把 Node 版本换成了当前 LTS。三个阶段各干一件事：装依赖、构建、运行，只有最后一个阶段会成为最终镜像。</p>
+<figure class="highlight dockerfile"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># syntax=docker/dockerfile:1</span></span><br><span class="line"><span class="keyword">ARG</span> NODE_VERSION=<span class="number">26</span>-slim</span><br><span class="line"></span><br><span class="line"><span class="comment"># 阶段 1：安装依赖</span></span><br><span class="line"><span class="keyword">FROM</span> node:${NODE_VERSION} AS deps</span><br><span class="line"><span class="keyword">WORKDIR</span><span class="language-bash"> /app</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> package.json package-lock.json ./</span></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> --mount=<span class="built_in">type</span>=cache,target=/root/.npm \</span></span><br><span class="line"><span class="language-bash">    npm ci --no-audit --no-fund</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 阶段 2：构建</span></span><br><span class="line"><span class="keyword">FROM</span> node:${NODE_VERSION} AS builder</span><br><span class="line"><span class="keyword">WORKDIR</span><span class="language-bash"> /app</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> --from=deps /app/node_modules ./node_modules</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> . .</span></span><br><span class="line"><span class="keyword">ENV</span> NODE_ENV=production</span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> npm run build</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 阶段 3：运行（这就是最终镜像）</span></span><br><span class="line"><span class="keyword">FROM</span> node:${NODE_VERSION} AS runner</span><br><span class="line"><span class="keyword">WORKDIR</span><span class="language-bash"> /app</span></span><br><span class="line"><span class="keyword">ENV</span> NODE_ENV=production</span><br><span class="line"><span class="keyword">ENV</span> PORT=<span class="number">3000</span></span><br><span class="line"><span class="keyword">ENV</span> HOSTNAME=<span class="string">"0.0.0.0"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> --from=builder --<span class="built_in">chown</span>=node:node /app/.next/standalone ./</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> --from=builder --<span class="built_in">chown</span>=node:node /app/.next/static ./.next/static</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> --from=builder --<span class="built_in">chown</span>=node:node /app/public ./public</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">USER</span> node</span><br><span class="line"><span class="keyword">EXPOSE</span> <span class="number">3000</span></span><br><span class="line"><span class="keyword">CMD</span><span class="language-bash"> [<span class="string">"node"</span>, <span class="string">"server.js"</span>]</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>逐段解释为什么这样写：</p>
+<ul>
+<li><strong>三个阶段分工明确。</strong><code>deps</code> 只装依赖，<code>builder</code> 只构建，<code>runner</code> 从干净的基础镜像重新开始，只拷 standalone 产物。编译器、开发依赖、源码都不会进入最终镜像。</li>
+<li><strong>先拷 <code>package.json</code> 和 lockfile 再装依赖。</strong>只要这两个文件没变，Docker 层缓存就会复用 <code>deps</code> 阶段，改代码时只重跑 <code>builder</code>，构建明显变快。</li>
+<li><strong><code>--mount=type=cache</code> 缓存 npm 下载。</strong>需要 BuildKit（Docker 23+ 默认开启），<code>npm ci</code> 不用每次都重新下载全部包。</li>
+<li><strong>用 <code>node:26-slim</code> 做基础镜像。</strong>Node 26（Lithium）自 2026 年 10 月 28 日起是 Active LTS，支持到 2029 年 4 月 30 日；Node 24 仍在维护期，支持到 2028 年 4 月 30 日；Node 20 及更早版本已停止维护。<code>slim</code> 是基于 Debian 的精简镜像，比完整版小得多，又避开了 Alpine 的 musl 兼容问题（见下文）。Next.js 16 要求 Node 不低于 20.9，选 LTS 线即可。</li>
+<li><strong>以非 root 用户运行。</strong>官方 Node 镜像自带 <code>node</code> 用户，<code>COPY --chown=node:node</code> 让拷进去的文件归它所有，再 <code>USER node</code> 切换过去。注意 <code>public/</code> 也要带 <code>--chown</code>——容器以非 root 用户运行时，未 chown 的静态文件可能读不到，表现为图片 403/404，这个坑很隐蔽。</li>
+<li><strong><code>HOSTNAME="0.0.0.0"</code></strong> 让 <code>server.js</code> 监听所有网卡，否则容器外的请求进不来。</li>
+</ul>
+<h2 id="第三步：写好-dockerignore"><a href="#第三步：写好-dockerignore" class="headerlink" title="第三步：写好 .dockerignore"></a>第三步：写好 .dockerignore</h2><p>多阶段构建再干净，也架不住构建上下文里塞满垃圾。<code>COPY . .</code> 会把上下文里的所有文件先送进构建，<code>.next/</code>、<code>.git/</code> 动辄几百 MB，既慢又可能把本地构建产物、环境变量文件误带进镜像：</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># .dockerignore</span><br><span class="line">node_modules</span><br><span class="line">.next</span><br><span class="line">.git</span><br><span class="line">Dockerfile*</span><br><span class="line">README.md</span><br><span class="line">.env*</span><br></pre></td></tr></tbody></table></figure>
+
+<p>核心是三条：<code>node_modules</code>、<code>.next</code>、<code>.git</code>。<code>.env*</code> 也要排除——密钥绝不能进镜像，运行时用 <code>--env-file</code> 或编排工具注入。</p>
+<h2 id="能瘦到多少：一次公开实测"><a href="#能瘦到多少：一次公开实测" class="headerlink" title="能瘦到多少：一次公开实测"></a>能瘦到多少：一次公开实测</h2><p>以下是一次公开实测的数据（2026 年 10 月，新建的 Next.js 16.4 应用，TypeScript + Tailwind + App Router，同一台机器，三种写法都返回 HTTP 200）：</p>
+<table>
+<thead>
+<tr>
+<th>写法</th>
+<th>镜像体积</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>单阶段（<code>node:24</code>，COPY 全量 + 构建）</td>
+<td>1.77 GB</td>
+</tr>
+<tr>
+<td>三阶段 standalone（<code>node:24-slim</code>）</td>
+<td>268 MB</td>
+</tr>
+<tr>
+<td>三阶段 standalone（<code>node:24-alpine</code>）</td>
+<td>209 MB</td>
+</tr>
+</tbody></table>
+<p>实际数值因项目依赖而异，但量级关系是稳定的：<strong>standalone + 多阶段能把镜像压到原来的六分之一到八分之一</strong>。体积小的好处不只是省磁盘：镜像拉取更快、部署更快、攻击面更小（最终镜像里没有编译器和源码）。</p>
+<h2 id="Alpine-还是-slim？"><a href="#Alpine-还是-slim？" class="headerlink" title="Alpine 还是 slim？"></a>Alpine 还是 slim？</h2><p>Alpine 还能再省几十 MB，但它用的是 musl 而不是 glibc，带原生依赖的包可能出问题。最常见的是图片处理库 sharp：Alpine 下 npm 会装它的 musl 构建（<code>@img/sharp-linuxmusl-x64</code>），多数项目能正常工作，但一旦有某个原生包没有 musl 预编译版，就得在 Alpine 里现场编译，构建变慢还容易失败。</p>
+<p>我的建议：</p>
+<ul>
+<li><strong>默认用 <code>node:26-slim</code>。</strong>268 MB 这个量级已经足够好，兼容性最稳。</li>
+<li><strong>确认没有原生依赖问题后，再试 Alpine。</strong>换之前先在 Alpine 镜像里跑通一次完整构建和图片优化，确认无报错再切。</li>
+<li><strong>不要用完整版 <code>node:26</code> 做最终镜像。</strong>它带了完整的 Debian 工具链，体积大、攻击面大，只适合本地开发。</li>
+</ul>
+<h2 id="环境变量的陷阱：构建时-vs-运行时"><a href="#环境变量的陷阱：构建时-vs-运行时" class="headerlink" title="环境变量的陷阱：构建时 vs 运行时"></a>环境变量的陷阱：构建时 vs 运行时</h2><p>这是多阶段构建最容易踩的坑，表现是：应用能构建、容器能启动，但某个配置在生产环境是 <code>undefined</code>。</p>
+<p>Next.js 的环境变量分两类，分界线在构建时刻：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>读取时机</th>
+<th>怎么传进容器</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>NEXT_PUBLIC_*</code></td>
+<td><strong>构建时固化</strong>进 JS 产物</td>
+<td>构建参数 <code>--build-arg</code></td>
+</tr>
+<tr>
+<td>其他变量（如数据库地址）</td>
+<td>运行时读取</td>
+<td><code>docker run -e</code> 或 <code>--env-file</code></td>
+</tr>
+</tbody></table>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 公开变量：构建时传入，写进产物</span></span><br><span class="line">docker build \</span><br><span class="line">  --build-arg NEXT_PUBLIC_API_URL=https://api.example.com \</span><br><span class="line">  -t my-app .</span><br><span class="line"></span><br><span class="line"><span class="comment"># 运行时变量：启动时传入，不进镜像</span></span><br><span class="line">docker run -p 3000:3000 --env-file .env.production my-app</span><br></pre></td></tr></tbody></table></figure>
+
+<p>对应的 Dockerfile 里要在构建阶段声明：</p>
+<figure class="highlight dockerfile"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># builder 阶段</span></span><br><span class="line"><span class="keyword">ARG</span> NEXT_PUBLIC_API_URL</span><br><span class="line"><span class="keyword">ENV</span> NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL</span><br></pre></td></tr></tbody></table></figure>
+
+<p>还有一个细节：<strong>完全静态预渲染的页面在构建时就把变量读走了</strong>，运行时再改变量也不会影响它。如果某个值必须在运行时才能确定（比如不同环境共用一个镜像），就别把它放进会被预渲染的页面，或者改用服务端组件在请求时读取。</p>
+<h2 id="构建缓存：让重复构建更快"><a href="#构建缓存：让重复构建更快" class="headerlink" title="构建缓存：让重复构建更快"></a>构建缓存：让重复构建更快</h2><p>镜像瘦了，构建速度也值得顺手优化。两个关键点：</p>
+<ol>
+<li><strong>依赖层与代码层分离。</strong>上面 Dockerfile 的写法已经做到了：<code>package.json</code> 和 lockfile 不变，<code>deps</code> 阶段直接命中缓存；只有改了代码才重跑 <code>builder</code>。反过来，如果先 <code>COPY . .</code> 再 <code>npm ci</code>，任何一次代码改动都会让依赖层失效，每次构建都重装全部依赖。</li>
+<li><strong>CI 里复用构建缓存。</strong>GitHub Actions 构建镜像时，用 <code>docker/build-push-action</code> 的 <code>cache-from</code> / <code>cache-to</code>（<code>type=gha</code>），跨运行复用层缓存。没有缓存时，一次完整构建里 <code>npm ci</code> 和 <code>next build</code> 是最耗时的两步。</li>
+</ol>
+<p>验证缓存是否生效很简单：连续构建两次，第二次应该只有少量步骤显示 <code>CACHED</code> 以外的输出——如果每次都从头装依赖，检查 <code>COPY</code> 的顺序是不是写反了。</p>
+<h2 id="常见报错排查"><a href="#常见报错排查" class="headerlink" title="常见报错排查"></a>常见报错排查</h2><table>
+<thead>
+<tr>
+<th>现象</th>
+<th>原因</th>
+<th>解决</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>图片、CSS 404</td>
+<td>漏拷 <code>public/</code> 或 <code>.next/static/</code></td>
+<td>按上文 Dockerfile 补两行 <code>COPY</code></td>
+</tr>
+<tr>
+<td><code>next start</code> 警告</td>
+<td>standalone 产物不该用 <code>next start</code></td>
+<td>改用 <code>node server.js</code></td>
+</tr>
+<tr>
+<td>容器启动后连不上</td>
+<td><code>server.js</code> 只监听了回环地址</td>
+<td>设 <code>HOSTNAME="0.0.0.0"</code></td>
+</tr>
+<tr>
+<td>静态文件 403/404</td>
+<td>以非 root 用户运行，但文件没 chown</td>
+<td><code>COPY</code> 加 <code>--chown=node:node</code></td>
+</tr>
+<tr>
+<td>构建每次都重装依赖</td>
+<td><code>COPY . .</code> 写在 <code>npm ci</code> 之前</td>
+<td>先拷 lockfile 装依赖，再拷源码</td>
+</tr>
+<tr>
+<td>某个配置生产环境是 <code>undefined</code></td>
+<td><code>NEXT_PUBLIC_*</code> 没在构建时传入</td>
+<td>用 <code>--build-arg</code> 在构建时传</td>
+</tr>
+<tr>
+<td>Alpine 下 sharp 报错</td>
+<td>musl 缺少预编译包</td>
+<td>换 <code>slim</code> 镜像，或确认 musl 构建可用</td>
+</tr>
+</tbody></table>
+<h2 id="验证：构建并跑起来"><a href="#验证：构建并跑起来" class="headerlink" title="验证：构建并跑起来"></a>验证：构建并跑起来</h2><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 构建（BuildKit 默认开启；旧版本加 DOCKER_BUILDKIT=1）</span></span><br><span class="line">docker build -t my-app .</span><br><span class="line"></span><br><span class="line"><span class="comment"># 看体积</span></span><br><span class="line">docker images my-app</span><br><span class="line"><span class="comment"># 预期：200–300 MB 量级，而不是 1GB+</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 跑起来验证</span></span><br><span class="line">docker run --<span class="built_in">rm</span> -p 3000:3000 my-app</span><br><span class="line">curl -s -o /dev/null -w <span class="string">"%{http_code}\n"</span> http://localhost:3000</span><br><span class="line"><span class="comment"># 预期：200</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>再顺手检查两点：镜像里不该有源码（<code>docker run --rm my-app ls /app</code> 应该只有 <code>server.js</code>、<code>node_modules</code>、<code>public</code>、<code>.next</code>）；容器进程不是 root（<code>docker exec &lt;容器名&gt; whoami</code> 应输出 <code>node</code>）。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>开 <code>output: 'standalone'</code>，让 Next.js 只追踪运行必需的文件。</li>
+<li>三阶段 Dockerfile：<code>deps</code> 装依赖、<code>builder</code> 构建、<code>runner</code> 只装 standalone 产物 + <code>public</code> + <code>.next/static</code>。</li>
+<li><code>.dockerignore</code> 排除 <code>node_modules</code>、<code>.next</code>、<code>.git</code>、<code>.env*</code>。</li>
+<li>基础镜像默认选 <code>node:26-slim</code>，确认无原生依赖问题再试 Alpine。</li>
+<li><code>NEXT_PUBLIC_*</code> 构建时用 <code>--build-arg</code> 传，运行时变量用 <code>--env-file</code> 传，两类不要混。</li>
+<li>以非 root 用户运行，<code>COPY</code> 记得 <code>--chown=node:node</code>。</li>
+</ul>
+<p>一套组合拳下来，生产镜像从 1GB 以上降到 200MB 左右，部署拉取更快，攻击面也更小。下一篇可以接着讲：镜像瘦了之后，用 GitHub Actions 把“构建—推送—部署”串成一条自动流水线。</p>
+<script data-cfasync="false">// 立即隐藏文章内容首张图片
+(function() {
+  const article = document.getElementById('article-container');
+  if (!article) return;
+  
+  // 查找可能的首张图片位置
+  const selectors = [
+    'p:first-child > img:first-child',
+    'img:first-child', 
+    'figure:first-child img',
+    'div:first-child > img:first-child'
+  ];
+  
+  for (const selector of selectors) {
+    const firstImg = article.querySelector(selector);
+    if (firstImg) {
+      firstImg.style.display = 'none';
+      break; // 只隐藏第一张找到的图片
+    }
+  }
+})();</script></article><div class="post-copyright"><div class="post-copyright__title"><span class="post-copyright-info"><h>Docker 多阶段构建：把 Next.js 生产镜像从 1GB+ 瘦到 200MB 以内</h></span></div><div class="post-copyright__type"><span class="post-copyright-info"><a href="https://blog.magisd.com/posts/docker-multistage-nextjs-image/">https://blog.magisd.com/posts/docker-multistage-nextjs-image/</a></span></div><div class="post-copyright-m"><div class="post-copyright-m-info"><div class="post-copyright-a"><h>作者</h><div class="post-copyright-cc-info"><h>Magi</h></div></div><div class="post-copyright-c"><h>发布于</h><div class="post-copyright-cc-info"><h>2026-11-16</h></div></div><div class="post-copyright-u"><h>更新于</h><div class="post-copyright-cc-info"><h>2026-11-16</h></div></div><div class="post-copyright-c"><h>许可协议</h><div class="post-copyright-cc-info"><a class="icon" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a><a rel="noopener" target="_blank" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></div></div></div></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/docker/">docker</a><a class="post-meta__tags" href="/tags/nextjs/">nextjs</a><a class="post-meta__tags" href="/tags/%E9%95%9C%E5%83%8F%E4%BC%98%E5%8C%96/">镜像优化</a><a class="post-meta__tags" href="/tags/%E9%83%A8%E7%BD%B2/">部署</a></div><div class="post-share"><div class="social-share" data-image="/img/docker-multistage-nextjs-image-cover.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer=""></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width prev-post" href="/posts/nginx-nextjs-reverse-proxy/" title="Nginx 反向代理实战：给 Next.js 应用做生产级部署"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Nginx 反向代理实战：给 Next.js 应用做生产级部署</div></div><div class="info-2"><div class="info-item-1">Next.js 应用在生产环境通常跑成一个 Node 进程（next start 或 standalone 的 node server.js），默认监听 3000 端口。直接把 3000 端口暴露到公网能跑，但有三个问题：没有 HTTPS、静态资源没有缓存策略、慢客户端和长耗时请求会直接拖住 Node 进程。 正确的做法是在前面放一层 Nginx 做反向代理：Nginx 对外只开 80/443，负责 TLS、压缩、缓存和超时控制；Node 进程只监听本机回环地址，专心渲染和跑接口。本文给出一份可直接套用的配置。 架构：请求是怎么走的12浏览器 --HTTPS 443--&gt; Nginx --HTTP--&gt; 127.0.0.1:3000 (Next.js)                    (TLS / 压缩 / 缓存 / 超时)  要点只有一个：公网只能访问到 Nginx，3000 端口不对公网开放。云服务器的安全组/防火墙只放行 80 和 443；如果是 Docker 部署，端口映射写成 -p...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/nginx-nextjs-reverse-proxy/" title="Nginx 反向代理实战：给 Next.js 应用做生产级部署"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/nginx-nextjs-reverse-proxy-cover.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-11-13</div><div class="info-item-2">Nginx 反向代理实战：给 Next.js 应用做生产级部署</div></div><div class="info-2"><div class="info-item-1">Next.js 应用在生产环境通常跑成一个 Node 进程（next start 或 standalone 的 node server.js），默认监听 3000 端口。直接把 3000 端口暴露到公网能跑，但有三个问题：没有 HTTPS、静态资源没有缓存策略、慢客户端和长耗时请求会直接拖住 Node 进程。 正确的做法是在前面放一层 Nginx 做反向代理：Nginx 对外只开 80/443，负责 TLS、压缩、缓存和超时控制；Node 进程只监听本机回环地址，专心渲染和跑接口。本文给出一份可直接套用的配置。 架构：请求是怎么走的12浏览器 --HTTPS 443--&gt; Nginx --HTTP--&gt; 127.0.0.1:3000 (Next.js)                    (TLS / 压缩 / 缓存 / 超时)  要点只有一个：公网只能访问到 Nginx，3000 端口不对公网开放。云服务器的安全组/防火墙只放行 80 和 443；如果是 Docker 部署，端口映射写成 -p...</div></div></div></a></div></div><hr class="custom-hr"><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="greeting-message" id="greeting-message"></div><div class="avatar-container"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/logo.svg" onerror="this.onerror=null;this.src='/img/placeholder-minimal.svg'" alt="avatar"></div><div class="avatar-description">个人博客，分享日常、博客部署等相关技术经验~</div><div class="sr-only">Magi 的前端、全栈、生活与部署运维分享。</div></div><div class="author-info"><div class="author-info-name">Magi</div><div class="author-info-description">Magi 的前端、全栈、生活与部署运维分享。</div></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/drlpg" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:danranlpg@163.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/drlpg"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5%EF%BC%9A%E6%89%93%E5%BC%80-standalone-%E8%BE%93%E5%87%BA"><span class="toc-number">1.</span> <span class="toc-text">第一步：打开 standalone 输出</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%9A%E4%B8%89%E9%98%B6%E6%AE%B5-Dockerfile"><span class="toc-number">2.</span> <span class="toc-text">第二步：三阶段 Dockerfile</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5%EF%BC%9A%E5%86%99%E5%A5%BD-dockerignore"><span class="toc-number">3.</span> <span class="toc-text">第三步：写好 .dockerignore</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%83%BD%E7%98%A6%E5%88%B0%E5%A4%9A%E5%B0%91%EF%BC%9A%E4%B8%80%E6%AC%A1%E5%85%AC%E5%BC%80%E5%AE%9E%E6%B5%8B"><span class="toc-number">4.</span> <span class="toc-text">能瘦到多少：一次公开实测</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Alpine-%E8%BF%98%E6%98%AF-slim%EF%BC%9F"><span class="toc-number">5.</span> <span class="toc-text">Alpine 还是 slim？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E7%9A%84%E9%99%B7%E9%98%B1%EF%BC%9A%E6%9E%84%E5%BB%BA%E6%97%B6-vs-%E8%BF%90%E8%A1%8C%E6%97%B6"><span class="toc-number">6.</span> <span class="toc-text">环境变量的陷阱：构建时 vs 运行时</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9E%84%E5%BB%BA%E7%BC%93%E5%AD%98%EF%BC%9A%E8%AE%A9%E9%87%8D%E5%A4%8D%E6%9E%84%E5%BB%BA%E6%9B%B4%E5%BF%AB"><span class="toc-number">7.</span> <span class="toc-text">构建缓存：让重复构建更快</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E6%8A%A5%E9%94%99%E6%8E%92%E6%9F%A5"><span class="toc-number">8.</span> <span class="toc-text">常见报错排查</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AA%8C%E8%AF%81%EF%BC%9A%E6%9E%84%E5%BB%BA%E5%B9%B6%E8%B7%91%E8%B5%B7%E6%9D%A5"><span class="toc-number">9.</span> <span class="toc-text">验证：构建并跑起来</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">10.</span> <span class="toc-text">总结</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/docker-multistage-nextjs-image/" title="Docker 多阶段构建：把 Next.js 生产镜像从 1GB+ 瘦到 200MB 以内"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/docker-multistage-nextjs-image-cover.jpg" onerror="this.onerror=null;this.src='/img/placeholder-minimal.svg'" alt="Docker 多阶段构建：把 Next.js 生产镜像从 1GB+ 瘦到 200MB 以内"></a><div class="content"><a class="title" href="/posts/docker-multistage-nextjs-image/" title="Docker 多阶段构建：把 Next.js 生产镜像从 1GB+ 瘦到 200MB 以内">Docker 多阶段构建：把 Next.js 生产镜像从 1GB+ 瘦到 200MB 以内</a><time datetime="2026-11-16T01:53:00.000Z" title="发表于 2026-11-16 09:53:00">2026-11-16</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/nginx-nextjs-reverse-proxy/" title="Nginx 反向代理实战：给 Next.js 应用做生产级部署"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/nginx-nextjs-reverse-proxy-cover.jpg" onerror="this.onerror=null;this.src='/img/placeholder-minimal.svg'" alt="Nginx 反向代理实战：给 Next.js 应用做生产级部署"></a><div class="content"><a class="title" href="/posts/nginx-nextjs-reverse-proxy/" title="Nginx 反向代理实战：给 Next.js 应用做生产级部署">Nginx 反向代理实战：给 Next.js 应用做生产级部署</a><time datetime="2026-11-13T01:53:00.000Z" title="发表于 2026-11-13 09:53:00">2026-11-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/hexo-actions-deploy/" title="GitHub Actions 自动部署 Hexo 博客到 GitHub Pages"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/hexo-actions-deploy-cover.jpg" onerror="this.onerror=null;this.src='/img/placeholder-minimal.svg'" alt="GitHub Actions 自动部署 Hexo 博客到 GitHub Pages"></a><div class="content"><a class="title" href="/posts/hexo-actions-deploy/" title="GitHub Actions 自动部署 Hexo 博客到 GitHub Pages">GitHub Actions 自动部署 Hexo 博客到 GitHub Pages</a><time datetime="2026-11-09T01:53:00.000Z" title="发表于 2026-11-09 09:53:00">2026-11-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/api/" title="Vercel + Supabase 搭建博客数据统计API"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://r2.lpblog.dpdns.org/Qexo/2025/09/25/07.jpg" onerror="this.onerror=null;this.src='/img/placeholder-minimal.svg'" alt="Vercel + Supabase 搭建博客数据统计API"></a><div class="content"><a class="title" href="/posts/api/" title="Vercel + Supabase 搭建博客数据统计API">Vercel + Supabase 搭建博客数据统计API</a><time datetime="2025-10-02T11:19:24.915Z" title="发表于 2025-10-02 19:19:24">2025-10-02</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="footer-container"><div class="footer-left"><div class="copyright"><span><b>©2024 - 2026</b></span><span><b>&nbsp;&nbsp;By Magi</b></span></div><div id="workboard"></div></div><div class="footer-filing"></div><div class="footer-right"><p id="ghbdages"><a class="github-badge" target="_blank" href="https://hexo.io/" title="博客框架为Hexo_v8.1.2"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/badges/hexo.svg" alt=""></a><a class="github-badge" target="_blank" href="https://butterfly.js.org/" title="主题版本Butterfly_v5.2.2"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/badges/butterfly.svg" alt=""></a><a class="github-badge" target="_blank" href="https://vercel.com/" title="本站采用多线部署，主线路托管于Vercel"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/badges/vercel.svg" alt=""></a><a class="github-badge" target="_blank" href="https://github.com/" title="本网站源码由Github提供存储仓库"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/badges/github.svg" alt=""></a></p></div></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><!-- 分享按钮已被移除--><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="grayscale-toggle" type="button" title="灰度和明度模式切换">灰</button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button><button id="header-bg-toggle" type="button" title="切换首页背景"><i class="fas fa-image"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button><button id="go-down" type="button" title="直达底部" onclick="btf.scrollToDest(document.body.scrollHeight, 500)"><i class="fas fa-arrow-down"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = null
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://twikoo.lpblog.dpdns.org',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(res => {
+      countELement.textContent = res[0].count
+    }).catch(err => {
+      console.error(err)
+    })
+  }
+
+  const init = (el = document, path = location.pathname) => {
+    twikoo.init({
+      el: el.querySelector('#twikoo-wrap'),
+      envId: 'https://twikoo.lpblog.dpdns.org',
+      region: '',
+      onCommentLoaded: () => {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      },
+      ...option,
+      path: isShuoshuo ? path : (option && option.path) || path
+    })
+
+    
+
+    isShuoshuo && (window.shuoshuoComment.destroyTwikoo = () => {
+      if (el.children.length) {
+        el.innerHTML = ''
+        el.classList.add('no-comment')
+      }
+    })
+  }
+
+  const loadTwikoo = (el, path) => {
+    if (typeof twikoo === 'object') setTimeout(() => init(el, path), 0)
+    else btf.getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(() => init(el, path))
+  }
+
+  if (isShuoshuo) {
+    'Twikoo' === 'Twikoo'
+      ? window.shuoshuoComment = { loadComment: loadTwikoo }
+      : window.loadOtherComment = loadTwikoo
+    return
+  }
+
+  if ('Twikoo' === 'Twikoo' || !false) {
+    if (false) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else loadTwikoo()
+  } else {
+    window.loadOtherComment = loadTwikoo
+  }
+})()</script></div><link rel="stylesheet" href="/css/APlayer.css"><link rel="stylesheet" href="/css/APlayer_diy.css"><link rel="stylesheet" href="/css/APlayer_color.css"><link rel="stylesheet" href="/css/music-player-fix.css"><link rel="stylesheet" href="/css/music-context-menu.css"><link rel="stylesheet" href="/css/fix-icons.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="/css/hide-site-title.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="/css/footer-height.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="/css/header-slideshow.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="/css/custom-context-menu.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="/css/hot-comment-popup.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="/css/post-header-center.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="/css/ai-summary.css" media="print" onload="this.media='all'"><script src="/js/console-filter.js" data-cfasync="false"></script><script src="/js/cdn-fallback.js" data-cfasync="false"></script><script src="/js/weather-icons.js?v=20250914" data-cfasync="false"></script><script src="/js/mobile-fix-immediate.js" data-cfasync="false"></script><script src="/js/mobile-viewport-fix.js" data-cfasync="false"></script><script src="/js/rightside-mobile-fix.js" data-cfasync="false"></script><script src="/js/article-dynamic-theme-color.js" data-cfasync="false"></script><script src="/js/aside-dynamic-theme-color.js" data-cfasync="false"></script><script defer="" src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script><script defer="" src="/js/dynamic-loader.js"></script><script defer="" src="/js/navigation_bar.js?v=20261107"></script><script defer="" src="/js/lunar.js"></script><script defer="" src="/js/day.js"></script><script defer="" src="/js/image-watermark.js"></script><script defer="" src="/js/blind-watermark.js"></script><script defer="" src="/js/runtime.js"></script><script defer="" src="/js/header-slideshow-simple.js"></script><script defer="" src="/js/page-card-controller.js"></script><script defer="" src="/js/page-scroll-fix.js"></script><script defer="" src="/js/search-tooltip.js"></script><script defer="" src="/js/greeting-message.js"></script><script defer="" src="/js/article-color-preloader.js"></script><script defer="" src="/js/article-first-image-handler.js"></script><script defer="" src="/js/devtools-detector.js"></script><script defer="" src="/js/APlayer.js"></script><script defer="" src="/js/Meting.js"></script><script defer="" src="/js/music-player-unified.js"></script><script defer="" src="/js/blind-watermark-verifier.js"></script><script async="" data-pjax="" src="/js/anzhiyufunction.js"></script><script async="" data-pjax="" src="/js/anzhiyu.js"></script><script async="" src="/js/anzhiyuOnlyOne.js"></script><script async="" src="/js/happy-title.js"></script><script defer="" src="/js/header-bg-toggle.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script>(() => {
+  const destroyAplayer = () => {
+    if (window.aplayers) {
+      for (let i = 0; i < window.aplayers.length; i++) {
+        if (!window.aplayers[i].options.fixed) {
+          window.aplayers[i].destroy()
+        }
+      }
+    }
+  }
+
+  const runMetingJS = () => {
+    typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+  }
+
+  btf.addGlobalFn('pjaxSend', destroyAplayer, 'destroyAplayer')
+  btf.addGlobalFn('pjaxComplete', loadMeting, 'runMetingJS')
+})()</script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: true,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      pjax.loadUrl('/404.html')
+    }
+  })
+})()</script><script async="" data-pjax="" src="/js/blog-stats-loader.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"></div></div><hr><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div><script defer="" src="/js/bilibili-bg.js"></script><script src="/js/mobile-gradient-bg.js"></script></div><div id="nav-music"><div id="nav-music-hoverTips" onclick="anzhiyu.musicToggle()" title="播放"><i class="fa-solid fa-play music-icon-large"></i></div><meting-js id="13156541985" server="netease" type="playlist" mutex="true" preload="none" theme="var(--anzhiyu-main)" data-lrctype="0" order="list"></meting-js></div><!-- hexo injector body_end start --><script data-pjax="">
+    function butterfly_categories_card_injector_config(){
+      var parent_div_git = document.getElementById('recent-posts');
+      var item_html = '<div id="categoryBar"><ul class="categoryBar-list"><li class="categoryBar-list-item" style="background:url();"><a class="categoryBar-list-link" href="/categories/" data-pjax-state="">分类</a><span class="categoryBar-list-count">2</span><span class="categoryBar-list-descr">分类</span></li><li class="categoryBar-list-item" style="background:url();"><a class="categoryBar-list-link" href="/tags/" data-pjax-state="">标签</a><span class="categoryBar-list-count">11</span><span class="categoryBar-list-descr">标签</span></li><li class="categoryBar-list-item" style="background:url();"><a class="categoryBar-list-link" href="/archives/" data-pjax-state="">归档</a><span class="categoryBar-list-count">4</span><span class="categoryBar-list-descr">归档</span></li></ul></div>';
+      parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+      
+      // 手动为动态插入的链接添加点击事件
+      if (typeof Pjax !== 'undefined') {
+        document.querySelectorAll('.categoryBar-list-link').forEach(function(link) {
+          link.addEventListener('click', function(e) {
+            e.preventDefault();
+            var url = this.getAttribute('href');
+            if (window.pjax) {
+              window.pjax.loadUrl(url);
+            } else {
+              window.location.href = url;
+            }
+          });
+        });
+      }
+    }
+    if(document.getElementById('recent-posts') && (location.pathname ==='/' || '/' ==='all')){
+      butterfly_categories_card_injector_config()
+    }
+  </script><script data-pjax="">
+  function butterfly_clock_anzhiyu_injector_config(){
+    var parent_div_git = document.getElementsByClassName('sticky_layout')[0];
+    var item_html = '<div class="card-widget card-clock"><div class="card-glass"><div class="card-background"><div class="card-content"><div id="hexo_electric_clock"><div class="clock-loading" id="card-clock-loading" style="display: flex; align-items: center; justify-content: center; background: transparent; padding: 10px 0;"><div style="text-align: center; background: transparent;"><div style="font-size: 14px; opacity: 0.7; background: transparent;">正在加载天气数据...</div></div></div></div></div></div></div></div>';
+    console.log('已挂载butterfly_clock_anzhiyu')
+    if(parent_div_git) {
+      parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+    }
+  }
+  var elist = 'null'.split(',');
+  var cpage = location.pathname;
+  var epage = '/';
+  var qweather_key = 'a17e385cf6d94f078f77b3dde0c2a18c';
+  var gaud_map_key = '5f5c8c34b248d5f76b10b65f8a7fa1d0';
+  var baidu_ak_key = 'undefined';
+  var flag = 0;
+  var clock_rectangle = '116.404000,39.928000';
+  var clock_default_rectangle_enable = 'false';
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_clock_anzhiyu_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_clock_anzhiyu_injector_config();
+  }
+  </script><script src="https://nx6yvwhdc7.re.qweatherapi.com/v7/weather/now"></script><script data-pjax="" src="/js/clock-fix.js?v=20250914"></script><!-- hexo injector body_end end --></body></html>

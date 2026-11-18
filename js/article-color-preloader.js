@@ -78,7 +78,7 @@
     }
   }
 
-  // 从文章链接中查找封面图片
+  // 从文章链接中查找封面图片（支持穿透懒加载，过滤无效占位图）
   function findCoverImage(articleUrl) {
     // 尝试从相关文章卡片中找到封面图片
     const links = document.querySelectorAll('a[href="' + articleUrl + '"]');
@@ -89,8 +89,16 @@
       
       if (container) {
         const img = container.querySelector('img');
-        if (img && img.src) {
-          return img.src;
+        if (img) {
+          // 优先读取懒加载真实属性
+          const realSrc = img.getAttribute('data-lazy-src') || 
+                          img.getAttribute('data-src') || 
+                          img.currentSrc || 
+                          img.src;
+          // 严格过滤 base64 占位图及包含 placeholder 的无效图片
+          if (realSrc && !realSrc.startsWith('data:') && !realSrc.includes('placeholder')) {
+            return realSrc;
+          }
         }
       }
     }
@@ -129,66 +137,76 @@
     img.src = corsProxyUrl;
   }
 
-  // 提取主色调
+  // 提取主色调（高精度中心加权算法）
   function extractDominantColor(img) {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d', { willReadFrequently: true });
-    
-    const size = 64;
-    canvas.width = size;
-    canvas.height = size;
-    
-    ctx.drawImage(img, 0, 0, size, size);
-    const imageData = ctx.getImageData(0, 0, size, size);
-    const data = imageData.data;
-    
-    const colorCounts = {};
-    const step = 8;
-    
-    for (let i = 0; i < data.length; i += step * 4) {
-      const r = data[i];
-      const g = data[i + 1];
-      const b = data[i + 2];
-      const alpha = data[i + 3];
+    try {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
       
-      if (alpha < 200) continue;
+      const size = 64;
+      canvas.width = size;
+      canvas.height = size;
       
-      if ((r >= 240 && g >= 240 && b >= 240) || 
-          (r <= 20 && g <= 20 && b <= 20)) {
-        continue;
+      ctx.drawImage(img, 0, 0, size, size);
+      const imageData = ctx.getImageData(0, 0, size, size);
+      const data = imageData.data;
+      
+      const colorCounts = {};
+      const step = 2; // 密集采样提升特征色捕获能力
+      const center = (size - 1) / 2;
+      const maxDist = Math.sqrt(center * center * 2);
+      
+      for (let y = 0; y < size; y += step) {
+        for (let x = 0; x < size; x += step) {
+          const idx = (y * size + x) * 4;
+          const r = data[idx];
+          const g = data[idx + 1];
+          const b = data[idx + 2];
+          const alpha = data[idx + 3];
+          
+          if (alpha < 200) continue;
+          
+          const max = Math.max(r, g, b);
+          const min = Math.min(r, g, b);
+          const saturation = max === 0 ? 0 : (max - min) / max;
+          const brightness = (r + g + b) / 3;
+          
+          // 排除过暗、过亮与低饱和背景色，聚焦画面中心与核心图案
+          if (saturation > 0.18 && brightness > 45 && brightness < 235) {
+            const dist = Math.sqrt((x - center) * (x - center) + (y - center) * (y - center));
+            const centerWeight = 1.0 + 0.8 * (1.0 - dist / maxDist);
+            const weight = Math.floor(Math.pow(saturation, 1.8) * brightness * centerWeight * 10);
+            
+            // 步长为16的精细分桶，避免不同主题色被粗粒度归并
+            const groupedR = Math.floor(r / 16) * 16;
+            const groupedG = Math.floor(g / 16) * 16;
+            const groupedB = Math.floor(b / 16) * 16;
+            
+            const key = groupedR + ', ' + groupedG + ', ' + groupedB;
+            colorCounts[key] = (colorCounts[key] || 0) + weight;
+          }
+        }
       }
       
-      const max = Math.max(r, g, b);
-      const min = Math.min(r, g, b);
-      const saturation = max === 0 ? 0 : (max - min) / max;
-      const brightness = (r + g + b) / 3;
+      let maxWeight = 0;
+      let dominantColor = null;
       
-      if (saturation > 0.15 && brightness > 30 && brightness < 220) {
-        const groupedR = Math.floor(r / 20) * 20;
-        const groupedG = Math.floor(g / 20) * 20;
-        const groupedB = Math.floor(b / 20) * 20;
-        
-        const key = groupedR + ',' + groupedG + ',' + groupedB;
-        const weight = Math.floor(saturation * brightness / 10);
-        colorCounts[key] = (colorCounts[key] || 0) + weight;
+      for (const color in colorCounts) {
+        if (colorCounts[color] > maxWeight) {
+          maxWeight = colorCounts[color];
+          dominantColor = color;
+        }
       }
+      
+      return dominantColor; // 提取失败返回 null，严禁返回假默认色
+    } catch (e) {
+      return null;
     }
-    
-    let maxWeight = 0;
-    let dominantColor = '61, 157, 242';
-    
-    for (const color in colorCounts) {
-      if (colorCounts[color] > maxWeight) {
-        maxWeight = colorCounts[color];
-        dominantColor = color;
-      }
-    }
-    
-    return dominantColor;
   }
 
-  // 后台保存到缓存
+  // 后台保存到缓存（防止写入坏死默认色）
   function saveToCacheBackground(articlePath, coverUrl, color) {
+    if (!color || color === '61, 157, 242' || color === '61,157,242') return;
     try {
       const cacheKey = 'butterfly_article_colors';
       const cached = localStorage.getItem(cacheKey);
@@ -218,27 +236,36 @@
     }
   }
 
-  // 清理缓存（可选）
+  // 清理缓存并剔除历史遗留的坏死默认色
   function cleanupCache() {
     try {
-      const cached = localStorage.getItem('butterfly_article_colors');
+      const cacheKey = 'butterfly_article_colors';
+      const cached = localStorage.getItem(cacheKey);
       if (!cached) return;
       
       const cache = JSON.parse(cached);
-      const cacheSize = JSON.stringify(cache).length;
+      let modified = false;
       
-      // 如果缓存过大（超过1MB），清理一些旧条目
-      if (cacheSize > 1024 * 1024) {
-        const entries = Object.entries(cache);
+      // 清除历史误写入的默认天蓝色条目
+      for (const key in cache) {
+        const itemColor = cache[key] && cache[key].color;
+        if (!itemColor || itemColor === '61, 157, 242' || itemColor === '61,157,242') {
+          delete cache[key];
+          modified = true;
+        }
+      }
+      
+      // 如果缓存过大（超过100条），清理旧条目
+      const entries = Object.entries(cache);
+      if (entries.length > 100) {
         entries.sort((a, b) => (b[1].timestamp || 0) - (a[1].timestamp || 0));
-        
-        // 保留最新的100条
         const newCache = {};
         entries.slice(0, 100).forEach(([key, value]) => {
           newCache[key] = value;
         });
-        
-        localStorage.setItem('butterfly_article_colors', JSON.stringify(newCache));
+        localStorage.setItem(cacheKey, JSON.stringify(newCache));
+      } else if (modified) {
+        localStorage.setItem(cacheKey, JSON.stringify(cache));
       }
     } catch (error) {
       // 静默处理缓存清理错误
